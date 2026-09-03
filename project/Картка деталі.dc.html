@@ -34,6 +34,10 @@
   /* Обгортка монтування має display:contents, тому розмір фото задається тут, а не на ній */
   [data-gallery-main] .ds-thumb { width: 100% !important; max-width: 380px; height: auto !important; aspect-ratio: 1 / 1; }
   [data-lightbox] .ds-thumb { width: 100% !important; max-width: 560px; height: auto !important; aspect-ratio: 1 / 1; }
+  /* Лупа в лайтбоксі: збільшення йде за курсором, тому transform без переходу — інакше
+     картинка наздоганяла б мишу. Межа різкості постачальницького знімка — приблизно 2,5×. */
+  [data-magnifier] .ds-thumb { transform-origin: var(--mx, 50%) var(--my, 50%); }
+  [data-magnifier][data-zoom='on'] .ds-thumb { transform: scale(2.5); }
   /* Лайтбокс — одне з трьох місць, де тінь дозволена */
   [data-lightbox] { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: var(--space-4); background: var(--surface-overlay); }
   @media (max-width: 639px) {
@@ -166,8 +170,8 @@
                     </sc-if>
                   </div>
 
-                  <div data-cell="btn" onClick="{{ addToCart }}">
-                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="primary" size="sm" icon="shopping-cart" hint-size="auto,34px">В кошик</x-import>
+                  <div data-cell="btn">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.AddToCartButton" onAdd="{{ addToCart }}" hint-size="auto,34px"></x-import>
                   </div>
                 </li>
               </sc-for>
@@ -227,30 +231,42 @@
           <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">{{ vehiclesLead }}</p>
           <ul style="list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
             <sc-for list="{{ vehicleMarks }}" as="mark" hint-placeholder-count="3">
-              <li style="border-top:1px solid var(--line-subtle)">
-                <button type="button" onClick="{{ mark.toggle }}" aria-expanded="{{ mark.expanded }}" style="display:flex;align-items:center;gap:var(--space-2);width:100%;padding:var(--space-3) var(--space-4);border:0;background:none;font:inherit;font-weight:500;color:var(--text-strong);text-align:left;cursor:pointer;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken)">
+              <li style="border-top:1px solid var(--line)">
+                <button type="button" onClick="{{ mark.toggle }}" aria-expanded="{{ mark.expanded }}" style="display:flex;align-items:center;gap:var(--space-2);width:100%;min-height:48px;padding:var(--space-2) var(--space-4);border:0;background:none;font-family:var(--font-display);font-size:var(--text-sm);font-weight:600;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--text-strong);text-align:left;cursor:pointer;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken)">
                   <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ mark.icon }}" size="16" hint-size="16px,16px"></x-import>
                   {{ mark.mark }}
+                  <span style="margin-left:auto;font-family:var(--font-sans);font-size:var(--text-2xs);font-weight:400;letter-spacing:0;text-transform:none;color:var(--text-faint);font-variant-numeric:tabular-nums">{{ mark.count }}</span>
                 </button>
 
                 <sc-if value="{{ mark.open }}" hint-placeholder-val="{{ true }}">
-                  <ul style="list-style:none;margin:0;padding:0 var(--space-4) var(--space-3)">
+                  <ul style="list-style:none;margin:0;padding:0">
                     <sc-for list="{{ mark.models }}" as="model" hint-placeholder-count="2">
                       <li style="border-top:1px solid var(--line-subtle)">
-                        <button type="button" onClick="{{ model.toggle }}" aria-expanded="{{ model.expanded }}" style="display:flex;align-items:center;gap:var(--space-2);width:100%;padding:var(--space-2) 0;border:0;background:none;font:inherit;font-size:var(--text-sm);font-weight:500;color:var(--text-muted);text-align:left;cursor:pointer" style-hover="color:var(--text-strong)">
+                        <button type="button" onClick="{{ model.toggle }}" aria-expanded="{{ model.expanded }}" style="display:flex;align-items:center;gap:var(--space-2);width:100%;min-height:44px;padding:var(--space-2) var(--space-4) var(--space-2) var(--space-8);border:0;background:none;font:inherit;font-size:var(--text-sm);font-weight:500;color:var(--text-strong);text-align:left;cursor:pointer;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken)">
                           <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ model.icon }}" size="15" hint-size="15px,15px"></x-import>
                           {{ model.model }}
+                          <span style="margin-left:auto;font-size:var(--text-2xs);color:var(--text-faint);font-variant-numeric:tabular-nums">{{ model.count }}</span>
                         </button>
 
                         <sc-if value="{{ model.open }}" hint-placeholder-val="{{ true }}">
-                          <div style="display:grid;gap:var(--space-2);padding:0 0 var(--space-2) var(--space-3)">
+                          <div>
                             <sc-for list="{{ model.types }}" as="type" hint-placeholder-count="2">
-                              <div>
-                                <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">{{ type.label }}</p>
-                                <ul style="list-style:none;display:grid;gap:2px;margin:2px 0 0;padding:0 0 0 var(--space-3)">
+                              <div style="border-top:1px solid var(--line-subtle)">
+                                <p style="display:flex;align-items:baseline;gap:var(--space-2);margin:0;padding:var(--space-2) var(--space-4) var(--space-1) var(--space-16)">
+                                  <span style="font-family:var(--font-display);font-size:var(--text-xs);font-weight:600;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--text-strong)">{{ type.name }}</span>
+                                  <sc-if value="{{ type.hasYears }}" hint-placeholder-val="{{ true }}">
+                                    <span style="font-family:var(--font-mono);font-size:var(--text-2xs);letter-spacing:var(--tracking-mono);color:var(--text-muted)">{{ type.years }}</span>
+                                  </sc-if>
+                                </p>
+                                <ul style="list-style:none;margin:0 0 var(--space-2);padding:0">
                                   <sc-for list="{{ type.vehicles }}" as="vehicle" hint-placeholder-count="2">
                                     <li>
-                                      <a href="#" target="_blank" rel="noopener" style="font-size:var(--text-sm);text-decoration:none">{{ vehicle.label }}</a>
+                                      <a href="#" target="_blank" rel="noopener" style="display:grid;grid-template-columns:132px 76px 72px minmax(0,1fr);align-items:baseline;gap:2px var(--space-3);min-height:34px;padding:5px var(--space-4) 5px var(--space-16);color:var(--text-body);text-decoration:none;box-shadow:inset 3px 0 0 transparent;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);box-shadow:var(--keyline-red);color:var(--text-strong);text-decoration:none">
+                                        <span style="font-size:var(--text-sm);font-weight:500;color:var(--text-strong)">{{ vehicle.engine }}</span>
+                                        <span style="font-size:var(--text-xs);color:var(--text-muted)">{{ vehicle.fuel }}</span>
+                                        <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-mono);color:var(--text-muted);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right">{{ vehicle.power }}</span>
+                                        <span style="font-size:var(--text-xs);color:var(--text-faint);white-space:nowrap">{{ vehicle.drive }}</span>
+                                      </a>
                                     </li>
                                   </sc-for>
                                 </ul>
@@ -322,6 +338,7 @@
       <div style="display:grid;gap:var(--space-3);width:min(760px,100%);padding:var(--space-4);border-radius:var(--radius-xl);background:var(--surface);box-shadow:var(--shadow-lg)">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-3)">
           <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">{{ photoPosition }}</p>
+          <p style="margin:0 auto 0 0;font-size:var(--text-xs);color:var(--text-faint)">Наведіть на фото, щоб роздивитися ближче</p>
           <span onClick="{{ closeZoom }}">
             <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="x" label="Закрити" size="md" tone="plain" hint-size="44px,44px"></x-import>
           </span>
@@ -330,7 +347,7 @@
           <span onClick="{{ prevPhoto }}" style="flex:none">
             <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="chevron-left" label="Попереднє фото" size="md" hint-size="44px,44px"></x-import>
           </span>
-          <div style="flex:1;min-width:0;display:grid;place-items:center">
+          <div data-magnifier data-zoom="off" onMouseMove="{{ magnify }}" onMouseLeave="{{ magnifyOff }}" style="flex:1;min-width:0;display:grid;place-items:center;overflow:hidden;border-radius:var(--radius-lg);cursor:zoom-in">
             <x-import component-from-global-scope="DesignSystem_d7c4f4.PartThumb" size="{{ zoomSize }}" hint-size="100%,420px"></x-import>
           </div>
           <span onClick="{{ nextPhoto }}" style="flex:none">
@@ -592,6 +609,40 @@ class Component extends DCLogic {
 
     /* §3.11: рівень із рівно одним значенням відкривається сам — не «перший із кількох». */
     const soleMark = VEHICLES.length === 1 ? VEHICLES[0].mark : null
+    /* «# машина / машини / машин» — українські форми, як у решті каталогу. */
+    const cars = (n) => {
+      const t = n % 10
+      const h = n % 100
+      if (t === 1 && h !== 11) return n + ' машина'
+      if (t >= 2 && t <= 4 && (h < 12 || h > 14)) return n + ' машини'
+      return n + ' машин'
+    }
+    /* Рядок машини — це чотири поля, а не одне речення: двигун, пальне, потужність, привод.
+       Постачальник склеює їх через « · », тому розбираємо тут, а не малюємо склейку. */
+    const leafOf = (label) => {
+      const parts = String(label).split(' · ').map((s) => s.trim())
+      const engine = parts[0] || label
+      let fuel = parts[1] || ''
+      /* «2.0 CRDi · 2.0 Дизель» — обʼєм стоїть у назві двигуна, тому в полі пального він
+         зайвий: два однакові числа в сусідніх рядках читаються як дві різні характеристики. */
+      const volume = (engine.match(/^\d+[.,]\d+/) || [])[0]
+      if (volume && fuel.startsWith(volume)) fuel = fuel.slice(volume.length).trim()
+      return {
+        label,
+        engine,
+        fuel,
+        power: parts[2] || '',
+        drive: parts[3] || ''
+      }
+    }
+    /* Тип моделі приходить як «TUCSON (JM) (2004–2010)» — роки живуть окремо від назви. */
+    const typeOf = (label) => {
+      const at = label.lastIndexOf(' (')
+      const tail = at < 0 ? '' : label.slice(at + 2, -1)
+      const yearly = /^\d{4}/.test(tail)
+      return { name: yearly ? label.slice(0, at) : label, years: yearly ? tail : '' }
+    }
+    const countTypes = (types) => types.reduce((t, type) => t + type.vehicles.length, 0)
     const vehicleMarks = VEHICLES.map((mark) => {
       const markOpen = openMarks.includes(mark.mark) || mark.mark === soleMark
       const soleModel = mark.models.length === 1 ? mark.models[0].model : null
@@ -600,6 +651,7 @@ class Component extends DCLogic {
         open: markOpen,
         expanded: markOpen ? 'true' : 'false',
         icon: markOpen ? 'chevron-down' : 'chevron-right',
+        count: cars(mark.models.reduce((m, model) => m + countTypes(model.types), 0)),
         toggle: this.toggleList('openMarks', mark.mark),
         models: mark.models.map((model) => {
           const key = mark.mark + '|' + model.model
@@ -609,11 +661,18 @@ class Component extends DCLogic {
             open: modelOpen,
             expanded: modelOpen ? 'true' : 'false',
             icon: modelOpen ? 'chevron-down' : 'chevron-right',
+            count: countTypes(model.types),
             toggle: this.toggleList('openModels', key),
-            types: model.types.map((type) => ({
-              label: type.label,
-              vehicles: type.vehicles.map((label) => ({ label }))
-            }))
+            types: model.types.map((type) => {
+              const parsed = typeOf(type.label)
+              return {
+                label: type.label,
+                name: parsed.name,
+                years: parsed.years,
+                hasYears: parsed.years !== '',
+                vehicles: type.vehicles.map(leafOf)
+              }
+            })
           }
         })
       }
@@ -653,6 +712,15 @@ class Component extends DCLogic {
       scrollThumbsBack: this.scrollBy(this.thumbStrip, -220),
       scrollThumbsForward: this.scrollBy(this.thumbStrip, 220),
       zoomed: zoomed && hasPhotos,
+      /* Лупа: пишемо координати прямо в DOM, а не в стан — mousemove дав би 60 рендерів на секунду. */
+      magnify: (event) => {
+        const box = event.currentTarget
+        const rect = box.getBoundingClientRect()
+        box.style.setProperty('--mx', (((event.clientX - rect.left) / rect.width) * 100).toFixed(2) + '%')
+        box.style.setProperty('--my', (((event.clientY - rect.top) / rect.height) * 100).toFixed(2) + '%')
+        box.setAttribute('data-zoom', 'on')
+      },
+      magnifyOff: (event) => event.currentTarget.setAttribute('data-zoom', 'off'),
       openZoom: () => this.setState({ zoomed: true }),
       closeZoom: () => this.setState({ zoomed: false }),
       closeOnScrim: (event) => {

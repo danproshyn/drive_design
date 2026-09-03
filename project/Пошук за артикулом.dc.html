@@ -69,11 +69,25 @@
       </div>
     </sc-if>
 
+    <sc-if value="{{ isNoQuery }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;gap:var(--space-3)">
+        <h1 class="ds-section-title" style="margin:0">Результати пошуку</h1>
+        <p style="margin:0;color:var(--text-muted)">Введіть артикул, щоб побачити результати</p>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isTooLong }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;gap:var(--space-3)">
+        <h1 class="ds-section-title" style="margin:0">Результати пошуку</h1>
+        <p style="margin:0;color:var(--text-muted)">Задовгий запит — не більше 100 символів</p>
+      </div>
+    </sc-if>
+
     <sc-if value="{{ isSearch }}" hint-placeholder-val="{{ true }}">
       <div style="display:grid;gap:var(--space-3)">
         <h1 class="ds-section-title" style="margin:0;flex-wrap:wrap">
           Результати за
-          <span class="ds-article" style="font-size:var(--text-lg)">0986452041</span>
+          <span class="ds-article" style="font-size:var(--text-lg)">{{ queryEcho }}</span>
           <sc-if value="{{ hasList }}" hint-placeholder-val="{{ true }}">
             <span class="ds-section-title__count">{{ countLabel }}</span>
           </sc-if>
@@ -92,7 +106,7 @@
 
     <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
       <div style="display:grid;gap:var(--space-4)">
-        <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="package-search" title="За запитом «0986452041» нічого не знайдено" hint-size="100%,180px">Перевірте артикул — можливо, у ньому помилка або цієї деталі немає в каталозі.</x-import>
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="package-search" title="{{ emptyTitle }}" hint-size="100%,180px">Перевірте артикул — можливо, у ньому помилка або цієї деталі немає в каталозі.</x-import>
 
         <section style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-5);padding:var(--space-5) var(--space-6);border:1px solid var(--line);border-left:3px solid var(--red-500);border-radius:var(--radius-lg);background:var(--surface-sunken)">
           <div style="flex:1 1 420px;min-width:280px">
@@ -211,8 +225,8 @@
                               </sc-if>
                             </div>
 
-                            <div data-cell="btn" onClick="{{ offer.onAdd }}">
-                              <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="primary" size="sm" icon="shopping-cart" hint-size="auto,34px">В кошик</x-import>
+                            <div data-cell="btn">
+                              <x-import component-from-global-scope="DesignSystem_d7c4f4.AddToCartButton" onAdd="{{ offer.onAdd }}" hint-size="auto,34px"></x-import>
                             </div>
                           </div>
                         </sc-for>
@@ -303,10 +317,11 @@
                 </div>
               </x-import>
 
-              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Відправка" hint-size="100%,110px">
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Сьогодні" count="{{ countShipToday }}" checked="{{ shipToday }}" onChange="{{ setShipToday }}" hint-size="100%,28px"></x-import>
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Завтра" count="{{ countShipTomorrow }}" checked="{{ shipTomorrow }}" onChange="{{ setShipTomorrow }}" hint-size="100%,28px"></x-import>
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="До 3 днів" count="{{ countShipWeek }}" checked="{{ shipWeek }}" onChange="{{ setShipWeek }}" hint-size="100%,28px"></x-import>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Відправка" hint-size="100%,140px">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Radio" name="ship-search" label="Будь-коли" checked="{{ shipAny }}" onChange="{{ setShipAny }}" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Radio" name="ship-search" label="Сьогодні" count="{{ countShipToday }}" checked="{{ shipToday }}" onChange="{{ setShipToday }}" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Radio" name="ship-search" label="Завтра" count="{{ countShipTomorrow }}" checked="{{ shipTomorrow }}" onChange="{{ setShipTomorrow }}" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Radio" name="ship-search" label="До 3 днів" count="{{ countShipWeek }}" checked="{{ shipWeek }}" onChange="{{ setShipWeek }}" hint-size="100%,28px"></x-import>
               </x-import>
 
               <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Висота, мм" more-count="4" hint-size="100%,140px">
@@ -482,7 +497,7 @@ class Component extends DCLogic {
   /* Ознака — взаємовиключна пара: оригінал або аналог. Повторний клік знімає фільтр. */
   toggleOem = (value) => () => this.setState((s) => ({ isOem: s.isOem === value ? null : value }))
 
-  setShip = (value) => () => this.setState((s) => ({ shipMax: s.shipMax === value ? null : value }))
+  setShip = (value) => () => this.setState({ shipMax: value })
 
   clear = () =>
     this.setState({
@@ -608,13 +623,32 @@ class Component extends DCLogic {
     const filterCount =
       brands.length + (isOem === null ? 0 : 1) + (priceMin === null ? 0 : 1) + (shipMax === null ? 0 : 1)
 
+    /* Запит з адреси — те саме джерело, що й поле в шапці (`app/search/page.tsx`).
+       Порожня адреса лишає демонстраційний артикул, інакше сторінка була б без предмета. */
+    const DEMO_QUERY = '0986452041'
+    let asked = null
+    try {
+      asked = new URLSearchParams(window.location.search).get('q')
+    } catch (e) { asked = null }
+    const q = (asked ?? '').trim()
+    const askedQuery = asked !== null
+    /* MIN/MAX_QUERY_LENGTH з `lib/search.ts`. Обмеження тримається на цьому боці, бо саме
+       ця сторінка друкує запит із адреси — задовгий запит не друкується ніде. */
+    const isNoQuery = askedQuery && q.length < 3
+    const isTooLong = askedQuery && q.length > 100
+    const queryEcho = askedQuery && !isNoQuery && !isTooLong ? q : DEMO_QUERY
+
     return {
       cartCount: cart,
       thumbSize: 64,
       isAnalogs,
-      isSearch: !isAnalogs,
-      isEmpty: view === 'empty',
-      hasList: view !== 'empty',
+      isSearch: !isAnalogs && !isNoQuery && !isTooLong,
+      isNoQuery: !isAnalogs && isNoQuery,
+      isTooLong: !isAnalogs && isTooLong,
+      queryEcho,
+      emptyTitle: 'За запитом «' + queryEcho + '» нічого не знайдено',
+      isEmpty: view === 'empty' && !isNoQuery && !isTooLong,
+      hasList: view !== 'empty' && !isNoQuery && !isTooLong,
       showKindFilter,
       noticeResults: !isAnalogs && view === 'results',
       noticeCross: !isAnalogs && view === 'crossref',
@@ -659,6 +693,8 @@ class Component extends DCLogic {
       shipToday: shipMax === 0,
       shipTomorrow: shipMax === 1,
       shipWeek: shipMax === 3,
+      shipAny: shipMax === null,
+      setShipAny: this.setShip(null),
       setShipToday: this.setShip(0),
       setShipTomorrow: this.setShip(1),
       setShipWeek: this.setShip(3),

@@ -194,6 +194,60 @@ function Icon({
 Object.assign(__ds_scope, { Icon });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/core/Icon.jsx", error: String((e && e.message) || e) }); }
 
+// components/catalog/AddToCartButton.jsx
+try { (() => {
+/**
+ * «В кошик», and the button is its own confirmation — `app/p/[...slug]/_components/AddToCartButton.tsx`.
+ *
+ * **The answer is the control, not a sentence beside it.** The repo draws «Додано.» and a cart
+ * link under the button; in a list of six offers that is two extra lines per row, and the
+ * owner read it as noise. The press turns the button into «✓ Додано» — the row it happened to
+ * is unmistakable, and the header's cart count carries the total.
+ *
+ * **«Додано» STAYS, on the owner's reading of 04.09.2026: one offer goes into the cart once.**
+ * A confirmation that expires says «this was true a moment ago» about a row that is still
+ * there, and the button then invites a press it will not honour. Pressed again it opens the
+ * cart, which is the only thing left to do with a line that is already in it. Quantity lives
+ * in the cart's own stepper (§3.3), so nothing is lost by refusing a second add here.
+ *
+ * This overrides §3.1's summing repeat press — «друга дія тієї самої людини в тому самому
+ * кошику» — which the owner has and chose against; it is his to choose.
+ *
+ * A confirmation is only honest if the row is actually there afterwards, so it waits for the
+ * add to report: `onAdd` may answer `false` (a storage refusal, a rejected PUT) and then the
+ * button never changes. `note` stays for a quantity the code adjusted (§3.3 «з поясненням»).
+ */
+function AddToCartButton({
+  label = 'В кошик',
+  cartHref = 'Кошик.dc.html',
+  onAdd,
+  size = 'sm',
+  note,
+  className = ''
+}) {
+  const [added, setAdded] = React.useState(false);
+  const press = () => {
+    if (added) { window.location.href = cartHref; return; }
+    const answer = typeof onAdd === 'function' ? onAdd() : true;
+    if (answer !== false) setAdded(true);
+  };
+  return React.createElement('div', {
+    className: ['ds-addcart', className].filter(Boolean).join(' ')
+  },
+    React.createElement(__ds_scope.Button, {
+      variant: 'primary', size: size,
+      icon: added ? 'check' : 'shopping-cart',
+      onClick: press,
+      className: added ? 'ds-addcart__btn--done' : '',
+      title: added ? 'Перейти в кошик' : undefined,
+      'aria-live': 'polite'
+    }, added ? 'Додано' : label),
+    added && note ? React.createElement('p', { className: 'ds-addcart__note', role: 'alert' },
+      React.createElement(__ds_scope.Icon, { name: 'info', size: 13 }), note) : null);
+}
+Object.assign(__ds_scope, { AddToCartButton });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/catalog/AddToCartButton.jsx", error: String((e && e.message) || e) }); }
+
 // components/catalog/CashbackBanner.jsx
 try { (() => {
 /** The site's only promotional surface. Renders nothing when the cashback ladder is empty. */
@@ -514,12 +568,9 @@ function OfferRow({
     style: {
       marginLeft: 'auto'
     }
-  }, /*#__PURE__*/React.createElement(__ds_scope.Button, {
-    variant: "primary",
-    size: "sm",
-    icon: "shopping-cart",
-    onClick: onAdd
-  }, "\u0412 \u043A\u043E\u0448\u0438\u043A")), staff ? /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(__ds_scope.AddToCartButton, {
+    onAdd: onAdd
+  })), staff ? /*#__PURE__*/React.createElement("div", {
     className: "ds-offer__staff"
   }, /*#__PURE__*/React.createElement(__ds_scope.Badge, {
     tone: "staff",
@@ -741,12 +792,9 @@ function PartCard({
     value: price,
     size: "md",
     stale: !inStock
-  }), inStock ? /*#__PURE__*/React.createElement(__ds_scope.Button, {
-    variant: "primary",
-    size: "sm",
-    icon: "shopping-cart",
-    onClick: onBuy
-  }, "\u0412 \u043a\u043e\u0448\u0438\u043a") : /*#__PURE__*/React.createElement("span", {
+  }), inStock ? /*#__PURE__*/React.createElement(__ds_scope.AddToCartButton, {
+    onAdd: onBuy
+  }) : /*#__PURE__*/React.createElement("span", {
     className: "ds-stock ds-stock--out"
   }, "\u041D\u0435\u043C\u0430\u0454 \u0432 \u043D\u0430\u044F\u0432\u043D\u043E\u0441\u0442\u0456"), inStock && minQty > 1 ? /*#__PURE__*/React.createElement("span", {
     className: "ds-minqty"
@@ -891,6 +939,31 @@ function Checkbox({
 Object.assign(__ds_scope, { Checkbox });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/forms/Checkbox.jsx", error: String((e && e.message) || e) }); }
 
+// components/forms/Radio.jsx
+try { (() => {
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+/**
+ * One value of a single-choice facet. Same row rhythm as Checkbox — the round
+ * indicator is the only signal needed, and it is the one users already read as
+ * «only one of these». Radios in a group must share a `name`.
+ */
+function Radio({
+  label,
+  count,
+  className = '',
+  ...rest
+}) {
+  return /*#__PURE__*/React.createElement("label", {
+    className: ['ds-check', 'ds-check--radio', className].filter(Boolean).join(' ')
+  }, /*#__PURE__*/React.createElement("input", _extends({
+    type: "radio"
+  }, rest)), /*#__PURE__*/React.createElement("span", null, label), count !== undefined && count !== null ? /*#__PURE__*/React.createElement("span", {
+    className: "ds-check__count"
+  }, "(", count, ")") : null);
+}
+Object.assign(__ds_scope, { Radio });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/forms/Radio.jsx", error: String((e && e.message) || e) }); }
+
 // components/forms/QuantityStepper.jsx
 try { (() => {
 function QuantityStepper({
@@ -953,6 +1026,8 @@ function SearchField({
   submitLabel = 'Знайти',
   suggests,
   error,
+  inputRef,
+  onSubmit,
   className = '',
   ...rest
 }) {
@@ -967,6 +1042,7 @@ function SearchField({
     size: hero ? 20 : 17,
     className: "ds-search__icon"
   }), /*#__PURE__*/React.createElement("input", _extends({
+    ref: inputRef,
     type: "search",
     className: ['ds-input', 'ds-search__input', hero ? 'ds-input--lg' : ''].filter(Boolean).join(' '),
     placeholder: placeholder,
@@ -974,7 +1050,8 @@ function SearchField({
     autoComplete: "off"
   }, rest)), suggests), /*#__PURE__*/React.createElement(__ds_scope.Button, {
     variant: "dark",
-    size: hero ? 'lg' : 'md'
+    size: hero ? 'lg' : 'md',
+    onClick: onSubmit
   }, submitLabel), error ? /*#__PURE__*/React.createElement("p", {
     className: "ds-field__error",
     role: "alert",
@@ -986,43 +1063,89 @@ function SearchField({
   }, error) : null);
 }
 
-/** The list that opens under the field while somebody types. Pasting searches at once instead. */
+/**
+ * The list that opens under the field while somebody types. Pasting searches at once instead.
+ * The list itself says nothing: the head is a label for screen readers, and the only sentence
+ * it ever draws is «Точного збігу немає» — the absence of an exact match, in words rather
+ * than in the ordering.
+ */
 function SearchSuggests({
-  heading,
+  label = 'Знайдені деталі',
   children
 }) {
   return /*#__PURE__*/React.createElement("div", {
-    className: "ds-suggest"
-  }, heading ? /*#__PURE__*/React.createElement("p", {
-    className: "ds-suggest__head"
-  }, heading) : null, children);
+    className: "ds-suggest",
+    role: "listbox",
+    "aria-label": label
+  }, children);
 }
+/**
+ * Splits an article number around what the customer has typed so far, ignoring the
+ * spaces and dashes suppliers print differently. The hit is marked by weight and
+ * colour only — red is spoken for.
+ */
+function __suggestParts(article, query) {
+  const text = String(article == null ? '' : article);
+  const word = /[0-9a-z\u0430-\u044f\u0456\u0457\u0454\u0491]/i;
+  const q = String(query == null ? '' : query).split('').filter((c) => word.test(c)).join('').toLowerCase();
+  if (!q) return [{ text: text, hit: false }];
+  const norm = [];
+  const at = [];
+  for (let i = 0; i < text.length; i++) {
+    if (word.test(text[i])) { norm.push(text[i].toLowerCase()); at.push(i); }
+  }
+  const found = norm.join('').indexOf(q);
+  if (found < 0) return [{ text: text, hit: false }];
+  const from = at[found];
+  const to = at[found + q.length - 1];
+  return [
+    { text: text.slice(0, from), hit: false },
+    { text: text.slice(from, to + 1), hit: true },
+    { text: text.slice(to + 1), hit: false },
+  ].filter((part) => part.text);
+}
+
+/**
+ * One found part. Five fields, in the order a customer checks them: the photo tells
+ * them it is the right shape, the article is what they typed, the price is what they
+ * came for. The name is allowed to truncate; the article and the price never are.
+ */
 function SearchSuggestRow({
   article,
   brand,
   name,
+  price,
+  src,
+  query,
   ...rest
 }) {
   return /*#__PURE__*/React.createElement("button", _extends({
     type: "button",
     className: "ds-suggest__row"
-  }, rest), /*#__PURE__*/React.createElement("span", {
-    className: "ds-article"
-  }, article), /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 'var(--text-sm)',
-      color: 'var(--text-strong)',
-      fontWeight: 500
-    }
-  }, name), /*#__PURE__*/React.createElement("span", {
-    style: {
-      marginLeft: 'auto',
-      fontSize: 'var(--text-xs)',
-      color: 'var(--text-muted)'
-    }
-  }, brand));
+  }, rest), /*#__PURE__*/React.createElement(__ds_scope.PartThumb, {
+    src: src,
+    alt: name || '',
+    size: 44,
+    className: "ds-suggest__thumb"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "ds-suggest__body"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "ds-suggest__ident"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "ds-article ds-suggest__art"
+  }, __suggestParts(article, query).map((part, index) => /*#__PURE__*/React.createElement("span", {
+    key: index,
+    className: part.hit ? 'ds-suggest__hit' : undefined
+  }, part.text))), brand ? /*#__PURE__*/React.createElement("span", {
+    className: "ds-suggest__brand"
+  }, brand) : null), name ? /*#__PURE__*/React.createElement("span", {
+    className: "ds-suggest__name"
+  }, name) : null), price !== undefined && price !== null ? /*#__PURE__*/React.createElement("span", {
+    className: "ds-suggest__price"
+  }, price, "\u2009\u20B4") : null);
 }
 Object.assign(__ds_scope, { SearchField, SearchSuggests, SearchSuggestRow });
+__ds_scope.__suggestParts = __suggestParts;
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/forms/SearchField.jsx", error: String((e && e.message) || e) }); }
 
 // components/forms/SelectField.jsx
@@ -3008,11 +3131,15 @@ window.DriveData = {
 };
 })(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/storefront/data.js", error: String((e && e.message) || e) }); }
 
+__ds_ns.AddToCartButton = __ds_scope.AddToCartButton;
+
 __ds_ns.CashbackBanner = __ds_scope.CashbackBanner;
 
 __ds_ns.CategoryTree = __ds_scope.CategoryTree;
 
 __ds_ns.FacetGroup = __ds_scope.FacetGroup;
+
+__ds_ns.Radio = __ds_scope.Radio;
 
 __ds_ns.GarageCard = __ds_scope.GarageCard;
 
@@ -3081,15 +3208,28 @@ __ds_ns.TabStrip = __ds_scope.TabStrip;
 try { (() => {
 const h = React.createElement;
 
+/** Operator marks, cropped from the official logos to the glyph only. currentColor, no brand colour. */
+const OPERATOR_GLYPHS = {
+  vodafone: { viewBox: '116.8 0 266.9 236.4', d: "M 251.06 0.00 L 257.81 0.00 Q 280.19 1.03 300.52 10.07 Q 260.59 9.76 229.78 33.07 C 201.47 54.50 184.13 92.09 192.89 127.31 C 198.77 150.98 216.69 170.69 240.51 176.63 C 281.25 186.80 318.17 154.57 316.42 113.99 C 315.06 82.47 294.81 66.55 266.23 58.71 Q 265.72 58.56 265.71 58.03 C 265.44 35.83 280.42 17.17 301.62 11.44 Q 302.05 11.32 302.00 10.79 C 330.26 22.58 352.21 49.33 362.04 77.19 C 383.64 138.41 348.33 206.82 285.95 224.51 Q 244.39 236.30 205.45 218.25 C 132.00 184.21 116.83 84.86 176.84 30.18 Q 207.73 2.02 251.06 0.00 Z" },
+  kyivstar: { viewBox: '-0.4 -0.4 41.4 39', d: "m 20.418,0 c -1.4514,0 -2.62695,1.14175 -2.62695,2.55078 v 9.35938 c 0,1.4097 1.17555,2.55273 2.62695,2.55273 1.4506,0 2.625,-1.14303 2.625,-2.55273 V 2.55078 C 23.043,1.14175 21.8686,0 20.418,0 Z M 2.4023797,12.56836 c -1.01976,0.085 -1.93742001,0.74801 -2.27344001,1.75391 -0.44727,1.3412 0.30622,2.78139 1.68555001,3.21679 l 9.1582003,2.89258 c 1.3794,0.4354 2.86185,-0.29817 3.31055,-1.63867 0.4481,-1.3405 -0.3066,-2.7814 -1.6875,-3.2168 L 3.4375397,12.68555 c -0.34484,-0.10903 -0.69524,-0.14553 -1.03516,-0.11719 z m 36.0312503,0.002 c -0.33993,-0.0285 -0.69016,0.006 -1.03516,0.11524 l -9.1582,2.89257 c -1.3793,0.4354 -2.13355,1.8763 -1.68555,3.2168 0.4488,1.3404 1.9292,2.07282 3.3086,1.63672 l 9.1582,-2.89062 c 1.3793,-0.4354 2.13435,-1.8763 1.68555,-3.2168 -0.33548,-1.0053 -1.25364,-1.66841 -2.27344,-1.75391 z M 15.168,25.32422 c -0.84232,-0.0279 -1.68448,0.33785 -2.21679,1.05078 l -5.6582103,7.57227 c -0.85252,1.1414 -0.59167,2.7386 0.58204,3.5664 1.17221,0.8278 2.8161603,0.5728 3.6679603,-0.5664 l 5.65821,-7.57422 c 0.8533,-1.1399 0.59041,-2.734 -0.58399,-3.5625 C 16.17765,25.4999 15.6734,25.34094 15.168,25.32422 Z m 10.50196,0 c -0.50561,0.0167 -1.01104,0.17568 -1.45117,0.48633 -1.173,0.8285 -1.43464,2.4226 -0.58204,3.5625 l 5.65821,7.57422 c 0.8517,1.1392 2.49577,1.3942 3.66797,0.5664 1.1737,-0.8278 1.43453,-2.425 0.58203,-3.5664 L 27.88675,26.375 c -0.53237,-0.71293 -1.37412,-1.07865 -2.21679,-1.05078 z" },
+};
+function OperatorGlyph({ name, size = 13 }) {
+  const g = OPERATOR_GLYPHS[name];
+  if (!g) return null;
+  return h('svg', {
+    viewBox: g.viewBox, width: size, height: size, fill: 'currentColor',
+    'aria-hidden': 'true', focusable: 'false', style: { display: 'block', overflow: 'visible' },
+  }, h('path', { d: g.d, fillRule: 'evenodd', clipRule: 'evenodd' }));
+}
+
 const SHOP = {
   address: 'м. Запоріжжя, вул. Гуляйпільська 15',
   mapHref: 'https://drive.zp.ua/go/map',
   email: 'magazine_drive@ukr.net',
   hours: [['пн–пт', '09:00–16:00'], ['сб', '09:00–14:00'], ['нд', 'вихідний']],
-  // Placeholder operator marks — the shop supplies the real glyphs later.
   phones: [
-    { number: '+38 (099) 045-04-40', href: 'tel:+380990450440', mark: 'V', operator: 'Vodafone' },
-    { number: '+38 (098) 559-32-65', href: 'tel:+380985593265', mark: 'К', operator: 'Київстар' },
+    { number: '+38 (099) 045-04-40', href: 'tel:+380990450440', glyph: 'vodafone', operator: 'Vodafone' },
+    { number: '+38 (098) 559-32-65', href: 'tel:+380985593265', glyph: 'kyivstar', operator: 'Київстар' },
   ],
   docs: [
     { label: 'Публічний договір (оферта)', href: 'Документи.dc.html#offer' },
@@ -3102,9 +3242,20 @@ const SHOP = {
     oem: 'Оригінальні каталоги.dc.html',
     account: 'Вхід.dc.html',
     cart: 'Кошик.dc.html',
+    search: 'Пошук за артикулом.dc.html',
+    part: 'Картка деталі.dc.html',
     request: 'Головна.dc.html#request',
   },
 };
+
+/** The query the current page is answering, or '' anywhere but the results page. */
+function __queryFromAddress() {
+  try {
+    const here = decodeURIComponent(window.location.pathname.split('/').pop() || '');
+    if (here !== SHOP.pages.search) return '';
+    return new URLSearchParams(window.location.search).get('q') || '';
+  } catch (e) { return ''; }
+}
 
 function PhoneMenu({ phones }) {
   const [open, setOpen] = React.useState(false);
@@ -3126,8 +3277,156 @@ function PhoneMenu({ phones }) {
     open
       ? h('div', { className: 'ds-phonemenu__list' }, phones.map((p) => h('a', {
           key: p.number, href: p.href, 'aria-label': p.operator + ' ' + p.number,
-        }, h('span', { className: 'ds-phonemenu__mark' }, p.mark), p.number)))
+        }, h('span', { className: 'ds-phonemenu__mark' }, h(OperatorGlyph, { name: p.glyph, size: 17 })), p.number)))
       : null);
+}
+
+/* ═══ Article search logic, from the frontend ══════════════════════════════════
+ *
+ * lib/search.ts        MIN_QUERY_LENGTH = 3, MAX_QUERY_LENGTH = 100. Below the floor
+ *                      nothing is asked and the list draws nothing — an ordinary state
+ *                      of a search field, not an input error. The cap is enforced on
+ *                      this side because the results page echoes the query itself.
+ * hooks/useArticleSuggests.ts  250 ms debounce after the last keystroke.
+ * components/SearchInput.tsx   §6.7 Р4 — typed text opens the list, PASTED text runs
+ *                      the search at once (somebody who pasted a number already knows
+ *                      what they want). The list closes three ways: a row press, a
+ *                      press away, Escape — and Escape puts focus back in the field.
+ *                      Submitting under the floor shows «Введіть щонайменше 3 символи».
+ * components/SearchSuggestList.tsx  kind is READ off the answer, never derived here:
+ *                      'exact' → rows only (and nothing at all when there are none);
+ *                      anything else → the pinned «Шукати аналоги за цим номером» row
+ *                      first, because /search runs the crossref branch and this route
+ *                      does not, then «Точного збігу немає. Схожі варіанти:», then rows.
+ * app/search/page.tsx  §6.1 Р1 — one exact match goes straight to the part page instead
+ *                      of a one-item list.
+ * ═════════════════════════════════════════════════════════════════════════════ */
+const MIN_QUERY_LENGTH = 3;
+const MAX_QUERY_LENGTH = 100;
+const SUGGEST_DEBOUNCE_MS = 250;
+
+/** Demo index. On the site this is `GET /search/articles`. */
+const SUGGEST_PARTS = [
+  { id: 1, article: '0 986 452 041', brand: 'BOSCH', name: 'Фільтр масляний', price: 268, src: null },
+  { id: 2, article: 'W 712/95', brand: 'MANN-FILTER', name: 'Фільтр масляний', price: 312, src: null },
+  { id: 3, article: 'OC 90 OF', brand: 'KNECHT', name: 'Фільтр масляний', price: 245, src: null },
+  { id: 4, article: '1 987 949 095', brand: 'BOSCH', name: 'Ремінь ГРМ', price: 690, src: null },
+  { id: 5, article: '04152-YZZA1', brand: 'TOYOTA', name: 'Фільтр масляний, оригінал', price: 402, src: null },
+  { id: 6, article: 'GDB1330', brand: 'TRW', name: 'Колодки гальмівні передні', price: 1140, src: null },
+];
+
+const __word = /[0-9a-z\u0430-\u044f\u0456\u0457\u0454\u0491]/i;
+const __norm = (value) => String(value == null ? '' : value).split('').filter((c) => __word.test(c)).join('').toLowerCase();
+
+/**
+ * Stands in for the route. Branches run in order and the first one that answers returns,
+ * so exact and similar are never mixed — that is a property of the source, which is what
+ * stops a «merge for completeness» being added on this side.
+ */
+function suggestArticles(query) {
+  const q = __norm(query);
+  if (q.length < MIN_QUERY_LENGTH) return { kind: 'empty', results: [] };
+  const exact = SUGGEST_PARTS.filter((p) => __norm(p.article).startsWith(q));
+  if (exact.length) return { kind: 'exact', results: exact };
+  const near = SUGGEST_PARTS.filter((p) => __norm(p.article).includes(q) || __norm(p.brand).includes(q) || __norm(p.name).includes(q));
+  if (near.length) return { kind: 'fuzzy', results: near };
+  return { kind: 'empty', results: [] };
+}
+
+function HeaderSearch({ parts, onOpenPart, onSearch, initialValue = '' }) {
+  const [value, setValue] = React.useState(initialValue);
+  /* Typing opens the list; pasting and submitting close it. A flag rather than «the field
+     is non-empty», because what §6.7 Р4 separates is how the text arrived. */
+  const [typing, setTyping] = React.useState(false);
+  const [debounced, setDebounced] = React.useState('');
+  const [tooShort, setTooShort] = React.useState(false);
+  const form = React.useRef(null);
+  const input = React.useRef(null);
+  const swallowFocus = React.useRef(false);
+
+  React.useEffect(() => {
+    const id = window.setTimeout(() => setDebounced(value.trim()), SUGGEST_DEBOUNCE_MS);
+    return () => window.clearTimeout(id);
+  }, [value]);
+
+  React.useEffect(() => {
+    if (!typing) return undefined;
+    /* pointerdown, not click: a press that starts outside and ends on a row would otherwise
+       close the list before the row's own press was delivered. */
+    const away = (event) => {
+      if (form.current && event.target instanceof Node && !form.current.contains(event.target)) setTyping(false);
+    };
+    document.addEventListener('pointerdown', away);
+    return () => document.removeEventListener('pointerdown', away);
+  }, [typing]);
+
+  const run = (raw) => {
+    const query = String(raw == null ? '' : raw).trim();
+    if (query.length < MIN_QUERY_LENGTH) { setTooShort(true); return; }
+    setTooShort(false);
+    setTyping(false);
+    /* §6.1 Р1 — one exact match is the part page, not a one-item list. On the site the
+       server decides this and answers `redirect_to`; this side only follows it. */
+    const answer = suggestArticles(query);
+    if (answer.kind === 'exact' && answer.results.length === 1 && onOpenPart) onOpenPart(answer.results[0]);
+    else if (onSearch) onSearch(query);
+  };
+
+  const data = debounced.length >= MIN_QUERY_LENGTH ? suggestArticles(debounced) : null;
+  const exact = data !== null && data.kind === 'exact';
+  const rows = data === null ? [] : data.results;
+  /* An exact answer with no rows is not a state the route produces, and an empty list with
+     no pinned row would be a box that opened onto nothing. */
+  const drawList = typing && data !== null && !(exact && rows.length === 0);
+
+  return h('div', {
+    ref: form, role: 'search', style: { position: 'relative', width: '100%' },
+    onKeyDown: (event) => {
+      if (event.key !== 'Escape' || !typing) return;
+      setTyping(false);
+      /* Only when focus sits on a row does this move focus and fire an event the focus
+         handler would read as a return to the field. A list that keeps focus is a trap. */
+      if (document.activeElement !== input.current) swallowFocus.current = true;
+      if (input.current) input.current.focus();
+    },
+  },
+    h(__ds_scope.SearchField, {
+      variant: 'compact',
+      value: value,
+      inputRef: input,
+      maxLength: MAX_QUERY_LENGTH,
+      error: tooShort ? 'Введіть щонайменше 3 символи' : undefined,
+      onChange: (event) => { setValue(event.target.value); setTyping(true); setTooShort(false); },
+      onPaste: (event) => {
+        const pasted = (event.clipboardData.getData('text') || '').slice(0, MAX_QUERY_LENGTH);
+        if (pasted.trim() === '') return;
+        event.preventDefault();
+        setValue(pasted);
+        run(pasted);
+      },
+      onFocus: () => {
+        if (swallowFocus.current) { swallowFocus.current = false; return; }
+        if (value.trim() !== '') setTyping(true);
+      },
+      onKeyDown: (event) => { if (event.key === 'Enter') run(value); },
+      onSubmit: () => run(value),
+      suggests: drawList
+        ? h(__ds_scope.SearchSuggests, { label: 'Знайдені деталі' },
+            exact ? null : h('button', {
+              type: 'button', className: 'ds-suggest__pinned',
+              onClick: () => run(value),
+            }, 'Шукати аналоги за цим номером'),
+            /* Відсутність точного збігу сказана словами в обох станах. З рядками — з обіцянкою
+               («Схожі варіанти:»), без рядків — без неї: заголовок над порожнечею обіцяв би
+               список, якого немає. Репозиторій у другому випадку не казав нічого. */
+            exact ? null : h('p', { className: 'ds-suggest__note' },
+              rows.length ? 'Точного збігу немає. Схожі варіанти:' : 'Нічого не знайдено.'),
+            rows.map((part) => h(__ds_scope.SearchSuggestRow, Object.assign({
+              key: part.id, query: value,
+              onClick: () => { setTyping(false); if (onOpenPart) onOpenPart(part); },
+            }, part))))
+        : null,
+    }));
 }
 
 /**
@@ -3174,7 +3473,13 @@ function SiteHeader({
       h('a', { href: link('home'), style: { flex: 'none' }, onClick: nav_('home') },
         h('img', { src: logoSrc, alt: 'Драйв', style: { height: 38, width: 'auto', display: 'block' } })),
       h('div', { style: { flex: '1 1 240px', minWidth: 200, maxWidth: 520 } },
-        h(__ds_scope.SearchField, { variant: 'compact' })),
+        h(HeaderSearch, {
+          /* The field is the ADDRESS's, not its own: on the results page it shows the query
+             that page is answering, and it is empty everywhere else. */
+          initialValue: __queryFromAddress(),
+          onOpenPart: () => { window.location.href = link('part'); },
+          onSearch: (query) => { window.location.href = link('search') + '?q=' + encodeURIComponent(query); },
+        })),
       h('nav', { className: 'ds-header__nav', style: { marginLeft: 'auto' } },
         nav.map((item) => h('a', {
           key: item.key, href: link(item.key), className: 'ds-navlink',
@@ -3317,7 +3622,7 @@ function SiteFooter({
         h('p', { className: 'ds-footer__title' }, 'Звʼязок'),
         h('p', { className: 'ds-footer__links' },
           SHOP.phones.map((p) => h('a', { key: p.number, href: p.href, className: 'ds-footer__phone' },
-            h('span', { className: 'ds-footer__mark' }, p.mark), p.number)),
+            h('span', { className: 'ds-footer__mark' }, h(OperatorGlyph, { name: p.glyph, size: 14 })), p.number)),
           h('a', { href: 'mailto:' + SHOP.email }, SHOP.email))),
       h('div', null,
         h('p', { className: 'ds-footer__title' }, 'Документи'),

@@ -378,10 +378,11 @@
                 </div>
               </x-import>
 
-              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Відправка" hint-size="100%,110px">
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Сьогодні" count="{{ countShipToday }}" checked="{{ shipToday }}" onChange="{{ setShipToday }}" hint-size="100%,28px"></x-import>
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Завтра" count="{{ countShipTomorrow }}" checked="{{ shipTomorrow }}" onChange="{{ setShipTomorrow }}" hint-size="100%,28px"></x-import>
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="До 3 днів" count="{{ countShipWeek }}" checked="{{ shipWeek }}" onChange="{{ setShipWeek }}" hint-size="100%,28px"></x-import>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Відправка" hint-size="100%,140px">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Radio" name="ship-catalog" label="Будь-коли" checked="{{ shipAny }}" onChange="{{ setShipAny }}" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Radio" name="ship-catalog" label="Сьогодні" count="{{ countShipToday }}" checked="{{ shipToday }}" onChange="{{ setShipToday }}" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Radio" name="ship-catalog" label="Завтра" count="{{ countShipTomorrow }}" checked="{{ shipTomorrow }}" onChange="{{ setShipTomorrow }}" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Radio" name="ship-catalog" label="До 3 днів" count="{{ countShipWeek }}" checked="{{ shipWeek }}" onChange="{{ setShipWeek }}" hint-size="100%,28px"></x-import>
               </x-import>
 
               <sc-for list="{{ attrFacets }}" as="attr" hint-placeholder-count="2">
@@ -696,7 +697,7 @@ class Component extends DCLogic {
       attrs: s.attrs.includes(token) ? s.attrs.filter((t) => t !== token) : [...s.attrs, token]
     }))
 
-  setShip = (value) => () => this.setState((s) => ({ shipMax: s.shipMax === value ? null : value }))
+  setShip = (value) => () => this.setState({ shipMax: value })
 
   clear = () =>
     this.setState({
@@ -891,6 +892,8 @@ class Component extends DCLogic {
       shipToday: s.shipMax === 0,
       shipTomorrow: s.shipMax === 1,
       shipWeek: s.shipMax === 3,
+      shipAny: s.shipMax === null,
+      setShipAny: this.setShip(null),
       setShipToday: this.setShip(0),
       setShipTomorrow: this.setShip(1),
       setShipWeek: this.setShip(3),
