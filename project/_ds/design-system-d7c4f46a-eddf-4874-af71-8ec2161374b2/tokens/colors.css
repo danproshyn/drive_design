@@ -1,0 +1,93 @@
+/* Драйв colour system.
+   Three families only — white, warm black, brand red — taken off the logo file:
+   #24211D (wordmark), #E81B21 («автомагазин»), #FCF9F7 (paper). Everything neutral is
+   warm-tinted so it sits with the mark instead of next to it. */
+:root {
+  /* ── Brand red ─────────────────────────────────────────────── */
+  --red-50: #fef2f2;
+  --red-100: #fde0e1;
+  --red-200: #fab9bb;
+  --red-300: #f68b8f;
+  --red-400: #f2464b;
+  --red-500: #e81b21; /* the logo red — graphic accent, never small text */
+  --red-600: #c4151a; /* interactive fill and link colour (AA on white) */
+  --red-700: #9e1014;
+  --red-800: #7a0c10;
+  --red-900: #5c0b0e;
+
+  /* ── Warm ink ──────────────────────────────────────────────── */
+  --ink-900: #1a1815;
+  --ink-800: #24211d; /* the logo black */
+  --ink-700: #3a3630;
+  --ink-600: #55504a;
+  --ink-500: #726c64;
+  --ink-400: #97918a;
+  --ink-300: #bdb8b1;
+  --ink-200: #dcd8d2;
+  --ink-100: #ebe8e3;
+  --ink-50: #f6f4f1;
+  --white: #ffffff;
+
+  /* ── Semantic ──────────────────────────────────────────────── */
+  --green-600: #157f3e;
+  --green-50: #e9f5ed;
+  --amber-600: #b26a00;
+  --amber-50: #fdf3e3;
+
+  /* ── Text ──────────────────────────────────────────────────── */
+  --text-strong: var(--ink-800);
+  --text-body: var(--ink-700);
+  --text-muted: var(--ink-500);
+  --text-faint: var(--ink-400);
+  --text-inverse: var(--white);
+  --text-inverse-muted: rgb(255 255 255 / 0.64);
+  --text-action: var(--red-600);
+  --text-action-hover: var(--red-700);
+
+  /* ── Surfaces ──────────────────────────────────────────────── */
+  --surface: var(--white);
+  --surface-sunken: var(--ink-50);
+  --surface-muted: var(--ink-100);
+  --surface-inverse: var(--ink-800);
+  --surface-inverse-raised: #2f2b26;
+  --surface-accent: var(--red-50);
+  --surface-overlay: rgb(26 24 21 / 0.6);
+
+  /* ── Lines ─────────────────────────────────────────────────── */
+  --line: var(--ink-200);
+  --line-subtle: var(--ink-100);
+  --line-strong: var(--ink-800);
+  --line-inverse: rgb(255 255 255 / 0.16);
+
+  /* ── Action (primary red) ──────────────────────────────────── */
+  --action: var(--red-600);
+  --action-hover: var(--red-700);
+  --action-active: var(--red-800);
+  --action-fg: var(--white);
+  --action-tint: var(--red-50);
+  --action-tint-line: var(--red-200);
+
+  /* ── Action (black, secondary weight) ──────────────────────── */
+  --action-dark: var(--ink-800);
+  --action-dark-hover: var(--ink-900);
+  --action-dark-fg: var(--white);
+
+  /* ── Stock and delivery states ─────────────────────────────── */
+  --stock-in: var(--green-600);
+  --stock-in-bg: var(--green-50);
+  --stock-out: var(--ink-400);
+  --cutoff: var(--amber-600);
+  --cutoff-bg: var(--amber-50);
+
+  /* ── Feedback ──────────────────────────────────────────────── */
+  --danger: var(--red-600);
+  --danger-bg: var(--red-50);
+  --danger-line: var(--red-200);
+  --success: var(--green-600);
+  --success-bg: var(--green-50);
+  --warning: var(--amber-600);
+  --warning-bg: var(--amber-50);
+
+  /* ── Focus ─────────────────────────────────────────────────── */
+  --focus-ring: var(--red-500);
+}

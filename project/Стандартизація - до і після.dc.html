@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/colors.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/space.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/motion.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/layout.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/base.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=3"></script>
+<style>
+  [data-cols] { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); margin-top: var(--space-3); }
+  @media (min-width: 700px) { [data-cols] { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-6); } }
+  [data-item] { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: var(--space-3); padding: var(--space-5) 0; border-top: 1px solid var(--line); }
+  [data-sum] { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-4) var(--space-6); padding: var(--space-5) var(--space-6); background: var(--surface-sunken); border-left: 3px solid var(--red-500); border-radius: var(--radius-lg); }
+</style>
+</helmet>
+
+<div class="ds-page">
+  <main class="ds-container ds-main">
+
+    <div>
+      <p class="t-eyebrow" style="margin:0 0 var(--space-2)">Аудит · 2 вересня 2026</p>
+      <h1 class="t-display-md" style="margin:0">Стандартизація восьми сторінок</h1>
+      <p style="margin:var(--space-3) 0 0;max-width:64ch;font-size:var(--text-md);line-height:1.6;color:var(--text-muted);text-wrap:pretty">Спільні фрагменти жили в кожній сторінці окремо, тому розходилися. Тепер ними володіє Design System: хедер, меню й футер узяті з головної, решта — з того варіанта, який відповідає правилам системи.</p>
+    </div>
+
+    <div data-sum>
+      <div>
+        <p class="t-eyebrow" style="margin:0 0 4px">Виправлень</p>
+        <p style="margin:0;font-family:var(--font-display);font-size:var(--text-2xl);color:var(--text-strong)">{{ total }}</p>
+      </div>
+      <div>
+        <p class="t-eyebrow" style="margin:0 0 4px">Сторінок</p>
+        <p style="margin:0;font-family:var(--font-display);font-size:var(--text-2xl);color:var(--text-strong)">8</p>
+      </div>
+      <div>
+        <p class="t-eyebrow" style="margin:0 0 4px">Нових компонентів і класів у DS</p>
+        <p style="margin:0;font-family:var(--font-display);font-size:var(--text-2xl);color:var(--text-strong)">14</p>
+      </div>
+      <div>
+        <p class="t-eyebrow" style="margin:0 0 4px">Знято дублікатів</p>
+        <p style="margin:0;font-family:var(--font-display);font-size:var(--text-2xl);color:var(--text-strong)">≈760 рядків</p>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:6px">
+      <sc-for list="{{ groups }}" as="g" hint-placeholder-count="4">
+        <button onClick="{{ g.pick }}" style="{{ g.style }}">{{ g.label }}</button>
+      </sc-for>
+    </div>
+
+    <ul style="list-style:none;margin:0;padding:0">
+      <sc-for list="{{ items }}" as="item" hint-placeholder-count="19">
+        <li data-item>
+          <span style="font-family:var(--font-display);font-size:var(--text-md);color:var(--text-faint);padding-top:2px">{{ item.num }}</span>
+          <div style="min-width:0">
+            <h2 style="margin:0;font-family:var(--font-display);text-transform:uppercase;letter-spacing:.01em;font-size:var(--text-lg);line-height:1.15;color:var(--text-strong)">{{ item.name }}</h2>
+            <div data-cols>
+              <div>
+                <p class="t-eyebrow" style="margin:0 0 4px;color:var(--text-faint)">Було</p>
+                <p style="margin:0;font-size:var(--text-sm);line-height:1.55;color:var(--text-muted);text-wrap:pretty">{{ item.before }}</p>
+              </div>
+              <div>
+                <p class="t-eyebrow" style="margin:0 0 4px;color:var(--red-600)">Стало</p>
+                <p style="margin:0;font-size:var(--text-sm);line-height:1.55;color:var(--text-body);text-wrap:pretty">{{ item.after }}</p>
+              </div>
+            </div>
+            <p style="margin:var(--space-3) 0 0;display:flex;flex-wrap:wrap;gap:4px var(--space-3);font-size:var(--text-xs);color:var(--text-faint)">
+              <span>{{ item.where }}</span>
+              <span class="ds-article" style="color:var(--text-muted)">{{ item.file }}</span>
+            </p>
+          </div>
+        </li>
+      </sc-for>
+    </ul>
+
+    <div style="padding:var(--space-5) var(--space-6);border:1px solid var(--line);border-radius:var(--radius-lg)">
+      <h2 class="ds-section-title" style="font-size:var(--text-lg);margin:0 0 var(--space-3)">Що лишилося вирішити</h2>
+      <ul style="margin:0;padding-left:1.1em;display:grid;gap:6px;font-size:var(--text-sm);line-height:1.55;color:var(--text-body)">
+        <li>Позначки операторів у меню телефонів («V», «К») — заглушки, потрібні справжні іконки.</li>
+        <li>Шторка фасетів відкривається на різних ширинах: каталог за авто — 1120 px, пошук за артикулом — 900 px. Різні макети, але варто підтвердити.</li>
+        <li>Наступні екрани — оформлення замовлення, кабінет, повернення, панель — будуються на <span class="ds-article">.ds-page</span> і <span class="ds-article">.ds-main</span> без правок обрамлення на сторінці.</li>
+      </ul>
+      <p style="margin:var(--space-4) 0 0;font-size:var(--text-sm);color:var(--text-muted)">Повний перелік змін DS для переносу в майстер-версію — <span class="ds-article">_ds/…/CHANGELOG-standardisation.md</span></p>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180,&quot;height&quot;:1000},&quot;group&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;all&quot;,&quot;chrome&quot;,&quot;catalog&quot;,&quot;controls&quot;],&quot;default&quot;:&quot;all&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const ITEMS = [
+  { g: 'chrome', name: 'Службова смуга', file: 'SiteHeader', where: 'усі 8 сторінок',
+    before: 'Скопійована в розмітку кожної сторінки у двох варіантах: на головній і вході — меню телефонів, на решті шести — адреса й один телефон. Компонентна смуга DS була прихована на всіх сторінках.',
+    after: 'Смугою володіє SiteHeader: промо-обіцянка кешбеку ліворуч, меню телефонів праворуч. Варіант головної став єдиним. Проп cashbackPercent прибирає промо, коли драбина порожня.' },
+  { g: 'chrome', name: 'Пункт меню «Контакти»', file: 'SiteHeader', where: '7 сторінок',
+    before: 'Пункт існував у компоненті, і кожна сторінка ховала його правилом .ds-header__nav > .ds-navlink:nth-child(3) — тобто по позиції.',
+    after: 'Пункт вилучено з меню: адреса, години й телефони є у службовій смузі та футері. CSS-правил на сторінках немає.' },
+  { g: 'chrome', name: 'Посилання в меню', file: 'SiteHeader', where: 'усі 8 сторінок',
+    before: 'Усі пункти меню, логотип, «Увійти» й «Кошик» вели на «#». Активний пункт задавався по-різному: active="home", active="" або взагалі без атрибута.',
+    after: 'Пункти ведуть на реальні сторінки. Активний стан: catalog для каталогу й картки деталі, oem, cart, account; для пошуку за артикулом і документів активного пункту немає.' },
+  { g: 'chrome', name: 'Футер', file: 'SiteFooter', where: 'працював на 3 з 8',
+    before: 'П’ять виправлень футера (телефони з позначками оператора, години в дві колонки, тег-лайн → запит на підбір, адреса → карта, посилання на документи) жили в логіці сторінок і крутилися на setInterval кожні 400 мс. Головна, вхід і документи їх мали, решта п’ять — ні.',
+    after: 'Усе це в SiteFooter. Патчів DOM і таймерів на сторінках немає; проп onRequest відкриває вікно запиту там, де воно є, інакше CTA веде на головну.' },
+  { g: 'chrome', name: 'Логотип у футері', file: 'SiteFooter', where: 'усі 8 сторінок',
+    before: 'Компонент інвертував логотип фільтром, тому кожна сторінка передавала темний файл і додавала .ds-footer img { filter: none !important }.',
+    after: 'Темний логотип за замовчуванням, без фільтра. Проп logo-src на сторінках не потрібен.' },
+  { g: 'chrome', name: 'Каркас сторінки', file: '.ds-page / .ds-main', where: 'усі 8 сторінок',
+    before: 'Оболонка сторінки — однаковий inline-стиль, скопійований вісім разів. Верхній відступ main відрізнявся: space-4, space-5, space-6 і space-8.',
+    after: 'Класи .ds-page і .ds-main: єдиний відступ space-6 / space-16 і крок space-6. Головна лишає ширший крок через .ds-main--wide — це рішення про ритм великих блоків, а не розбіжність.' },
+  { g: 'chrome', name: 'Скидання стилів у helmet', file: 'tokens/base.css', where: 'усі 8 сторінок',
+    before: 'Кожна сторінка перевизначала a, a:hover і body — тими самими значеннями, що вже є в base.css.',
+    after: 'Рядки видалені; кольори посилань і тло сторінки приходять із токенів.' },
+  { g: 'chrome', name: 'Мобільні правила хедера', file: 'components.css', where: '6 сторінок',
+    before: 'Правила «меню в два рядки до 640 px» і «щільніші проміжки до 900 px» дублювалися в helmet кожної сторінки, а на кошику їх не було зовсім.',
+    after: 'Обидва правила в DS, разом із приховуванням службової смуги до 640 px.' },
+  { g: 'chrome', name: 'Бейдж кількості в кошику', file: '.ds-navlink__count', where: 'SiteHeader',
+    before: 'Одинадцять inline-властивостей просто в розмітці компонента.',
+    after: 'Клас у components.css — той самий бейдж можна поставити будь-де.' },
+  { g: 'catalog', name: 'Дата відправки й час відсічення', file: 'ShipDate', where: '4 сторінки, 4 розкладки',
+    before: 'Компонент віддавав один рядок, і кожна сторінка правила його по-своєму: кошик виносив час відсічення окремим елементом сітки, каталог перемотував його переносом рядка, а картка деталі й пошук за артикулом малювали дату вручну — з розміром text-2xs замість text-xs.',
+    after: 'ShipDate: дата в один рядок, час відсічення під нею в тій самій колонці, text-xs, колір --cutoff. Однаково в кошику, каталозі, картці деталі й пошуку.' },
+  { g: 'catalog', name: '«сьогодні» і «завтра»', file: '.ds-ship--soon', where: '2 сторінки проти 2',
+    before: 'У рядках каталогу близька дата була зеленою, у таблицях пропозицій — нейтральною.',
+    after: 'Зелений --stock-in у списках деталей — каталог за авто й кошик, де дата одна на рядок. У таблиці пропозицій виділяє тільки вага: там дат багато й майже всі близькі.' },
+  { g: 'catalog', name: 'Підпис кнопки купівлі', file: 'PartCard', where: '2 сторінки проти 3',
+    before: '«Купити» в рядках каталогу — «В кошик» у пропозиціях, кошику й на картці деталі.',
+    after: '«В кошик» усюди.' },
+  { g: 'catalog', name: 'Таблиця пропозицій', file: '.ds-offers / .ds-offerline', where: '2 сторінки',
+    before: 'Дві копії однакового CSS із різними колонками: 72 px під кількість у пошуку за артикулом і 104 px на картці деталі. Ціни й дати не збігалися між екранами.',
+    after: 'Один набір колонок у DS, разом із розкладкою до 1120 px. Inline-сітки в розмітці немає.' },
+  { g: 'catalog', name: 'Списки рядків', file: '.ds-rows', where: '2 сторінки, 3 варіанти',
+    before: 'Рядок монтується в обгортку, тому .ds-row:last-child не спрацьовував, і кожна сторінка дописувала власне правило про нижню лінію — в трьох різних варіантах.',
+    after: 'Клас .ds-rows на списку: лінії між рядками й жодної під останнім.' },
+  { g: 'controls', name: 'Поле сортування', file: '.ds-sortfield', where: '3 сторінки',
+    before: '24 рядки CSS, скопійовані на каталог, картку деталі й пошук за артикулом.',
+    after: 'Компонентні класи .ds-sortfield, __trigger, __menu. Активний пункт чорний, наведення — червона лінія ліворуч.' },
+  { g: 'controls', name: 'Діапазон ціни', file: '.ds-range', where: '2 сторінки',
+    before: 'Два повзунки на одній лінії — вісім рядків CSS із псевдоелементами, продубльовані на двох екранах.',
+    after: 'Клас .ds-range у DS.' },
+  { g: 'controls', name: 'Пошук у дереві категорій', file: '.ds-treefield', where: '2 сторінки',
+    before: 'Поле з іконкою всередині описане окремо в каталозі за авто й в оригінальних каталогах.',
+    after: 'Класи .ds-treefield і __icon — однакові стани наведення й фокуса.' },
+  { g: 'controls', name: 'Шторка фасетів', file: '.ds-sheet', where: '2 сторінки',
+    before: 'Поведінка «панель праворуч на вузьких екранах» описана двічі.',
+    after: 'Клас .ds-sheet у DS. Ширина, на якій вона відкривається, лишається за сторінкою: у каталозі три колонки, у пошуку дві.' },
+  { g: 'controls', name: 'Хлібні крихти на «Документах»', file: 'Breadcrumbs', where: '1 сторінка',
+    before: 'Власний nav зі слешем-розділювачем — інший вигляд, ніж у решти сторінок.',
+    after: 'Компонент Breadcrumbs, як у каталозі, картці деталі й оригінальних каталогах.' },
+  { g: 'chrome', name: 'Адреса бандла DS', file: '_ds_bundle.js', where: '2 сторінки',
+    before: 'Каталог за авто й оригінальні каталоги вантажили _ds_bundle.js?v=2 — інший URL, тому бандл виконувався двічі.',
+    after: 'Одна адреса на всіх сторінках.' },
+]
+
+const GROUPS = [
+  { key: 'all', label: 'Усі' },
+  { key: 'chrome', label: 'Обрамлення' },
+  { key: 'catalog', label: 'Каталог' },
+  { key: 'controls', label: 'Контроли' },
+]
+
+class Component extends DCLogic {
+  state = { group: null }
+
+  renderVals() {
+    const group = this.state.group || this.props.group || 'all'
+    const list = group === 'all' ? ITEMS : ITEMS.filter((it) => it.g === group)
+    return {
+      total: ITEMS.length,
+      groups: GROUPS.map((g) => ({
+        label: g.label,
+        pick: () => this.setState({ group: g.key }),
+        style: {
+          minHeight: 34, padding: '0 14px', borderRadius: 'var(--radius-full)',
+          border: '1px solid ' + (group === g.key ? 'var(--ink-800)' : 'var(--line)'),
+          background: group === g.key ? 'var(--ink-800)' : 'var(--white)',
+          color: group === g.key ? 'var(--white)' : 'var(--text-body)',
+          font: 'inherit', fontSize: 'var(--text-sm)', fontWeight: 500, cursor: 'pointer',
+        },
+      })),
+      items: list.map((it, i) => ({
+        num: String(i + 1).padStart(2, '0'),
+        name: it.name,
+        before: it.before,
+        after: it.after,
+        where: it.where,
+        file: it.file,
+      })),
+    }
+  }
+}
+</script>
+</body>
+</html>

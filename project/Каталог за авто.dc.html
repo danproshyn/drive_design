@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/colors.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/space.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/motion.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/layout.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/base.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=3"></script>
+<style>
+
+  /* Дерево: розкривний блок над списком, від 900 px — колонка ліворуч */
+  [data-layout] { grid-template-columns: minmax(0, 1fr); }
+  [data-tree-panel][data-open="false"] { display: none; }
+  @media (min-width: 900px) {
+    [data-layout] { grid-template-columns: 272px minmax(0, 1fr); }
+    [data-tree-toggle] { display: none !important; }
+    [data-tree-panel][data-open="false"] { display: block; }
+  }
+
+  /* Фасети: шторка праворуч до 1120 px, далі — третя колонка */
+  [data-facet-panel][data-open="false"] { display: none; }
+  [data-facet-panel][data-open="true"] { position: fixed; inset: 0; z-index: 80; background: var(--surface-overlay); }
+  [data-facet-panel][data-open="true"] > div {
+    position: absolute; inset-block: 0; right: 0; width: min(360px, 100%);
+    overflow-y: auto; border: 0; border-left: 1px solid var(--line); border-radius: 0;
+    box-shadow: var(--shadow-lg); padding: var(--space-4) var(--space-4) var(--space-8);
+  }
+  @media (min-width: 1120px) {
+    [data-layout][data-facets="true"] { grid-template-columns: 272px minmax(0, 1fr) 248px; }
+    [data-facets-toggle] { display: none !important; }
+    [data-facet-panel] { position: static !important; background: none !important; }
+    [data-facet-panel][data-open="false"] { display: block; }
+    [data-facet-panel] > div {
+      position: static !important; width: auto !important; overflow: visible !important;
+      border: 1px solid var(--line) !important; border-radius: var(--radius-lg) !important;
+      box-shadow: none !important; padding: var(--space-4) !important;
+    }
+    [data-sheet-close] { display: none !important; }
+  }
+
+
+  /* Характеристики авто: підпис над значенням, розділені вертикальними лініями */
+  [data-specs] { display: flex; flex-wrap: wrap; gap: var(--space-3) 0; }
+  [data-specs] > div { padding: 0 var(--space-4); border-left: 1px solid var(--line); }
+  [data-specs] > div:first-child { padding-left: 0; border-left: 0; }
+  [data-specs] dt {
+    margin: 0 0 2px; font-size: var(--text-2xs); font-weight: 500;
+    letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint);
+  }
+  [data-specs] dd { margin: 0; font-size: var(--text-sm); font-weight: 500; color: var(--text-strong); }
+  [data-specs] dd.ds-article { font-weight: 400; }
+
+
+  /* Той самий перелік у шапці вузла — один рядок, місця тут мало */
+  [data-specs-inline] { display: flex; flex-wrap: wrap; gap: 2px var(--space-3); font-size: var(--text-xs); color: var(--text-muted); }
+  [data-specs-inline] span { display: inline-flex; align-items: center; }
+  [data-specs-inline] span + span { padding-left: var(--space-3); border-left: 1px solid var(--line); }
+
+  /* Дії над машиною — такі самі пігулки, як у гаражі, тільки з іконками */
+  [data-vehicleactions] { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+  [data-vehicleactions] a {
+    display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 12px;
+    border: 1px solid var(--line); border-radius: var(--radius-md);
+    font-size: var(--text-sm); font-weight: 500; color: var(--text-strong); text-decoration: none;
+    transition: var(--transition-colors);
+  }
+  [data-vehicleactions] a:hover { border-color: var(--ink-300); background: var(--surface-sunken); color: var(--text-strong); text-decoration: none; }
+  [data-vehicleactions] a svg { color: var(--text-faint); }
+
+  /* Гараж: інші машини — компактні пігулки в один рядок, без заголовка */
+  [data-garage] a {
+    display: inline-flex; align-items: center; height: 26px; padding: 0 10px;
+    border: 1px solid var(--line); border-radius: 999px;
+    font-size: var(--text-xs); color: var(--text-muted); text-decoration: none;
+    transition: var(--transition-colors);
+  }
+  [data-garage] a:hover { border-color: var(--ink-300); background: var(--surface-sunken); color: var(--text-strong); text-decoration: none; }
+
+  /* Бренд і мітка «Оригінал» в один рядок, назва деталі, під нею артикул */
+  [data-list="parts"] .ds-row__meta { flex-wrap: wrap; row-gap: 2px; }
+
+
+
+  /* Рядок деталі: ціна й кнопка під назвою на телефоні — плитки тут не буває */
+  @media (max-width: 639px) {
+    [data-list="parts"] .ds-row > div:first-child { flex-wrap: wrap; }
+    [data-list="parts"] .ds-row .ds-thumb { width: 76px !important; height: 76px !important; }
+    [data-list="parts"] .ds-row > div > div:last-child {
+      flex-direction: row !important; align-items: center !important;
+      width: 100%; justify-content: space-between;
+    }
+    .ds-row { padding-inline: var(--space-3) !important; }
+    .ds-pager { flex-wrap: wrap; }
+    [data-carphoto] { width: 112px !important; height: 74px !important; }
+  }
+</style>
+</helmet>
+
+<div class="ds-page">
+
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteHeader" active="catalog" cart-count="{{ cartCount }}" hint-size="100%,150px"></x-import>
+
+  <main class="ds-container ds-main">
+
+    <x-import component-from-global-scope="DesignSystem_d7c4f4.Breadcrumbs" items="{{ crumbs }}" hint-size="100%,24px"></x-import>
+
+    <sc-if value="{{ isVehicle }}" hint-placeholder-val="{{ false }}">
+      <section style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--space-5)">
+        <div class="ds-thumb" data-carphoto style="width:220px;height:145px">
+          <img src="assets/vehicle-no-photo.png" alt="BMW 3 (E90) 320d">
+        </div>
+        <div style="flex:1 1 320px;min-width:260px">
+          <h1 class="ds-section-title" style="margin:0">BMW 3 (E90) 320d</h1>
+          <dl data-specs style="margin:12px 0 0">
+            <div><dt>Роки</dt><dd>2004–2011</dd></div>
+            <div><dt>Двигун</dt><dd>2.0 d · 163 к.с.</dd></div>
+            <div><dt>Кузов</dt><dd>Седан</dd></div>
+            <div><dt>Привод</dt><dd>Задній</dd></div>
+            <div><dt>VIN</dt><dd class="ds-article">WBAVB13506PT22180</dd></div>
+          </dl>
+          <p data-vehicleactions style="margin:16px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)">
+            <a href="#">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="book-open" size="15" hint-size="15px,15px"></x-import>
+              Оригінальні каталоги
+            </a>
+            <a href="#">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="repeat" size="15" hint-size="15px,15px"></x-import>
+              Обрати іншу машину
+            </a>
+          </p>
+        </div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isNode }}" hint-placeholder-val="{{ true }}">
+      <section style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3) var(--space-4);padding-bottom:var(--space-4);border-bottom:1px solid var(--line-subtle)">
+        <div class="ds-thumb" data-carphoto style="width:92px;height:60px">
+          <img src="assets/vehicle-no-photo.png" alt="BMW 3 (E90) 320d">
+        </div>
+        <div style="min-width:0;flex:1 1 240px">
+          <a href="#" style="font-size:var(--text-md);font-weight:600;color:var(--text-strong);text-decoration:none">BMW 3 (E90) 320d</a>
+          <p data-specs-inline style="margin:4px 0 0">
+            <span>2004–2011</span>
+            <span>2.0 d · 163 к.с.</span>
+            <span>Седан</span>
+            <span>Задній привод</span>
+          </p>
+        </div>
+        <p data-vehicleactions style="flex:none;margin:0">
+          <a href="#">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="book-open" size="15" hint-size="15px,15px"></x-import>
+            Оригінальні каталоги
+          </a>
+          <a href="#">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="repeat" size="15" hint-size="15px,15px"></x-import>
+            Обрати іншу машину
+          </a>
+        </p>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ hasOtherCars }}" hint-placeholder-val="{{ true }}">
+      <p data-garage style="margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)">
+        <span title="Мій гараж" style="display:inline-flex;color:var(--text-faint)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="car-front" size="16" hint-size="16px,16px"></x-import>
+        </span>
+        <sc-for list="{{ otherCars }}" as="car" hint-placeholder-count="2">
+          <a href="#">{{ car.name }}</a>
+        </sc-for>
+      </p>
+    </sc-if>
+
+    <sc-if value="{{ isVehicle }}" hint-placeholder-val="{{ false }}">
+      <section style="display:grid;gap:var(--space-4);margin-top:var(--space-2)">
+        <h2 class="ds-section-title" style="margin:0">Категорії</h2>
+
+        <div style="max-width:420px">
+          <div class="ds-treefield" data-treefield>
+            <span class="ds-treefield__icon" data-treeicon>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="search" size="16" hint-size="16px,16px"></x-import>
+            </span>
+            <input class="ds-input" data-treesearch type="search" aria-label="Пошук у категоріях" placeholder="Шукати категорію" value="{{ treeQuery }}" onChange="{{ onTreeQuery }}">
+          </div>
+        </div>
+
+        <sc-if value="{{ treeHasNodes }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:var(--space-4)">
+            <sc-for list="{{ treeNodes }}" as="group" hint-placeholder-count="5">
+              <section style="padding:var(--space-4);border:1px solid var(--line);border-radius:var(--radius-lg)">
+                <p style="display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3);margin:0 0 var(--space-2);font-family:var(--font-display);text-transform:uppercase;font-size:var(--text-md);letter-spacing:.01em;color:var(--text-strong)">
+                  {{ group.name }}
+                  <span class="ds-tree__count">{{ group.count }}</span>
+                </p>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.CategoryTree" nodes="{{ group.children }}" expand-all="{{ treeSearching }}" hint-size="100%,140px"></x-import>
+              </section>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ treeEmpty }}" hint-placeholder-val="{{ false }}">
+          <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Нічого не знайдено серед категорій цієї машини.</p>
+        </sc-if>
+
+        <sc-if value="{{ hasUncategorised }}" hint-placeholder-val="{{ true }}">
+          <p style="margin:0"><a href="#" style="font-size:var(--text-sm)">{{ uncategorisedLabel }}</a></p>
+        </sc-if>
+      </section>
+
+      <sc-if value="{{ showConsumables }}" hint-placeholder-val="{{ true }}">
+        <section style="padding-top:var(--space-5);border-top:1px solid var(--line)">
+          <button onClick="{{ toggleConsumables }}" style="display:flex;width:100%;align-items:baseline;justify-content:space-between;gap:var(--space-4);min-height:44px;padding:0;border:0;background:none;font:inherit;text-align:left;cursor:pointer">
+            <span style="font-size:var(--text-md);font-weight:600;color:var(--text-strong)">
+              Підходить на більшість авто
+              <span style="font-weight:400;color:var(--text-muted)">{{ consumablesCount }}</span>
+            </span>
+            <span style="font-size:var(--text-sm);color:var(--text-muted);text-decoration:underline;text-underline-offset:2px">{{ consumablesToggleLabel }}</span>
+          </button>
+
+          <sc-if value="{{ consumablesOpen }}" hint-placeholder-val="{{ false }}">
+            <ul class="ds-rows" data-list="parts" style="list-style:none;margin:var(--space-3) 0 0;padding:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
+              <sc-for list="{{ consumables }}" as="row" hint-placeholder-count="3">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" oem="{{ row.oem }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" ship-date="{{ row.shipDate }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogsCount }}" faster-offers="{{ row.fasterOffers }}" faster-date="{{ row.fasterDate }}" faster-price="{{ row.fasterPrice }}" on-buy="{{ row.onBuy }}" min-qty="{{ row.minQty }}" href="#" hint-size="100%,150px"></x-import>
+              </sc-for>
+            </ul>
+          </sc-if>
+        </section>
+      </sc-if>
+    </sc-if>
+
+    <sc-if value="{{ isNode }}" hint-placeholder-val="{{ true }}">
+      <div data-layout data-facets="{{ facetsAttr }}" style="display:grid;gap:var(--space-6);align-items:start">
+
+        <aside data-tree style="min-width:0">
+          <button data-tree-toggle onClick="{{ toggleTree }}" style="display:flex;width:100%;align-items:center;justify-content:space-between;gap:var(--space-3);min-height:44px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:var(--text-sm);font-weight:600;color:var(--text-strong);cursor:pointer" style-hover="background:var(--surface-sunken)">
+            <span>Категорії <span style="font-weight:400;color:var(--text-muted)">Фільтр масляний</span></span>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="17" hint-size="17px,17px"></x-import>
+          </button>
+
+          <div data-tree-panel data-open="{{ treeOpenAttr }}" style="margin-top:var(--space-3)">
+            <div class="ds-treefield" data-treefield style="margin-bottom:var(--space-3)">
+              <span class="ds-treefield__icon" data-treeicon>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="search" size="16" hint-size="16px,16px"></x-import>
+              </span>
+              <input class="ds-input" data-treesearch type="search" aria-label="Пошук у категоріях" placeholder="Шукати категорію" value="{{ treeQuery }}" onChange="{{ onTreeQuery }}">
+            </div>
+
+            <sc-if value="{{ treeHasNodes }}" hint-placeholder-val="{{ true }}">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.CategoryTree" nodes="{{ treeNodes }}" open-code="oil-filter" expand-all="{{ treeSearching }}" hint-size="100%,320px"></x-import>
+            </sc-if>
+            <sc-if value="{{ treeEmpty }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Нічого не знайдено серед категорій цієї машини.</p>
+            </sc-if>
+            <sc-if value="{{ hasUncategorised }}" hint-placeholder-val="{{ true }}">
+              <p style="margin:var(--space-3) 0 0"><a href="#" style="font-size:var(--text-sm)">{{ uncategorisedLabel }}</a></p>
+            </sc-if>
+          </div>
+        </aside>
+
+        <div style="min-width:0;display:grid;gap:var(--space-4)">
+
+          <h1 class="ds-section-title" style="margin:0">
+            Фільтр масляний
+            <sc-if value="{{ hasRows }}" hint-placeholder-val="{{ true }}">
+              <span class="ds-section-title__count">{{ countLabel }}</span>
+            </sc-if>
+          </h1>
+
+          <sc-if value="{{ hasParts }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)">
+              <div class="ds-sortfield" data-sortfield style="margin-left:auto">
+                <button type="button" class="ds-sortfield__trigger" data-sorttrigger aria-haspopup="listbox" aria-expanded="{{ sortOpenAttr }}" onClick="{{ toggleSort }}">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-down" size="15" hint-size="15px,15px"></x-import>
+                  <span>{{ sortLabel }}</span>
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="15" hint-size="15px,15px"></x-import>
+                </button>
+                <sc-if value="{{ sortOpen }}" hint-placeholder-val="{{ false }}">
+                  <ul class="ds-sortfield__menu" data-sortmenu role="listbox">
+                    <sc-for list="{{ sortOptions }}" as="opt" hint-placeholder-count="4">
+                      <li role="option" aria-selected="{{ opt.selectedAttr }}" data-selected="{{ opt.selectedAttr }}" onClick="{{ opt.pick }}">{{ opt.label }}</li>
+                    </sc-for>
+                  </ul>
+                </sc-if>
+              </div>
+              <button data-facets-toggle onClick="{{ toggleFacets }}" style="display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:var(--text-sm);font-weight:600;color:var(--text-strong);cursor:pointer" style-hover="background:var(--surface-sunken);border-color:var(--ink-300)">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="sliders-horizontal" size="17" hint-size="17px,17px"></x-import>
+                Фільтри
+                <span style="color:var(--text-muted);font-weight:400">{{ activeFilterLabel }}</span>
+              </button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ hasRows }}" hint-placeholder-val="{{ true }}">
+            <div style="display:grid;gap:var(--space-5)">
+              <ul class="ds-rows" data-list="parts" style="list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
+                <sc-for list="{{ rows }}" as="row" hint-placeholder-count="6">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" oem="{{ row.oem }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" ship-date="{{ row.shipDate }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogsCount }}" faster-offers="{{ row.fasterOffers }}" faster-date="{{ row.fasterDate }}" faster-price="{{ row.fasterPrice }}" on-buy="{{ row.onBuy }}" min-qty="{{ row.minQty }}" href="#" hint-size="100%,150px"></x-import>
+                </sc-for>
+              </ul>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Pager" page="1" pages="2" hint-size="100%,60px"></x-import>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isEmptyNode }}" hint-placeholder-val="{{ false }}">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="package-search" title="У цій категорії немає деталей для цієї машини" hint-size="100%,180px">Оберіть інший вузол — або попросіть менеджера підібрати деталь вручну.</x-import>
+          </sc-if>
+
+          <sc-if value="{{ noRows }}" hint-placeholder-val="{{ false }}">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="filter" title="Під ці фільтри нічого не підходить" action="{{ clearAction }}" hint-size="100%,200px">Зніміть частину умов — і список повернеться.</x-import>
+          </sc-if>
+
+        </div>
+
+        <sc-if value="{{ showFacets }}" hint-placeholder-val="{{ true }}">
+          <aside data-facet-panel data-open="{{ facetsOpenAttr }}" onClick="{{ closeSheetOnScrim }}" style="min-width:0">
+            <div style="padding:var(--space-4);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface)">
+              <div style="display:flex;align-items:center;gap:var(--space-3)">
+                <p class="t-eyebrow" style="margin:0">Фільтри</p>
+                <sc-if value="{{ hasFilters }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ clearFilters }}" style="border:0;background:none;padding:0;font:inherit;font-size:var(--text-xs);color:var(--text-muted);text-decoration:underline;text-underline-offset:2px;cursor:pointer" style-hover="color:var(--text-strong)">Очистити</button>
+                </sc-if>
+                <span data-sheet-close style="margin-left:auto" onClick="{{ toggleFacets }}">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="x" label="Закрити фільтри" size="md" tone="plain" hint-size="44px,44px"></x-import>
+                </span>
+              </div>
+
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Тип" hint-size="100%,90px">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Оригінал" count="{{ countOem }}" checked="{{ oemOnly }}" onChange="{{ toggleOemOnly }}" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Аналог" count="{{ countAnalog }}" checked="{{ analogOnly }}" onChange="{{ toggleAnalogOnly }}" hint-size="100%,28px"></x-import>
+              </x-import>
+
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Бренд" more-count="{{ brandMoreCount }}" hint-size="100%,200px">
+                <div style="position:relative;margin-bottom:var(--space-2)">
+                  <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);display:inline-flex;color:var(--text-faint);pointer-events:none">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="search" size="15" hint-size="15px,15px"></x-import>
+                  </span>
+                  <input type="search" placeholder="Пошук бренду" aria-label="Пошук бренду" value="{{ brandQuery }}" onChange="{{ onBrandQuery }}" style="width:100%;box-sizing:border-box;height:36px;padding:0 10px 0 30px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:var(--text-sm);color:var(--text-strong)">
+                </div>
+                <sc-for list="{{ brandFacets }}" as="b" hint-placeholder-count="5">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="{{ b.name }}" count="{{ b.count }}" checked="{{ b.checked }}" onChange="{{ b.toggle }}" hint-size="100%,28px"></x-import>
+                </sc-for>
+                <sc-if value="{{ noBrandMatch }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Такого бренду тут немає</p>
+                </sc-if>
+              </x-import>
+
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Ціна, ₴" hint-size="100%,150px">
+                <div style="display:grid;gap:var(--space-3)">
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:var(--space-2)">
+                    <input type="text" inputMode="numeric" aria-label="Ціна від" value="{{ draftMin }}" onChange="{{ onDraftMinText }}" style="min-width:0;height:40px;padding:0 10px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:var(--text-sm);color:var(--text-strong)">
+                    <span style="color:var(--text-faint)">—</span>
+                    <input type="text" inputMode="numeric" aria-label="Ціна до" value="{{ draftMax }}" onChange="{{ onDraftMaxText }}" style="min-width:0;height:40px;padding:0 10px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:var(--text-sm);color:var(--text-strong)">
+                  </div>
+
+                  <div class="ds-range" data-range>
+                    <span style="left:0;right:0;background:var(--line)"></span>
+                    <span style="left:{{ fillLeft }};width:{{ fillWidth }};background:var(--ink-800)"></span>
+                    <input type="range" aria-label="Ціна від" min="{{ priceFloor }}" max="{{ priceCeil }}" value="{{ draftMin }}" onChange="{{ onDraftMin }}">
+                    <input type="range" aria-label="Ціна до" min="{{ priceFloor }}" max="{{ priceCeil }}" value="{{ draftMax }}" onChange="{{ onDraftMax }}">
+                  </div>
+
+                  <div onClick="{{ applyPrice }}">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="secondary" size="sm" block="{{ true }}" hint-size="100%,34px">Застосувати</x-import>
+                  </div>
+                </div>
+              </x-import>
+
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Відправка" hint-size="100%,110px">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Сьогодні" count="{{ countShipToday }}" checked="{{ shipToday }}" onChange="{{ setShipToday }}" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Завтра" count="{{ countShipTomorrow }}" checked="{{ shipTomorrow }}" onChange="{{ setShipTomorrow }}" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="До 3 днів" count="{{ countShipWeek }}" checked="{{ shipWeek }}" onChange="{{ setShipWeek }}" hint-size="100%,28px"></x-import>
+              </x-import>
+
+              <sc-for list="{{ attrFacets }}" as="attr" hint-placeholder-count="2">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="{{ attr.title }}" more-count="{{ attr.moreCount }}" hint-size="100%,140px">
+                  <sc-for list="{{ attr.values }}" as="v" hint-placeholder-count="3">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="{{ v.label }}" count="{{ v.count }}" checked="{{ v.checked }}" onChange="{{ v.toggle }}" hint-size="100%,28px"></x-import>
+                  </sc-for>
+                </x-import>
+              </sc-for>
+
+              <div data-sheet-close style="margin-top:var(--space-5)" onClick="{{ toggleFacets }}">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="dark" size="lg" block="{{ true }}" hint-size="100%,48px">Показати деталі</x-import>
+              </div>
+            </div>
+          </aside>
+        </sc-if>
+
+      </div>
+    </sc-if>
+
+    <section style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-5);margin-top:var(--space-4);padding:var(--space-5) var(--space-6);border:1px solid var(--line);border-left:3px solid var(--red-500);border-radius:var(--radius-lg);background:var(--surface-sunken)">
+      <div style="flex:1 1 420px;min-width:280px">
+        <p class="t-eyebrow" style="margin:0 0 6px">Запит на пошук автозапчастин</p>
+        <p style="margin:0;font-size:var(--text-lg);font-weight:600;line-height:1.3;color:var(--text-strong)">Не знайшли деталь у каталозі — надішліть VIN і список потрібного</p>
+        <p style="margin:6px 0 0;font-size:var(--text-sm);color:var(--text-muted)">Менеджер підбере запчастини вручну й передзвонить. Список можна написати словами або прикріпити файлом.</p>
+      </div>
+      <button class="ds-btn ds-btn--md ds-btn--primary" style="flex:none">Залишити запит</button>
+    </section>
+
+  </main>
+
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteFooter" hint-size="100%,260px"></x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1180},&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;vehicle&quot;,&quot;category&quot;,&quot;empty&quot;],&quot;default&quot;:&quot;category&quot;,&quot;tsType&quot;:&quot;'vehicle' | 'category' | 'empty'&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;otherCarsInGarage&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;showFacets&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;showConsumables&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;}}">
+/*
+ * Каталог за авто. Другий дизайн списку (PartCard): одна деталь — одна найкраща ціна,
+ * без кількості, кожне вторинне посилання веде в картку деталі, а не розкриває щось на місці.
+ * Кількість пропозицій і вибір пропозиції — це перший дизайн, він живе в пошуку за артикулом.
+ *
+ * Два стани екрана, як у фронтенді: сторінка машини списку не має (вузол не обрано —
+ * немає що показувати), сторінка вузла має список, сортування й фасети.
+ */
+const TREE = [
+  {
+    code: 'filters', name: 'Фільтри', count: 41, children: [
+      { code: 'oil-filter', name: 'Фільтр масляний', count: 15, href: '#' },
+      { code: 'air-filter', name: 'Фільтр повітряний', count: 12, href: '#' },
+      { code: 'fuel-filter', name: 'Фільтр паливний', count: 9, href: '#' },
+      { code: 'cabin-filter', name: 'Фільтр салона', count: 5, href: '#' }
+    ]
+  },
+  {
+    code: 'brakes', name: 'Гальмівна система', count: 64, children: [
+      {
+        code: 'brake-pads', name: 'Колодки', count: 31, children: [
+          { code: 'pads-front', name: 'Передні', count: 18, href: '#' },
+          { code: 'pads-rear', name: 'Задні', count: 13, href: '#' }
+        ]
+      },
+      { code: 'brake-discs', name: 'Диски гальмівні', count: 22, href: '#' },
+      { code: 'brake-hoses', name: 'Шланги гальмівні', count: 11, href: '#' }
+    ]
+  },
+  {
+    code: 'engine', name: 'Двигун', count: 128, children: [
+      { code: 'gaskets', name: 'Прокладки', count: 51, href: '#' },
+      { code: 'belts', name: 'Привідні ремені й ролики', count: 34, href: '#' },
+      { code: 'pistons', name: 'Поршні й гільзи', count: 24, href: '#' },
+      { code: 'engine-mounts', name: 'Опори двигуна', count: 19, href: '#' }
+    ]
+  },
+  {
+    code: 'timing', name: 'Система ГРМ', count: 46, children: [
+      { code: 'timing-belt', name: 'Ремені ГРМ', count: 18, href: '#' },
+      { code: 'timing-chain', name: 'Ланцюги ГРМ', count: 12, href: '#' },
+      { code: 'tensioners', name: 'Натяжники й ролики', count: 16, href: '#' }
+    ]
+  },
+  {
+    code: 'cooling', name: 'Система охолодження', count: 43, children: [
+      { code: 'radiators', name: 'Радіатори', count: 12, href: '#' },
+      { code: 'thermostats', name: 'Термостати', count: 9, href: '#' },
+      { code: 'water-pumps', name: 'Насоси водяні', count: 14, href: '#' },
+      { code: 'hoses', name: 'Патрубки', count: 8, href: '#' }
+    ]
+  },
+  {
+    code: 'fuel', name: 'Паливна система', count: 57, children: [
+      { code: 'fuel-pumps', name: 'Насоси паливні', count: 16, href: '#' },
+      { code: 'injectors', name: 'Форсунки', count: 21, href: '#' },
+      { code: 'pressure-regulators', name: 'Регулятори тиску', count: 8, href: '#' },
+      { code: 'tank', name: 'Бак і кришки', count: 12, href: '#' }
+    ]
+  },
+  {
+    code: 'ignition', name: 'Система запалювання', count: 38, children: [
+      { code: 'spark-plugs', name: 'Свічки запалювання', count: 19, href: '#' },
+      { code: 'coils', name: 'Котушки запалювання', count: 11, href: '#' },
+      { code: 'ht-leads', name: 'Провід високовольтний', count: 8, href: '#' }
+    ]
+  },
+  {
+    code: 'exhaust', name: 'Вихлопна система', count: 34, children: [
+      { code: 'mufflers', name: 'Глушники', count: 12, href: '#' },
+      { code: 'catalysts', name: 'Каталізатори', count: 8, href: '#' },
+      { code: 'lambda', name: 'Лямбда-зонди', count: 14, href: '#' }
+    ]
+  },
+  {
+    code: 'clutch', name: 'Зчеплення', count: 29, children: [
+      { code: 'clutch-disc', name: 'Диски зчеплення', count: 11, href: '#' },
+      { code: 'clutch-cover', name: 'Кошики зчеплення', count: 9, href: '#' },
+      { code: 'clutch-cylinders', name: 'Циліндри зчеплення', count: 9, href: '#' }
+    ]
+  },
+  {
+    code: 'transmission', name: 'Трансмісія', count: 52, children: [
+      { code: 'driveshafts', name: 'Приводні вали', count: 14, href: '#' },
+      { code: 'cv-joints', name: 'ШРУСи', count: 21, href: '#' },
+      { code: 'gearbox-mounts', name: 'Опори КПП', count: 9, href: '#' },
+      { code: 'boots', name: 'Пильники', count: 8, href: '#' }
+    ]
+  },
+  {
+    code: 'suspension', name: 'Підвіска', count: 96, children: [
+      { code: 'shocks', name: 'Амортизатори', count: 24, href: '#' },
+      { code: 'arms', name: 'Важелі', count: 30, href: '#' },
+      { code: 'bushings', name: 'Сайлентблоки', count: 42, href: '#' }
+    ]
+  },
+  {
+    code: 'steering', name: 'Рульове керування', count: 41, children: [
+      { code: 'tie-rods', name: 'Рульові тяги', count: 17, href: '#' },
+      { code: 'tie-rod-ends', name: 'Наконечники', count: 14, href: '#' },
+      { code: 'power-steering', name: 'Насоси ГУР', count: 10, href: '#' }
+    ]
+  },
+  {
+    code: 'hubs', name: 'Маточини й підшипники', count: 33, children: [
+      { code: 'wheel-bearings', name: 'Підшипники маточини', count: 21, href: '#' },
+      { code: 'wheel-hubs', name: 'Маточини', count: 12, href: '#' }
+    ]
+  },
+  {
+    code: 'electrics', name: 'Електрика', count: 57, children: [
+      { code: 'batteries', name: 'Акумулятори', count: 12, href: '#' },
+      { code: 'alternators', name: 'Генератори', count: 14, href: '#' },
+      { code: 'starters', name: 'Стартери', count: 11, href: '#' },
+      { code: 'sensors', name: 'Датчики', count: 20, href: '#' }
+    ]
+  },
+  {
+    code: 'lighting', name: 'Освітлення', count: 45, children: [
+      { code: 'lamps', name: 'Лампи', count: 21, href: '#' },
+      { code: 'headlights', name: 'Фари', count: 13, href: '#' },
+      { code: 'tail-lights', name: 'Ліхтарі задні', count: 11, href: '#' }
+    ]
+  },
+  {
+    code: 'climate', name: 'Опалення й кондиціонування', count: 36, children: [
+      { code: 'ac-compressors', name: 'Компресори кондиціонера', count: 9, href: '#' },
+      { code: 'heater-radiators', name: 'Радіатори опалювача', count: 12, href: '#' },
+      { code: 'dryers', name: 'Фільтри-осушувачі', count: 6, href: '#' },
+      { code: 'blower-motors', name: 'Мотори вентилятора', count: 9, href: '#' }
+    ]
+  },
+  {
+    code: 'body', name: 'Кузов і скло', count: 62, children: [
+      { code: 'mirrors', name: 'Дзеркала', count: 14, href: '#' },
+      { code: 'wipers', name: 'Щітки склоочистки', count: 19, href: '#' },
+      { code: 'locks', name: 'Замки й ручки', count: 18, href: '#' },
+      { code: 'moldings', name: 'Молдинги', count: 11, href: '#' }
+    ]
+  }
+]
+
+/* day — днів до відправки: 0 сьогодні, 1 завтра, далі — дата. qty 0 — ціна остання відома. */
+const PARTS = [
+  { id: 1, brand: 'BOSCH', article: '0 986 452 041', name: 'Фільтр масляний', price: 284, oem: true, analogs: 12, qty: 10, day: 0, cutoff: '21:00', attrs: { height: '79', diameter: '76' } },
+  { id: 2, brand: 'MANN-FILTER', article: 'HU 816 x', name: 'Фільтр масляний', price: 264, oem: false, analogs: 9, qty: 6, minQty: 4, day: 0, cutoff: '18:00', attrs: { height: '79', diameter: '76' } },
+  { id: 3, brand: 'MAHLE', article: 'OX 361D', name: 'Фільтр масляний', price: 231, oem: false, analogs: 8, qty: 2, day: 3, date: '4 вер, пт', faster: { date: 'завтра', price: 268 }, attrs: { height: '86', diameter: '76' } },
+  { id: 4, brand: 'FEBI BILSTEIN', article: '32100', name: 'Фільтр масляний', price: 161, oem: false, analogs: 3, qty: 0, attrs: { height: '86', diameter: '65' } },
+  { id: 5, brand: 'HENGST FILTER', article: 'E13H01 D100', name: 'Фільтр масляний', price: 219, oem: false, analogs: 7, qty: 4, day: 1, faster: { date: 'сьогодні', price: 245 }, attrs: { height: '86', diameter: '76' } },
+  { id: 6, brand: 'FILTRON', article: 'OE 667/2', name: 'Фільтр масляний', price: 178, oem: false, analogs: 11, qty: 10, day: 0, cutoff: '21:00', attrs: { height: '79', diameter: '76' } },
+  { id: 7, brand: 'WIX FILTERS', article: 'WL7509', name: 'Фільтр масляний', price: 168, oem: false, analogs: 6, qty: 3, minQty: 2, day: 1, attrs: { height: '95', diameter: '65' } },
+  { id: 8, brand: 'UFI', article: '25.062.00', name: 'Фільтр масляний', price: 246, oem: false, analogs: 5, qty: 5, day: 1, attrs: { height: '86', diameter: '76' } },
+  { id: 9, brand: 'BLUE PRINT', article: 'ADB112101', name: 'Фільтр масляний з прокладкою', price: 214, oem: false, analogs: 4, qty: 7, day: 3, date: '4 вер, пт', attrs: { height: '86', diameter: '76' } },
+  { id: 10, brand: 'PURFLUX', article: 'L358', name: 'Фільтр масляний', price: 197, oem: false, analogs: 9, qty: 2, day: 0, cutoff: '18:00', attrs: { height: '79', diameter: '65' } },
+  { id: 11, brand: 'SCT GERMANY', article: 'SH 4045 P', name: 'Фільтр масляний', price: 129, oem: false, analogs: 2, qty: 8, day: 4, date: '5 вер, сб', attrs: { height: '95', diameter: '76' } },
+  { id: 12, brand: 'CHAMPION', article: 'COF100558E', name: 'Фільтр масляний', price: 152, oem: false, analogs: 3, qty: 0, attrs: { height: '79', diameter: '65' } },
+  { id: 13, brand: 'KAMOKA', article: 'F109901', name: 'Фільтр масляний', price: 118, oem: false, analogs: 0, qty: 9, day: 1, attrs: { height: '86', diameter: '65' } },
+  { id: 14, brand: 'JC PREMIUM', article: 'B1B009PR', name: 'Фільтр масляний', price: 134, oem: false, analogs: 2, qty: 4, day: 6, date: '8 вер, пн', attrs: { height: '95', diameter: '76' } },
+  { id: 15, brand: 'MEYLE', article: '314 322 0006', name: 'Фільтр масляний', price: 208, oem: false, analogs: 6, qty: 6, day: 0, cutoff: '18:00', attrs: { height: '79', diameter: '76' } }
+]
+
+/* Смуга «підходить на більшість авто»: дерево цих деталей не рахує. */
+const CONSUMABLES = [
+  { id: 101, brand: 'MOTUL', article: '8100 X-CESS 5W40 5L', name: 'Олива моторна синтетична, 5 л', price: 1840, oem: false, analogs: 4, qty: 10, day: 0, cutoff: '21:00' },
+  { id: 102, brand: 'ATE', article: '03.9901-6402.2', name: 'Рідина гальмівна DOT 4, 1 л', price: 298, oem: false, analogs: 6, qty: 8, day: 0, cutoff: '18:00' },
+  { id: 103, brand: 'FEBI BILSTEIN', article: '22270', name: 'Антифриз концентрат G12, 1,5 л', price: 412, oem: false, analogs: 3, qty: 5, day: 1 }
+]
+
+const ATTRS = [
+  { id: 'height', title: 'Висота, мм', total: 11 },
+  { id: 'diameter', title: 'Зовнішній діаметр, мм', total: 7 }
+]
+
+const SORTS = [
+  { id: 'popularity', label: 'За популярністю' },
+  { id: 'price_asc', label: 'Спочатку дешевші' },
+  { id: 'price_desc', label: 'Спочатку дорожчі' },
+  { id: 'ship_date', label: 'За датою відправлення' }
+]
+
+const OTHER_CARS = [{ name: 'Skoda Octavia II 1.9 TDI' }, { name: 'Renault Duster 1.5 dCi' }]
+
+const UNCATEGORISED = 12
+const CONSUMABLES_TOTAL = 1676
+
+function partsPlural(n) {
+  const ten = n % 10
+  const hundred = n % 100
+  if (ten === 1 && hundred !== 11) return 'деталь'
+  if (ten >= 2 && ten <= 4 && (hundred < 12 || hundred > 14)) return 'деталі'
+  return 'деталей'
+}
+
+function positionsPlural(n) {
+  const ten = n % 10
+  const hundred = n % 100
+  if (ten === 1 && hundred !== 11) return 'позиція'
+  if (ten >= 2 && ten <= 4 && (hundred < 12 || hundred > 14)) return 'позиції'
+  return 'позицій'
+}
+
+function thousands(n) {
+  return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+}
+
+/* Значення однієї характеристики — це «або», різні характеристики — «і». */
+function attrsOk(part, tokens) {
+  const byCriteria = {}
+  tokens.forEach((token) => {
+    const cut = token.indexOf(':')
+    const key = token.slice(0, cut)
+    if (byCriteria[key] === undefined) byCriteria[key] = []
+    byCriteria[key].push(token.slice(cut + 1))
+  })
+  return Object.keys(byCriteria).every((key) => byCriteria[key].includes(String((part.attrs || {})[key])))
+}
+
+function apply(list, f) {
+  return list.filter(
+    (p) =>
+      (f.brands.length === 0 || f.brands.includes(p.brand)) &&
+      (f.isOem === null || p.oem === f.isOem) &&
+      (f.priceMin === null || p.price >= f.priceMin) &&
+      (f.priceMax === null || p.price <= f.priceMax) &&
+      (f.shipMax === null || (p.qty > 0 && p.day <= f.shipMax)) &&
+      (f.attrs.length === 0 || attrsOk(p, f.attrs))
+  )
+}
+
+/* Пошук у категоріях повертає дерево, а не плаский список: збіг стоїть на своєму місці. */
+function induced(nodes, query) {
+  return nodes.flatMap((node) => {
+    const children = induced(node.children || [], query)
+    const hit = node.name.toLowerCase().includes(query)
+    if (!hit && children.length === 0) return []
+    return [{ ...node, children: hit ? node.children || [] : children }]
+  })
+}
+
+function shipRank(part) {
+  return part.qty === 0 ? 99 : part.day
+}
+
+class Component extends DCLogic {
+  state = {
+    sort: 'popularity',
+    brands: [],
+    isOem: null,
+    brandQuery: '',
+    /* draft* — положення повзунків, price* — застосований діапазон */
+    draftMin: null,
+    draftMax: null,
+    priceMin: null,
+    priceMax: null,
+    /* Максимальна кількість днів до відправки; null — без обмеження */
+    shipMax: null,
+    attrs: [],
+    treeQuery: '',
+    treeOpen: false,
+    facetsOpen: false,
+    consumablesOpen: false,
+    cart: 2
+  }
+
+  setSort = (sort) => () => this.setState({ sort })
+
+  toggleBrand = (name) => () =>
+    this.setState((s) => ({
+      brands: s.brands.includes(name) ? s.brands.filter((b) => b !== name) : [...s.brands, name]
+    }))
+
+  toggleOem = (value) => () => this.setState((s) => ({ isOem: s.isOem === value ? null : value }))
+
+  toggleAttr = (token) => () =>
+    this.setState((s) => ({
+      attrs: s.attrs.includes(token) ? s.attrs.filter((t) => t !== token) : [...s.attrs, token]
+    }))
+
+  setShip = (value) => () => this.setState((s) => ({ shipMax: s.shipMax === value ? null : value }))
+
+  clear = () =>
+    this.setState({
+      brands: [], isOem: null, attrs: [], brandQuery: '', shipMax: null,
+      draftMin: null, draftMax: null, priceMin: null, priceMax: null
+    })
+
+  add = () => this.setState((s) => ({ cart: s.cart + 1 }))
+
+  renderVals() {
+    const s = this.state
+    const view = this.props.state ?? 'category'
+    const showFacets = this.props.showFacets ?? true
+    const showConsumables = this.props.showConsumables ?? true
+    const isVehicle = view === 'vehicle'
+    const isNode = !isVehicle
+    const base = view === 'empty' ? [] : PARTS
+
+    const filters = {
+      brands: s.brands, isOem: s.isOem, attrs: s.attrs,
+      priceMin: s.priceMin, priceMax: s.priceMax, shipMax: s.shipMax
+    }
+    const kept = apply(base, filters)
+
+    const ordered = [...kept]
+    if (s.sort === 'price_asc') ordered.sort((a, b) => a.price - b.price)
+    if (s.sort === 'price_desc') ordered.sort((a, b) => b.price - a.price)
+    if (s.sort === 'ship_date') ordered.sort((a, b) => shipRank(a) - shipRank(b) || a.price - b.price)
+
+    const draw = (part) => ({
+      ...part,
+      inStock: part.qty > 0,
+      /* PartCard сам показує пілюлю «від N шт», коли партія більша за одну. */
+      minQty: part.minQty ?? 1,
+      shipRelative: part.day === 0 ? 'today' : part.day === 1 ? 'tomorrow' : 'later',
+      shipDate: part.date ?? '',
+      cutoff: part.cutoff ?? '',
+      analogsCount: part.analogs ?? 0,
+      fasterOffers: !!part.faster,
+      fasterDate: part.faster ? part.faster.date : '',
+      fasterPrice: part.faster ? part.faster.price : null,
+      onBuy: this.add
+    })
+
+    /* Кожен лічильник — це список з усіма іншими фільтрами, але без цього:
+       фасет, який неможливо розширити, — не фасет. */
+    const countWith = (patch, predicate) => apply(base, { ...filters, ...patch }).filter(predicate).length
+
+    const brandQuery = s.brandQuery.trim().toLowerCase()
+    const allBrands = [...new Set(base.map((p) => p.brand))].filter((name) => name.toLowerCase().includes(brandQuery))
+    const brandFacets = allBrands
+      .map((name) => ({
+        name,
+        count: countWith({ brands: [] }, (p) => p.brand === name),
+        checked: s.brands.includes(name),
+        toggle: this.toggleBrand(name)
+      }))
+      .filter((facet) => facet.count > 0 || facet.checked)
+      .sort((a, b) => b.count - a.count)
+
+    const attrFacets = ATTRS.map((attr) => {
+      const values = [...new Set(base.map((p) => (p.attrs || {})[attr.id]).filter((v) => v !== undefined))].sort(
+        (a, b) => Number(a) - Number(b)
+      )
+      return {
+        title: attr.title,
+        moreCount: Math.max(attr.total - values.length, 0),
+        values: values.map((value) => {
+          const token = attr.id + ':' + value
+          return {
+            label: value,
+            count: countWith({ attrs: s.attrs.filter((t) => !t.startsWith(attr.id + ':')) }, (p) => String((p.attrs || {})[attr.id]) === value),
+            checked: s.attrs.includes(token),
+            toggle: this.toggleAttr(token)
+          }
+        })
+      }
+    })
+
+    const prices = base.map((p) => p.price)
+    const priceFloor = prices.length > 0 ? Math.min(...prices) : 0
+    const priceCeil = prices.length > 0 ? Math.max(...prices) : 0
+    const draftMin = s.draftMin ?? priceFloor
+    const draftMax = s.draftMax ?? priceCeil
+    const span = Math.max(priceCeil - priceFloor, 1)
+    const pct = (v) => Math.round(((v - priceFloor) / span) * 100)
+
+    const treeQuery = s.treeQuery.trim().toLowerCase()
+    const treeSearching = treeQuery.length >= 2
+    const treeNodes = treeSearching ? induced(TREE, treeQuery) : TREE
+    const filterCount =
+      s.brands.length + (s.isOem === null ? 0 : 1) + (s.priceMin === null ? 0 : 1) + (s.shipMax === null ? 0 : 1) + s.attrs.length
+
+    return {
+      cartCount: s.cart,
+      isVehicle,
+      isNode,
+      crumbs: isVehicle
+        ? [
+            { label: 'Головна', href: '#' },
+            { label: 'Підбір за авто', href: '#' },
+            { label: 'BMW 3 (E90) 320d' }
+          ]
+        : [
+            { label: 'Головна', href: '#' },
+            { label: 'Підбір за авто', href: '#' },
+            { label: 'BMW 3 (E90) 320d', href: '#' },
+            { label: 'Фільтри', href: '#' },
+            { label: 'Фільтр масляний' }
+          ],
+      /* Перемикач із однією позицією — не перемикач: коли інших машин немає, смуга не малюється. */
+      otherCars: OTHER_CARS,
+      hasOtherCars: (this.props.otherCarsInGarage ?? true) && OTHER_CARS.length > 0,
+
+      treeQuery: s.treeQuery,
+      onTreeQuery: (e) => this.setState({ treeQuery: e.target.value }),
+      treeSearching,
+      treeNodes,
+      treeHasNodes: treeNodes.length > 0,
+      treeEmpty: treeNodes.length === 0,
+      treeOpenAttr: s.treeOpen ? 'true' : 'false',
+      toggleTree: () => this.setState((prev) => ({ treeOpen: !prev.treeOpen })),
+      hasUncategorised: UNCATEGORISED > 0,
+      uncategorisedLabel: 'Ще ' + UNCATEGORISED + ' ' + partsPlural(UNCATEGORISED) + ' без категорії',
+
+      showConsumables,
+      consumablesOpen: s.consumablesOpen,
+      consumablesCount: thousands(CONSUMABLES_TOTAL) + ' ' + positionsPlural(CONSUMABLES_TOTAL),
+      consumablesToggleLabel: s.consumablesOpen ? 'Згорнути' : 'Показати',
+      toggleConsumables: () => this.setState((prev) => ({ consumablesOpen: !prev.consumablesOpen })),
+      consumables: CONSUMABLES.map(draw),
+
+      hasParts: base.length > 0,
+      rows: ordered.map(draw),
+      hasRows: ordered.length > 0,
+      noRows: base.length > 0 && ordered.length === 0,
+      isEmptyNode: base.length === 0,
+      countLabel: ordered.length + ' ' + partsPlural(ordered.length),
+
+      sortOpen: s.sortOpen === true,
+      sortOpenAttr: s.sortOpen === true ? 'true' : 'false',
+      toggleSort: () => this.setState((prev) => ({ sortOpen: !prev.sortOpen })),
+      sortLabel: (SORTS.find((o) => o.id === s.sort) || SORTS[0]).label,
+      sortOptions: SORTS.map((o) => ({
+        label: o.label,
+        selectedAttr: s.sort === o.id ? 'true' : 'false',
+        pick: () => this.setState({ sort: o.id, sortOpen: false })
+      })),
+      sortPopularity: s.sort === 'popularity',
+      sortPriceAsc: s.sort === 'price_asc',
+      sortPriceDesc: s.sort === 'price_desc',
+      sortShip: s.sort === 'ship_date',
+      setSortPopularity: this.setSort('popularity'),
+      setSortPriceAsc: this.setSort('price_asc'),
+      setSortPriceDesc: this.setSort('price_desc'),
+      setSortShip: this.setSort('ship_date'),
+
+      showFacets,
+      facetsAttr: showFacets ? 'true' : 'false',
+      facetsOpenAttr: s.facetsOpen ? 'true' : 'false',
+      toggleFacets: () => this.setState((prev) => ({ facetsOpen: !prev.facetsOpen })),
+      closeSheetOnScrim: (event) => {
+        if (event.target === event.currentTarget) this.setState({ facetsOpen: false })
+      },
+      activeFilterLabel: filterCount > 0 ? String(filterCount) : '',
+      hasFilters: filterCount > 0 || brandQuery !== '',
+      clearFilters: this.clear,
+
+      brandQuery: s.brandQuery,
+      onBrandQuery: (e) => this.setState({ brandQuery: e.target.value }),
+      brandFacets: brandFacets.slice(0, 6),
+      brandMoreCount: Math.max(brandFacets.length - 6, 0),
+      noBrandMatch: brandFacets.length === 0,
+      countOem: countWith({ isOem: null }, (p) => p.oem),
+      countAnalog: countWith({ isOem: null }, (p) => !p.oem),
+      oemOnly: s.isOem === true,
+      analogOnly: s.isOem === false,
+      toggleOemOnly: this.toggleOem(true),
+      toggleAnalogOnly: this.toggleOem(false),
+      attrFacets,
+      priceFloor,
+      priceCeil,
+      draftMin,
+      draftMax,
+      fillLeft: pct(draftMin) + '%',
+      fillWidth: Math.max(pct(draftMax) - pct(draftMin), 0) + '%',
+      onDraftMin: (e) => this.setState({ draftMin: Math.min(Number(e.target.value), draftMax) }),
+      onDraftMax: (e) => this.setState({ draftMax: Math.max(Number(e.target.value), draftMin) }),
+      onDraftMinText: (e) => this.setState({ draftMin: Number(e.target.value.replace(/\D/g, '')) || priceFloor }),
+      onDraftMaxText: (e) => this.setState({ draftMax: Number(e.target.value.replace(/\D/g, '')) || priceCeil }),
+      applyPrice: () => this.setState({ priceMin: draftMin, priceMax: draftMax }),
+      shipToday: s.shipMax === 0,
+      shipTomorrow: s.shipMax === 1,
+      shipWeek: s.shipMax === 3,
+      setShipToday: this.setShip(0),
+      setShipTomorrow: this.setShip(1),
+      setShipWeek: this.setShip(3),
+      countShipToday: countWith({ shipMax: null }, (p) => p.qty > 0 && p.day === 0),
+      countShipTomorrow: countWith({ shipMax: null }, (p) => p.qty > 0 && p.day <= 1),
+      countShipWeek: countWith({ shipMax: null }, (p) => p.qty > 0 && p.day <= 3),
+
+      clearAction: React.createElement(
+        window.DesignSystem_d7c4f4.Button,
+        { variant: 'secondary', onClick: this.clear },
+        'Скинути фільтри'
+      )
+    }
+  }
+}
+
+</script>
+</body>
+</html>

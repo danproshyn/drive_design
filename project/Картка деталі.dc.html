@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/colors.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/space.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/motion.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/layout.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/base.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=3"></script>
+<style>
+  /* Картка: галерея фіксованої ширини, ідентичність і пропозиції — решта */
+  [data-part] { display: grid; gap: var(--space-6) var(--space-8); align-items: start; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 900px) { [data-part] { grid-template-columns: 380px minmax(0, 1fr); } }
+  /* Стрічки з горизонтальним скролом: мініатюри галереї та останні переглянуті */
+  [data-strip] { display: flex; gap: var(--space-2); margin: 0; padding: 0; list-style: none; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: thin; }
+  [data-strip] > * { scroll-snap-align: start; }
+  [data-carousel] { display: flex; gap: var(--space-3); margin: 0; padding: 0 1px 4px; list-style: none; overflow-x: auto; scroll-behavior: smooth; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+  [data-carousel] > li { flex: 0 0 clamp(168px, 16vw, 196px); scroll-snap-align: start; }
+  [data-oe-grid] { display: grid; gap: var(--space-1) var(--space-4); grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 640px) { [data-oe-grid] { grid-template-columns: 12rem minmax(0, 1fr); } }
+  /* Обгортка монтування має display:contents, тому розмір фото задається тут, а не на ній */
+  [data-gallery-main] .ds-thumb { width: 100% !important; max-width: 380px; height: auto !important; aspect-ratio: 1 / 1; }
+  [data-lightbox] .ds-thumb { width: 100% !important; max-width: 560px; height: auto !important; aspect-ratio: 1 / 1; }
+  /* Лайтбокс — одне з трьох місць, де тінь дозволена */
+  [data-lightbox] { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: var(--space-4); background: var(--surface-overlay); }
+  @media (max-width: 639px) {
+  }
+</style>
+</helmet>
+
+<div class="ds-page">
+
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteHeader" active="catalog" cart-count="{{ cartCount }}" hint-size="100%,150px"></x-import>
+
+  <main class="ds-container ds-main">
+
+    <x-import component-from-global-scope="DesignSystem_d7c4f4.Breadcrumbs" items="{{ crumbs }}" hint-size="100%,24px"></x-import>
+
+    <article data-part>
+
+      <div style="min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-3)">
+        <sc-if value="{{ hasPhotos }}" hint-placeholder-val="{{ true }}">
+          <button data-gallery-main type="button" onClick="{{ openZoom }}" aria-label="Збільшити фото" style="display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.PartThumb" size="{{ mainSize }}" hint-size="100%,380px"></x-import>
+          </button>
+
+          <div data-comment-anchor="fc7c2d1a11-strip" style="min-width:0;display:flex;align-items:center;gap:var(--space-1)">
+            <span onClick="{{ scrollThumbsBack }}" style="flex:none">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="chevron-left" label="Показати попередні мініатюри" size="sm" tone="plain" hint-size="34px,34px"></x-import>
+            </span>
+            <ul data-strip ref="{{ thumbStrip }}" style="flex:1;min-width:0">
+              <sc-for list="{{ photos }}" as="photo" hint-placeholder-count="10">
+                <li style="flex:none">
+                  <button type="button" onClick="{{ photo.select }}" aria-label="{{ photo.label }}" aria-current="{{ photo.current }}" style="display:block;padding:0;border:0;background:none;border-radius:var(--radius-md);cursor:pointer;box-shadow:{{ photo.ring }}">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.PartThumb" size="{{ thumbSize }}" hint-size="64px,64px"></x-import>
+                  </button>
+                </li>
+              </sc-for>
+            </ul>
+            <span onClick="{{ scrollThumbsForward }}" style="flex:none">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="chevron-right" label="Показати наступні мініатюри" size="sm" tone="plain" hint-size="34px,34px"></x-import>
+            </span>
+          </div>
+          <p style="margin:0;font-size:var(--text-2xs);color:var(--text-muted)">{{ photoPosition }}</p>
+        </sc-if>
+
+        <sc-if value="{{ noPhotos }}" hint-placeholder-val="{{ false }}">
+          <div data-gallery-main style="width:100%;display:grid;gap:var(--space-2);justify-items:center">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.PartThumb" size="{{ mainSize }}" hint-size="100%,380px"></x-import>
+            <p style="margin:0;font-size:var(--text-xs);color:var(--text-muted)">Фото відсутнє</p>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="min-width:0;display:grid;gap:var(--space-5);align-content:start">
+
+        <header style="display:grid;gap:var(--space-2)">
+          <p class="ds-row__meta" style="margin:0;gap:var(--space-2)" data-comment-anchor="43-brand">
+            <span style="font-weight:600;color:var(--text-body)">BANDO</span>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.Badge" tone="oem" hint-size="auto,20px">Оригінал</x-import>
+          </p>
+          <h1 class="t-display-sm" style="margin:0;max-width:26ch;color:var(--text-strong);text-wrap:pretty">Ремень поликліновий Tucson (09-)/IX35/Sportage (G6BA-G) (6PK2000) (25212-37182) Bando</h1>
+          <p style="margin:0"><span class="ds-article">6PK2000</span></p>
+        </header>
+
+        <sc-if value="{{ outOfStock }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:var(--space-4);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)">
+            <p style="margin:0;font-weight:500;color:var(--stock-out)">Немає в наявності</p>
+            <p style="display:flex;align-items:baseline;gap:var(--space-2);margin:var(--space-2) 0 0;font-size:var(--text-sm);color:var(--text-muted)">
+              Остання відома ціна
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ lastKnownPrice }}" size="sm" stale="{{ true }}" hint-size="auto,20px"></x-import>
+            </p>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasOffers }}" hint-placeholder-val="{{ true }}">
+        <section style="display:grid;gap:var(--space-3)">
+          <div style="display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:var(--space-3)">
+            <h2 class="ds-section-title" style="margin:0;font-size:var(--display-xs)">
+              Пропозиції
+              <sc-if value="{{ hasOffers }}" hint-placeholder-val="{{ true }}">
+                <span class="ds-section-title__count">{{ offerCount }}</span>
+              </sc-if>
+            </h2>
+            <sc-if value="{{ sortable }}" hint-placeholder-val="{{ true }}">
+              <div class="ds-sortfield" data-sortfield>
+                <button type="button" class="ds-sortfield__trigger" data-sorttrigger aria-haspopup="listbox" aria-expanded="{{ sortOpenAttr }}" onClick="{{ toggleSort }}">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-down" size="15" hint-size="15px,15px"></x-import>
+                  <span>{{ sortLabel }}</span>
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="15" hint-size="15px,15px"></x-import>
+                </button>
+                <sc-if value="{{ sortOpen }}" hint-placeholder-val="{{ false }}">
+                  <ul class="ds-sortfield__menu" data-sortmenu role="listbox">
+                    <sc-for list="{{ sortOptions }}" as="opt" hint-placeholder-count="4">
+                      <li role="option" aria-selected="{{ opt.selectedAttr }}" data-selected="{{ opt.selectedAttr }}" onClick="{{ opt.pick }}">{{ opt.label }}</li>
+                    </sc-for>
+                  </ul>
+                </sc-if>
+              </div>
+            </sc-if>
+          </div>
+
+            <ul class="ds-offers" data-offers>
+              <sc-for list="{{ offers }}" as="offer" hint-placeholder-count="3">
+                <li class="ds-offerline" data-offer data-primary="{{ offer.primaryAttr }}">
+                  <div data-cell="ship" style="min-width:0;display:grid;gap:1px">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="{{ offer.shipDate }}" relative="{{ offer.shipRelative }}" cutoff="{{ offer.shipCutoff }}" hint-size="auto,34px"></x-import>
+                    <sc-if value="{{ offer.warehouse }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size:var(--text-2xs);color:var(--amber-600)">{{ offer.warehouse }}</span>
+                    </sc-if>
+                  </div>
+
+                  <div data-cell="stock" style="min-width:0;display:grid;justify-items:center;gap:3px">
+                    <span class="ds-stock ds-stock--in">{{ offer.qtyLabel }}</span>
+                    <sc-if value="{{ offer.minQtyLabel }}" hint-placeholder-val="{{ false }}">
+                      <span class="ds-minqty">{{ offer.minQtyLabel }}</span>
+                    </sc-if>
+                  </div>
+
+                  <div data-cell="marks" style="display:flex;flex-wrap:wrap;gap:4px">
+                    <sc-if value="{{ offer.bestPrice }}" hint-placeholder-val="{{ true }}">
+                      <x-import component-from-global-scope="DesignSystem_d7c4f4.Badge" tone="best-price" icon="tag" hint-size="auto,20px">Найкраща ціна</x-import>
+                    </sc-if>
+                    <sc-if value="{{ offer.bestDate }}" hint-placeholder-val="{{ false }}">
+                      <x-import component-from-global-scope="DesignSystem_d7c4f4.Badge" tone="best-date" icon="zap" hint-size="auto,20px">Найшвидше</x-import>
+                    </sc-if>
+                  </div>
+
+                  <div data-cell="price" style="display:grid;justify-items:end;gap:1px">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ offer.price }}" size="md" hint-size="auto,24px"></x-import>
+                    <sc-if value="{{ offer.sellerPrice }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size:var(--text-sm);font-weight:600;color:var(--amber-600)">{{ offer.sellerPrice }}</span>
+                    </sc-if>
+                  </div>
+
+                  <div data-cell="btn" onClick="{{ addToCart }}">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="primary" size="sm" icon="shopping-cart" hint-size="auto,34px">В кошик</x-import>
+                  </div>
+                </li>
+              </sc-for>
+            </ul>
+          <sc-if value="{{ hasRest }}" hint-placeholder-val="{{ true }}">
+            <div onClick="{{ showRest }}" style="padding-inline:var(--space-3)">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="link" hint-size="auto,24px">{{ restLabel }}</x-import>
+            </div>
+          </sc-if>
+        </section>
+        </sc-if>
+
+      </div>
+    </article>
+
+    <section id="tabs" style="display:grid;gap:var(--space-5);scroll-margin-top:calc(var(--header-h) + var(--space-4))">
+      <x-import component-from-global-scope="DesignSystem_d7c4f4.TabStrip" tabs="{{ tabs }}" active="{{ tab }}" onSelect="{{ onTab }}" hint-size="100%,44px"></x-import>
+
+      <sc-if value="{{ isSpecs }}" hint-placeholder-val="{{ true }}">
+        <div style="max-width:760px;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
+          <sc-for list="{{ specs }}" as="spec" hint-placeholder-count="6">
+            <div style="display:grid;gap:2px var(--space-4);grid-template-columns:minmax(0,1fr) minmax(0,1fr);padding:var(--space-3) var(--space-4);border-top:1px solid var(--line-subtle);font-size:var(--text-sm)">
+              <span style="color:var(--text-muted)">{{ spec.name }}</span>
+              <span style="color:var(--text-strong)">{{ spec.value }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isOe }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;gap:var(--space-4)">
+          <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted);max-width:60ch;text-wrap:pretty">Номери оригінальних деталей, які ця замінює. Їх наносять на саму деталь — за ними можна перевірити збіг. Клік на номері відкриває пошук за ним у новій вкладці.</p>
+          <div style="border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
+            <sc-for list="{{ oeGroups }}" as="group" hint-placeholder-count="3">
+              <div data-oe-grid style="padding:var(--space-3) var(--space-4);border-top:1px solid var(--line-subtle)">
+                <span style="display:flex;align-self:start;align-items:center;min-height:44px;font-size:var(--text-sm);color:var(--text-muted)">{{ group.carmaker }}</span>
+                <div style="display:flex;flex-wrap:wrap;gap:var(--space-2)">
+                  <sc-for list="{{ group.numbers }}" as="number" hint-placeholder-count="3">
+                    <span style="display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);overflow:hidden">
+                      <a href="{{ number.href }}" target="_blank" rel="noopener" title="Знайти за номером {{ number.value }}" style="display:inline-flex;align-items:center;min-height:44px;padding:0 var(--space-3);text-decoration:none;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken)">
+                        <span class="ds-article">{{ number.value }}</span>
+                      </a>
+                      <button type="button" onClick="{{ number.copy }}" title="Скопіювати номер" aria-label="Скопіювати номер {{ number.value }}" style="display:inline-flex;align-items:center;justify-content:center;width:40px;border:0;border-left:1px solid var(--line-subtle);background:none;color:var(--text-muted);cursor:pointer;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);color:var(--text-strong)">
+                        <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ number.icon }}" size="15" hint-size="15px,15px"></x-import>
+                      </button>
+                    </span>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isVehicles }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;gap:var(--space-3);max-width:900px" data-comment-anchor="db0db5ea30-div">
+          <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">{{ vehiclesLead }}</p>
+          <ul style="list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
+            <sc-for list="{{ vehicleMarks }}" as="mark" hint-placeholder-count="3">
+              <li style="border-top:1px solid var(--line-subtle)">
+                <button type="button" onClick="{{ mark.toggle }}" aria-expanded="{{ mark.expanded }}" style="display:flex;align-items:center;gap:var(--space-2);width:100%;padding:var(--space-3) var(--space-4);border:0;background:none;font:inherit;font-weight:500;color:var(--text-strong);text-align:left;cursor:pointer;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken)">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ mark.icon }}" size="16" hint-size="16px,16px"></x-import>
+                  {{ mark.mark }}
+                </button>
+
+                <sc-if value="{{ mark.open }}" hint-placeholder-val="{{ true }}">
+                  <ul style="list-style:none;margin:0;padding:0 var(--space-4) var(--space-3)">
+                    <sc-for list="{{ mark.models }}" as="model" hint-placeholder-count="2">
+                      <li style="border-top:1px solid var(--line-subtle)">
+                        <button type="button" onClick="{{ model.toggle }}" aria-expanded="{{ model.expanded }}" style="display:flex;align-items:center;gap:var(--space-2);width:100%;padding:var(--space-2) 0;border:0;background:none;font:inherit;font-size:var(--text-sm);font-weight:500;color:var(--text-muted);text-align:left;cursor:pointer" style-hover="color:var(--text-strong)">
+                          <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ model.icon }}" size="15" hint-size="15px,15px"></x-import>
+                          {{ model.model }}
+                        </button>
+
+                        <sc-if value="{{ model.open }}" hint-placeholder-val="{{ true }}">
+                          <div style="display:grid;gap:var(--space-2);padding:0 0 var(--space-2) var(--space-3)">
+                            <sc-for list="{{ model.types }}" as="type" hint-placeholder-count="2">
+                              <div>
+                                <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">{{ type.label }}</p>
+                                <ul style="list-style:none;display:grid;gap:2px;margin:2px 0 0;padding:0 0 0 var(--space-3)">
+                                  <sc-for list="{{ type.vehicles }}" as="vehicle" hint-placeholder-count="2">
+                                    <li>
+                                      <a href="#" target="_blank" rel="noopener" style="font-size:var(--text-sm);text-decoration:none">{{ vehicle.label }}</a>
+                                    </li>
+                                  </sc-for>
+                                </ul>
+                              </div>
+                            </sc-for>
+                          </div>
+                        </sc-if>
+                      </li>
+                    </sc-for>
+                  </ul>
+                </sc-if>
+              </li>
+            </sc-for>
+          </ul>
+        </div>
+      </sc-if>
+    </section>
+
+    <sc-if value="{{ showRecent }}" hint-placeholder-val="{{ true }}">
+      <section style="display:grid;gap:var(--space-3)" data-comment-anchor="0f86e632f5-section">
+        <div style="display:flex;align-items:center;gap:var(--space-2)">
+          <h2 class="ds-section-title" style="margin:0;font-size:var(--display-xs)">Останні переглянуті</h2>
+          <span style="margin-left:auto;display:flex;gap:var(--space-1)">
+            <span onClick="{{ scrollRecentBack }}">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="chevron-left" label="Прокрутити назад" size="sm" tone="plain" hint-size="34px,34px"></x-import>
+            </span>
+            <span onClick="{{ scrollRecentForward }}">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="chevron-right" label="Прокрутити далі" size="sm" tone="plain" hint-size="34px,34px"></x-import>
+            </span>
+          </span>
+        </div>
+        <ul data-carousel ref="{{ recentStrip }}">
+          <sc-for list="{{ recent }}" as="item" hint-placeholder-count="6">
+            <li>
+              <a href="#" style="display:grid;gap:var(--space-2);height:100%;box-sizing:border-box;padding:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-lg);text-decoration:none;color:inherit;background:var(--surface);transition:var(--transition-colors)" style-hover="border-color:var(--ink-300);background:var(--surface-sunken)">
+                <span style="display:flex;justify-content:center">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.PartThumb" size="{{ recentThumbSize }}" hint-size="96px,96px"></x-import>
+                </span>
+                <span class="ds-row__meta" style="gap:6px">
+                  <span style="font-weight:600;color:var(--text-body)">{{ item.brand }}</span>
+                  <span class="ds-article">{{ item.article }}</span>
+                </span>
+                <span style="font-size:var(--text-sm);color:var(--text-strong);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ item.name }}</span>
+                <span style="margin-top:auto">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ item.price }}" size="sm" hint-size="auto,20px"></x-import>
+                </span>
+              </a>
+            </li>
+          </sc-for>
+        </ul>
+      </section>
+    </sc-if>
+
+    <section style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-5);padding:var(--space-5) var(--space-6);border:1px solid var(--line);border-left:3px solid var(--red-500);border-radius:var(--radius-lg);background:var(--surface-sunken)">
+      <div style="flex:1 1 420px;min-width:280px">
+        <p class="t-eyebrow" style="margin:0 0 6px">Запит на пошук автозапчастин</p>
+        <p style="margin:0;font-size:var(--text-lg);font-weight:600;line-height:1.3;color:var(--text-strong)">Не знайшли деталь у каталозі — надішліть VIN і список потрібного</p>
+        <p style="margin:6px 0 0;font-size:var(--text-sm);color:var(--text-muted)">Менеджер підбере запчастини вручну й передзвонить. Список можна написати словами або прикріпити файлом.</p>
+      </div>
+      <button class="ds-btn ds-btn--md ds-btn--primary" style="flex:none">Залишити запит</button>
+    </section>
+
+  </main>
+
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteFooter" hint-size="100%,260px"></x-import>
+
+  <sc-if value="{{ zoomed }}" hint-placeholder-val="{{ false }}">
+    <div data-lightbox onClick="{{ closeOnScrim }}">
+      <div style="display:grid;gap:var(--space-3);width:min(760px,100%);padding:var(--space-4);border-radius:var(--radius-xl);background:var(--surface);box-shadow:var(--shadow-lg)">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-3)">
+          <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">{{ photoPosition }}</p>
+          <span onClick="{{ closeZoom }}">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="x" label="Закрити" size="md" tone="plain" hint-size="44px,44px"></x-import>
+          </span>
+        </div>
+        <div style="display:flex;align-items:center;gap:var(--space-3)">
+          <span onClick="{{ prevPhoto }}" style="flex:none">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="chevron-left" label="Попереднє фото" size="md" hint-size="44px,44px"></x-import>
+          </span>
+          <div style="flex:1;min-width:0;display:grid;place-items:center">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.PartThumb" size="{{ zoomSize }}" hint-size="100%,420px"></x-import>
+          </div>
+          <span onClick="{{ nextPhoto }}" style="flex:none">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="chevron-right" label="Наступне фото" size="md" hint-size="44px,44px"></x-import>
+          </span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1400},&quot;stock&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;in&quot;,&quot;out&quot;],&quot;default&quot;:&quot;in&quot;,&quot;tsType&quot;:&quot;'in' | 'out'&quot;,&quot;section&quot;:&quot;Стан картки&quot;},&quot;photos&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;some&quot;,&quot;none&quot;],&quot;default&quot;:&quot;some&quot;,&quot;tsType&quot;:&quot;'some' | 'none'&quot;,&quot;section&quot;:&quot;Стан картки&quot;},&quot;singleOffer&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан картки&quot;},&quot;staffView&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан картки&quot;},&quot;showRecent&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан картки&quot;}}">
+/*
+ * Картка деталі BANDO 6PK2000.
+ *
+ * Порядок екрана — з репозиторію (`app/p/[...slug]/page.tsx`): галерея й ідентичність, потім
+ * пропозиції, і лише під ними вкладки. Пропозиції не є вкладкою: це те, для чого сторінка існує.
+ * Рядок пропозиції — той самий табличний вигляд, що на екрані пошуку за артикулом.
+ *
+ * Вкладка «Застосовність» — дерево з `PartVehicleTree.tsx`: марка → загальна модель →
+ * тип моделі з роками → машина-посилання. Кожен рівень закритий, кілька відкриваються разом,
+ * а якщо на рівні рівно одне значення — воно відкривається саме. Кількостей на екрані немає.
+ */
+const PHOTO_COUNT = 10
+
+const OFFERS = [
+  { key: 'o1', price: 486, qty: 10, day: 0, cutoff: '21:00', primary: true, visible: true },
+  { key: 'o2', price: 462, qty: 8, minQty: 4, day: 1, visible: true },
+  { key: 'o3', price: 512, qty: 8, day: 3, date: '4 вер, пт', visible: true },
+  { key: 'o4', price: 498, qty: 2, day: 4, date: '5 вер, сб' },
+  { key: 'o5', price: 541, qty: 10, day: 7, date: '8 вер, вт' },
+  { key: 'o6', price: 568, qty: 1, day: 9, date: '10 вер, чт' }
+]
+
+const WAREHOUSES = ['Запоріжжя · власний склад', 'Київ · ELIT', 'Одеса · Автологістика', 'Львів · Інтеркарс']
+
+const SPECS = [
+  { name: 'Кількість ребер', value: '6' },
+  { name: 'Довжина', value: '2 000 мм' },
+  { name: 'Ширина', value: '21,36 мм' },
+  { name: 'Профіль', value: 'PK' },
+  { name: 'Матеріал', value: 'EPDM' },
+  { name: 'Тип ременя', value: 'Поліклиновий (ручейковий)' },
+  { name: 'Кількість ручейків', value: '6' },
+  { name: 'Виробник', value: 'BANDO' }
+]
+
+/* Номери — рівно так, як їх надсилає постачальник: з пробілами й дефісами, бо так вибито на деталі. */
+const OE = [
+  {
+    carmaker: 'HYUNDAI',
+    numbers: [
+      '25212-37182', '25212-2F000', '25212-2A000', '25212-2F001', '25212-27400',
+      '25212-27000', '25212-2A400', '25212-2F100', '25212-4A000', '25212-2B000',
+      '25212-2A100'
+    ]
+  },
+  { carmaker: 'KIA', numbers: ['25212-2F001', '25212-4A000'] },
+  { carmaker: 'MITSUBISHI', numbers: ['MD 371500'] }
+]
+
+/* Дерево застосовності: марка → загальна модель → тип моделі (роки) → машини. */
+const VEHICLES = [
+  {
+    mark: 'HYUNDAI',
+    models: [
+      {
+        model: 'TUCSON',
+        types: [
+          {
+            label: 'TUCSON (JM) (2004–2010)',
+            vehicles: [
+              '2.0 CRDi · 2.0 Дизель · 140 к.с. · Повний привод',
+              '2.0 CRDi · 2.0 Дизель · 113 к.с. · Передній привод',
+              '2.0 · 2.0 Бензин · 141 к.с. · Передній привод'
+            ]
+          },
+          {
+            label: 'TUCSON (LM, JM, EL) (2009–2015)',
+            vehicles: ['2.0 CRDi · 2.0 Дизель · 136 к.с. · Повний привод']
+          }
+        ]
+      },
+      {
+        model: 'IX35',
+        types: [
+          {
+            label: 'IX35 (LM, EL, ELH) (2009–2017)',
+            vehicles: [
+              '2.0 CRDi 4WD · 2.0 Дизель · 184 к.с. · Повний привод',
+              '2.0 CRDi · 2.0 Дизель · 136 к.с. · Передній привод',
+              '2.0 · 2.0 Бензин · 150 к.с. · Передній привод'
+            ]
+          }
+        ]
+      },
+      {
+        model: 'SANTA FÉ',
+        types: [
+          {
+            label: 'SANTA FÉ II (CM) (2005–2012)',
+            vehicles: ['2.2 CRDi GLS · 2.2 Дизель · 155 к.с. · Повний привод']
+          }
+        ]
+      }
+    ]
+  },
+  {
+    mark: 'KIA',
+    models: [
+      {
+        model: 'SPORTAGE',
+        types: [
+          {
+            label: 'SPORTAGE (JE_, KM_) (2004–2010)',
+            vehicles: [
+              '2.0 CRDi · 2.0 Дизель · 140 к.с. · Повний привод',
+              '2.0 CRDi 4WD · 2.0 Дизель · 113 к.с. · Повний привод'
+            ]
+          },
+          {
+            label: 'SPORTAGE (SL) (2009–2016)',
+            vehicles: ['2.0 CRDi AWD · 2.0 Дизель · 184 к.с. · Повний привод']
+          }
+        ]
+      },
+      {
+        model: 'CARENS',
+        types: [
+          {
+            label: 'CARENS III (UN) (2006–2013)',
+            vehicles: ['2.0 CRDi 135 · 2.0 Дизель · 136 к.с. · Передній привод']
+          }
+        ]
+      }
+    ]
+  },
+  {
+    mark: 'MITSUBISHI',
+    models: [
+      {
+        model: 'OUTLANDER',
+        types: [
+          {
+            label: 'OUTLANDER II (CW_W) (2006–2012)',
+            vehicles: ['2.0 DI-D · 2.0 Дизель · 140 к.с. · Повний привод']
+          }
+        ]
+      }
+    ]
+  }
+]
+
+const RECENT = [
+  { brand: 'MANN-FILTER', article: 'W 712/75', name: 'Фільтр масляний', price: 196 },
+  { brand: 'BREMBO', article: 'P 06 024', name: 'Колодки гальмівні передні', price: 1284 },
+  { brand: 'SACHS', article: '311 909', name: 'Амортизатор передній, газомасляний', price: 2140 },
+  {
+    brand: 'GATES', article: '6PK1560', price: 486,
+    name: 'Ремень поликліновий Tucson (09-)/IX35/Sportage (G6BA-G) (6PK2000) (25212-37182) Bando'
+  },
+  { brand: 'BOSCH', article: '0 986 452 041', name: 'Фільтр масляний', price: 284 },
+  { brand: 'FEBI BILSTEIN', article: '34781', name: 'Натягувач ременя допоміжних агрегатів', price: 1620 }
+]
+
+const OFFER_SORTS = [
+  { id: '', label: 'Спочатку рекомендовані' },
+  { id: 'price', label: 'За ціною' },
+  { id: 'shipDate', label: 'За датою відправки' },
+  { id: 'quantity', label: 'За кількістю' }
+]
+
+class Component extends DCLogic {
+  state = {
+    sort: '',
+    expanded: false,
+    tab: 'specs',
+    photo: 0,
+    zoomed: false,
+    /* Відкриті вузли дерева застосовності: марки та моделі (ключ «марка|модель»). */
+    openMarks: [],
+    openModels: [],
+    copied: null,
+    cart: 2
+  }
+
+  thumbStrip = React.createRef()
+  recentStrip = React.createRef()
+
+  onSort = (event) => {
+    const sort = event.target.value
+    /* Сортування розкриває те, що збирається впорядкувати. */
+    this.setState({ sort, expanded: sort === '' ? this.state.expanded : true })
+  }
+
+  copy = (value) => () => {
+    if (navigator.clipboard) navigator.clipboard.writeText(value).catch(() => {})
+    this.setState({ copied: value })
+    clearTimeout(this.copyTimer)
+    this.copyTimer = setTimeout(() => this.setState({ copied: null }), 1600)
+  }
+
+  step = (delta) => () => this.setState((s) => ({ photo: (s.photo + delta + PHOTO_COUNT) % PHOTO_COUNT }))
+
+  scrollBy = (ref, amount) => () => {
+    if (ref.current) ref.current.scrollBy({ left: amount, behavior: 'smooth' })
+  }
+
+  toggleList = (field, key) => () =>
+    this.setState((s) => ({
+      [field]: s[field].includes(key) ? s[field].filter((item) => item !== key) : [...s[field], key]
+    }))
+
+  componentWillUnmount() {
+    clearTimeout(this.copyTimer)
+  }
+
+  renderVals() {
+    const { sort, expanded, tab, photo, zoomed, openMarks, openModels, copied, cart } = this.state
+    const hasPhotos = (this.props.photos ?? 'some') === 'some'
+    const outOfStock = (this.props.stock ?? 'in') === 'out'
+    const staffView = this.props.staffView ?? false
+    const single = this.props.singleOffer ?? false
+
+    const all = outOfStock ? [] : single ? [OFFERS[0]] : OFFERS
+
+    /* Мітки вважаються по ВСІХ пропозиціях деталі; при одній порівнювати нема з чим. */
+    const comparable = all.length > 1
+    const best = comparable ? Math.min(...all.map((o) => o.price)) : null
+    const soonest = comparable ? Math.min(...all.map((o) => o.day)) : null
+    const bestPriceKey = comparable ? (all.find((o) => o.price === best) || {}).key : null
+    const bestDateKey = comparable ? (all.find((o) => o.day === soonest) || {}).key : null
+
+    let ordered = all
+    if (sort === 'price') ordered = [...all].sort((a, b) => a.price - b.price)
+    if (sort === 'shipDate') ordered = [...all].sort((a, b) => a.day - b.day || a.price - b.price)
+    if (sort === 'quantity') ordered = [...all].sort((a, b) => b.qty - a.qty)
+
+    const shown = sort !== '' || expanded ? ordered : ordered.filter((o) => o.visible)
+    const restCount = all.length - shown.length
+
+    const offers = shown.map((offer, index) => ({
+      key: offer.key,
+      price: offer.price,
+      shipDate: offer.date || '',
+            shipRelative: offer.day === 0 ? 'today' : offer.day === 1 ? 'tomorrow' : 'later',
+      /* У вигляді продавця час відсічення не дублюємо — він у назві складу. */
+      shipCutoff: !staffView && offer.cutoff ? offer.cutoff : '',
+      qtyLabel: offer.qty + ' шт',
+      /* Мінімальна партія — та сама пілюля, що в кошику й у пошуку за артикулом. */
+      minQtyLabel: offer.minQty > 1 ? 'від ' + offer.minQty + ' шт' : '',
+      bestPrice: offer.key === bestPriceKey,
+      bestDate: offer.key === bestDateKey,
+      primaryAttr: offer.primary === true ? 'true' : 'false',
+      warehouse: staffView ? WAREHOUSES[index % WAREHOUSES.length] + (offer.cutoff ? ' · до ' + offer.cutoff : '') : '',
+      sellerPrice: staffView ? Math.round(offer.price * 0.74) + ' ₴' : ''
+    }))
+
+    /* §3.11: рівень із рівно одним значенням відкривається сам — не «перший із кількох». */
+    const soleMark = VEHICLES.length === 1 ? VEHICLES[0].mark : null
+    const vehicleMarks = VEHICLES.map((mark) => {
+      const markOpen = openMarks.includes(mark.mark) || mark.mark === soleMark
+      const soleModel = mark.models.length === 1 ? mark.models[0].model : null
+      return {
+        mark: mark.mark,
+        open: markOpen,
+        expanded: markOpen ? 'true' : 'false',
+        icon: markOpen ? 'chevron-down' : 'chevron-right',
+        toggle: this.toggleList('openMarks', mark.mark),
+        models: mark.models.map((model) => {
+          const key = mark.mark + '|' + model.model
+          const modelOpen = openModels.includes(key) || model.model === soleModel
+          return {
+            model: model.model,
+            open: modelOpen,
+            expanded: modelOpen ? 'true' : 'false',
+            icon: modelOpen ? 'chevron-down' : 'chevron-right',
+            toggle: this.toggleList('openModels', key),
+            types: model.types.map((type) => ({
+              label: type.label,
+              vehicles: type.vehicles.map((label) => ({ label }))
+            }))
+          }
+        })
+      }
+    })
+
+    const vehicleCount = VEHICLES.reduce(
+      (sum, mark) =>
+        sum + mark.models.reduce((m, model) => m + model.types.reduce((t, type) => t + type.vehicles.length, 0), 0),
+      0
+    )
+
+    return {
+      cartCount: cart,
+      crumbs: [
+        { label: 'Головна', href: '#' },
+        { label: 'HYUNDAI IX35 2.0 CRDi', href: '#' },
+        { label: 'Ремені та ролики', href: '#' },
+        { label: 'Ремінь поліклиновий' }
+      ],
+
+      hasPhotos,
+      noPhotos: !hasPhotos,
+      /* Числа, а не рядки: PartThumb ставить їх у width/height, і "64" React відкидає. */
+      mainSize: 380,
+      zoomSize: 560,
+      thumbSize: 64,
+      recentThumbSize: 168,
+      lastKnownPrice: 462,
+      photos: Array.from({ length: PHOTO_COUNT }, (unused, index) => ({
+        label: 'Показати фото ' + (index + 1),
+        current: index === photo ? 'true' : 'false',
+        ring: index === photo ? 'inset 0 0 0 2px var(--ink-800)' : 'inset 0 0 0 1px var(--line)',
+        select: () => this.setState({ photo: index })
+      })),
+      photoPosition: 'Фото ' + (photo + 1) + ' з ' + PHOTO_COUNT,
+      thumbStrip: this.thumbStrip,
+      scrollThumbsBack: this.scrollBy(this.thumbStrip, -220),
+      scrollThumbsForward: this.scrollBy(this.thumbStrip, 220),
+      zoomed: zoomed && hasPhotos,
+      openZoom: () => this.setState({ zoomed: true }),
+      closeZoom: () => this.setState({ zoomed: false }),
+      closeOnScrim: (event) => {
+        if (event.target === event.currentTarget) this.setState({ zoomed: false })
+      },
+      prevPhoto: this.step(-1),
+      nextPhoto: this.step(1),
+
+      outOfStock,
+      offers,
+      offerCount: all.length,
+      hasOffers: all.length > 0,
+      noOffers: all.length === 0,
+      sortable: all.length > 1,
+      sort,
+      onSort: this.onSort,
+      sortOpen: this.state.sortOpen === true,
+      sortOpenAttr: this.state.sortOpen === true ? 'true' : 'false',
+      toggleSort: () => this.setState((s) => ({ sortOpen: !s.sortOpen })),
+      sortLabel: (OFFER_SORTS.find((o) => o.id === sort) || OFFER_SORTS[0]).label,
+      sortOptions: OFFER_SORTS.map((o) => ({
+        label: o.label,
+        selectedAttr: sort === o.id ? 'true' : 'false',
+        /* Сортування розкриває те, що збирається впорядкувати. */
+        pick: () => this.setState({ sort: o.id, sortOpen: false, expanded: o.id === '' ? this.state.expanded : true })
+      })),
+      hasRest: restCount > 0,
+      restLabel: 'Показати решту (' + restCount + ')',
+      showRest: () => this.setState({ expanded: true }),
+      addToCart: () => this.setState((s) => ({ cart: s.cart + 1 })),
+
+      tabs: [
+        { key: 'analogs', label: 'Аналоги', count: 12 },
+        { key: 'specs', label: 'Характеристики', count: SPECS.length },
+        { key: 'oe', label: 'Оригінальні номери', count: 6 },
+        { key: 'vehicles', label: 'Застосовність', count: vehicleCount }
+      ],
+      tab,
+      /* Вкладка є адресою. «Аналоги» — окремий екран, і клік веде саме на нього. */
+      onTab: (key) => {
+        if (key === 'analogs') window.location.href = 'Пошук за артикулом.dc.html'
+        else this.setState({ tab: key })
+      },
+      isSpecs: tab === 'specs',
+      isOe: tab === 'oe',
+      isVehicles: tab === 'vehicles',
+
+      specs: SPECS,
+      oeGroups: OE.map((group) => ({
+        carmaker: group.carmaker,
+        numbers: group.numbers.map((value) => ({
+          value,
+          href: 'Пошук за артикулом.dc.html',
+          icon: copied === value ? 'check' : 'copy',
+          copy: this.copy(value)
+        }))
+      })),
+
+      vehicleMarks,
+      vehiclesLead: 'Підходить на ' + vehicleCount + ' автомобілів',
+
+      showRecent: this.props.showRecent ?? true,
+      recent: RECENT,
+      recentStrip: this.recentStrip,
+      scrollRecentBack: this.scrollBy(this.recentStrip, -420),
+      scrollRecentForward: this.scrollBy(this.recentStrip, 420)
+    }
+  }
+}
+
+</script>
+</body>
+</html>

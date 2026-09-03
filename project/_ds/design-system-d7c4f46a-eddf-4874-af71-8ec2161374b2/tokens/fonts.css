@@ -1,0 +1,4 @@
+/* Webfonts. Oswald / Onest / IBM Plex Mono all ship full Cyrillic — non-negotiable for a
+   Ukrainian catalogue. Served from Google Fonts; there are no self-hosted binaries in this
+   design system, so there are no @font-face rules of our own to declare. */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Onest:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');

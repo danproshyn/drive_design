@@ -1,0 +1,90 @@
+/* Document defaults. Deliberately thin — this file sets the page, not components. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--text-body);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-tight);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  color: var(--text-strong);
+  margin: 0;
+}
+
+a {
+  color: var(--text-action);
+  text-decoration: none;
+  transition: var(--transition-colors);
+}
+a:hover {
+  color: var(--text-action-hover);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+button {
+  font: inherit;
+  letter-spacing: inherit;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+::selection {
+  background: var(--red-100);
+  color: var(--ink-900);
+}
+
+/* Utility: the page container every surface uses. */
+.ds-container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+@media (min-width: 640px) {
+  .ds-container { padding-inline: var(--container-pad-lg); }
+}
+
+/* Utility: the diagonal speed-stripe motif lifted from the logo. Use behind black
+   surfaces only, at low contrast, and never behind body copy. */
+.ds-stripes {
+  background-image: repeating-linear-gradient(
+    -66deg,
+    rgb(255 255 255 / 0.07) 0 2px,
+    transparent 2px 9px
+  );
+}

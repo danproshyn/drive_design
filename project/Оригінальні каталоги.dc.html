@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/colors.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/space.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/motion.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/layout.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/base.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=3"></script>
+<style>
+
+  /* Пошук машини — той самий блок, що й на головній; на екранах з машиною він стискається в один рядок */
+  [data-lookup] {
+    display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface-sunken);
+  }
+  [data-lookup][data-compact="true"] { align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); }
+  [data-lookup][data-compact="true"] .ds-field__label { display: none; }
+  [data-lookup][data-compact="true"] [data-or] { display: none; }
+
+  /* Дві панелі: дерево ліворуч, перегляд праворуч. До 1024 px дерево — розкривний блок над переглядом */
+  [data-panes] { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
+  [data-tree-panel][data-open="false"] { display: none; }
+  @media (min-width: 1024px) {
+    [data-panes] { grid-template-columns: 292px minmax(0, 1fr); gap: var(--space-6); }
+    [data-tree-toggle] { display: none !important; }
+    [data-tree-panel][data-open="false"] { display: block; }
+  }
+
+
+  /* Дерево: наведення дає підкладку й червону лінію ліворуч — той самий жест, що в каталозі */
+  [data-tree] { list-style: none; margin: var(--space-3) 0 0; padding: 0; }
+  [data-node] {
+    display: block; width: 100%; min-height: 40px; padding: 9px 12px;
+    border: 0; border-left: 3px solid transparent; background: none;
+    font: inherit; font-size: var(--text-sm); text-align: left; color: var(--text-action);
+    cursor: pointer; transition: var(--transition-colors);
+  }
+  [data-node]:hover { background: var(--surface-sunken); border-left-color: var(--red-500); color: var(--text-action-hover); }
+  [data-node][aria-current="true"] { background: var(--surface-sunken); border-left-color: var(--ink-800); color: var(--text-strong); font-weight: 600; }
+  [data-branch] {
+    flex: 1; min-width: 0; display: block; min-height: 40px; padding: 9px 8px;
+    border: 0; background: none; text-align: left; cursor: pointer;
+    font-family: var(--font-display); font-size: var(--text-xs); font-weight: 500;
+    letter-spacing: .05em; text-transform: uppercase; color: var(--text-strong);
+    transition: var(--transition-colors);
+  }
+  [data-branch]:hover { color: var(--text-action-hover); }
+  [data-plain] { display: block; padding: 9px 12px; font-size: var(--text-sm); color: var(--text-muted); }
+  [data-depth="1"] { padding-left: 42px; }
+
+  /* Гілка згорнута, поки її не відкрили: розділів багато, і всі одразу — це не перелік */
+  [data-groupline] { display: flex; align-items: center; gap: 0; border-bottom: 1px solid var(--line-subtle); }
+  [data-groupline] [data-node] { flex: 1; min-width: 0; padding-inline: 8px; }
+  [data-toggle] {
+    flex: none; display: grid; place-items: center; width: 34px; height: 40px;
+    border: 0; background: none; color: var(--text-faint); cursor: pointer; transition: var(--transition-colors);
+  }
+  [data-toggle]:hover { color: var(--text-strong); }
+  [data-toggle] svg { transition: transform var(--dur-fast) var(--ease-out); }
+  [data-toggle][aria-expanded="true"] svg { transform: rotate(90deg); }
+  [data-count] { flex: none; padding-right: 10px; font-size: var(--text-2xs); font-variant-numeric: tabular-nums; color: var(--text-faint); }
+  [data-subtree] { list-style: none; margin: 0; padding: var(--space-1) 0 var(--space-2); }
+
+  /* Кабани вузлів у «Каталозі виробника» — знімок і назва, і більше нічого */
+  [data-units] { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 640px) { [data-units] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  [data-unitcard] {
+    display: grid; gap: 0; height: 100%; border: 1px solid var(--line); border-radius: var(--radius-lg);
+    overflow: hidden; text-decoration: none; transition: var(--transition-colors);
+  }
+  [data-unitcard]:hover { background: var(--surface-sunken); border-color: var(--ink-300); text-decoration: none; }
+  [data-unitcard] span { padding: 10px 12px; font-size: var(--text-xs); font-weight: 500; color: var(--text-strong); }
+
+  /* Заглушка зображення: постачальникове фото/схема, яких у макеті немає */
+  [data-ph] { display: grid; place-items: center; gap: 6px; background: var(--surface-sunken); border-bottom: 1px solid var(--line-subtle); color: var(--ink-300); aspect-ratio: 4 / 3; }
+  [data-ph] em { font-family: var(--font-sans); font-size: var(--text-3xs); font-style: normal; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
+
+  /* Таблиця деталей — чотири колонки, спільні для перегляду й для сторінки вузла */
+  [data-tablewrap] { overflow: auto; border: 1px solid var(--line); border-radius: var(--radius-lg); }
+  [data-dtable] { width: 100%; min-width: 460px; border-collapse: collapse; font-size: var(--text-sm); }
+  [data-dtable] th {
+    position: sticky; top: 0; z-index: 1; padding: 9px var(--space-3);
+    background: var(--surface-sunken); border-bottom: 1px solid var(--line);
+    font-size: var(--text-3xs); font-weight: 500; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--text-faint); text-align: left; white-space: nowrap;
+  }
+  [data-dtable] td { padding: 10px var(--space-3); border-top: 1px solid var(--line-subtle); vertical-align: top; }
+  [data-dtable] tbody tr:first-child td { border-top: 0; }
+  [data-dtable] [data-col="pos"] { width: 44px; font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-muted); }
+  [data-dtable] [data-col="spec"] { color: var(--text-muted); white-space: nowrap; }
+  [data-dtable] tr[data-row] { transition: var(--transition-colors); }
+  [data-dtable] tr[data-row]:hover { background: var(--surface-sunken); }
+  [data-dtable] tr[data-row]:hover td:first-child { box-shadow: inset 3px 0 0 var(--red-500); }
+  [data-dtable] tr[data-row][data-sel="true"] { background: var(--surface-sunken); }
+  [data-dtable] tr[data-row][data-sel="true"] td:first-child { box-shadow: inset 3px 0 0 var(--ink-800); }
+  [data-posbtn] { border: 0; background: none; padding: 0; font: inherit; font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-muted); cursor: pointer; }
+  [data-posbtn]:hover { color: var(--text-strong); }
+  [data-oem] { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 500; letter-spacing: var(--tracking-mono); text-decoration: none; }
+  [data-copy] { display: inline-flex; align-items: center; gap: 4px; border: 0; background: none; padding: 2px; font: inherit; font-size: var(--text-3xs); color: var(--text-faint); cursor: pointer; transition: var(--transition-colors); }
+  [data-copy]:hover { color: var(--text-strong); }
+
+  /* Схема вузла: рамка з прямокутниками позицій, масштаб і перетягування */
+  [data-diagram] {
+    position: relative; overflow: hidden; aspect-ratio: 4 / 3;
+    border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface-sunken);
+    touch-action: none;
+  }
+  [data-diagram][data-grab="true"] { cursor: grab; }
+  [data-diagram-inner] { position: absolute; inset: 0; transform-origin: 50% 50%; }
+  [data-diagram-note] { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 8px; color: var(--ink-300); pointer-events: none; }
+  [data-hot] {
+    position: absolute; padding: 0; border: 1.5px solid var(--ink-300); border-radius: 3px;
+    background: rgb(255 255 255 / .28); cursor: pointer; transition: var(--transition-colors);
+  }
+  [data-hot]:hover { border-color: var(--red-500); background: rgb(232 27 33 / .1); }
+  [data-hot][data-sel="true"] { border-color: var(--ink-800); border-width: 2px; background: rgb(36 33 29 / .07); }
+  [data-hot] i {
+    position: absolute; top: -10px; left: -10px; display: grid; place-items: center;
+    width: 20px; height: 20px; border-radius: var(--radius-full); background: var(--ink-800);
+    color: var(--white); font-family: var(--font-mono); font-size: 11px; font-style: normal; line-height: 1;
+  }
+  [data-hot][data-sel="true"] i { background: var(--red-600); }
+
+  /* Сторінка вузла: схема й перелік деталей поруч від 900 px, нижче — одне під одним.
+     Схему читають із ПК, тому від 1360 px контейнер цієї сторінки ширший за решту сайту
+     й схема забирає більшу частку — це єдине місце, де ширина сайту не тримається. */
+  [data-unitlayout] { display: grid; gap: var(--space-5); grid-template-columns: minmax(0, 1fr); align-items: start; }
+  @media (min-width: 900px) {
+    [data-unitlayout] { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+  }
+  @media (min-width: 1360px) {
+    /* Ширшає лише ця секція, а не сторінка: власна ширина плюс відʼємні поля виводять її
+       за контейнер симетрично, решта блоків лишається на 1200 px. */
+    [data-unitwide] { --wide: min(1520px, calc(100vw - 64px)); width: var(--wide); margin-inline: calc((100% - var(--wide)) / 2); }
+    [data-unitlayout] { grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: var(--space-6); }
+  }
+  [data-diagram][data-grab="true"]:active { cursor: grabbing; }
+
+  /* Інформація про автомобіль — постачальникові поля, згорнуті під пошуком */
+  [data-info] { border: 1px solid var(--line); border-radius: var(--radius-lg); }
+  [data-info] summary { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 var(--space-4); font-size: var(--text-sm); font-weight: 600; color: var(--text-strong); cursor: pointer; list-style: none; }
+  [data-info] summary::-webkit-details-marker { display: none; }
+  [data-info][open] summary { border-bottom: 1px solid var(--line-subtle); }
+  [data-info] dl { margin: 0; padding: var(--space-4); display: grid; gap: var(--space-3) var(--space-5); grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  [data-info] dt { margin: 0 0 2px; font-size: var(--text-3xs); font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); }
+  [data-info] dd { margin: 0; font-size: var(--text-sm); color: var(--text-strong); }
+  [data-info] dd[data-mono="true"] { font-family: var(--font-mono); letter-spacing: var(--tracking-mono); }
+
+  @media (max-width: 639px) {
+    [data-lookup] { gap: var(--space-3); padding: var(--space-3); }
+    [data-lookup] > * { flex: 1 1 100%; }
+    [data-lookup] button { width: 100%; }
+    [data-units] { gap: var(--space-2); }
+  }
+</style>
+</helmet>
+
+<div class="ds-page">
+
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteHeader" active="oem" cart-count="{{ cartCount }}" hint-size="100%,150px"></x-import>
+
+  <main class="ds-container ds-main">
+
+    <x-import component-from-global-scope="DesignSystem_d7c4f4.Breadcrumbs" items="{{ crumbs }}" hint-size="100%,24px"></x-import>
+
+    <sc-if value="{{ isLookup }}" hint-placeholder-val="{{ true }}">
+      <header style="display:grid;gap:8px;max-width:62ch">
+        <h1 style="margin:0;font-family:var(--font-display);font-size:var(--display-sm);font-weight:600;line-height:1.05;letter-spacing:.01em;text-transform:uppercase;color:var(--text-strong)">Оригінальні каталоги</h1>
+        <p style="margin:0;font-size:var(--text-md);color:var(--text-body);text-wrap:pretty">Схеми виробника: вузол, розкладка, оригінальні номери деталей.</p>
+      </header>
+    </sc-if>
+
+    <section data-lookup data-compact="{{ compactLookup }}">
+      <div class="ds-field" style="flex:0 0 auto">
+        <span class="ds-field__label">Держномер</span>
+        <div style="display:inline-flex;align-items:stretch;height:44px;border:2px solid var(--ink-800);border-radius:6px;background:var(--white);overflow:hidden">
+          <div style="width:28px;flex:none;background:#0057B7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding-block:4px">
+            <span style="display:block;width:14px;height:10px;background:linear-gradient(#0057B7 50%, #FFD700 50%);border:1px solid rgba(255,255,255,.55);box-sizing:border-box"></span>
+            <span style="font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.04em;color:#fff;line-height:1">UA</span>
+          </div>
+          <input aria-label="Державний номер" placeholder="AA 0000 AA" maxlength="11" value="{{ plate }}" onChange="{{ onPlate }}" style="width:150px;border:0;outline:none;background:none;font-family:var(--font-mono);font-size:19px;font-weight:600;letter-spacing:.06em;color:var(--ink-800);text-align:center;text-transform:uppercase">
+        </div>
+      </div>
+
+      <div data-or style="flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;height:44px;justify-content:center">
+        <span style="width:1px;flex:1;background:var(--line)"></span>
+        <span class="t-eyebrow">або</span>
+        <span style="width:1px;flex:1;background:var(--line)"></span>
+      </div>
+
+      <label class="ds-field" style="flex:1 1 260px;min-width:220px">
+        <span class="ds-field__label">VIN-код</span>
+        <input class="ds-input ds-input--mono" aria-label="VIN-код" placeholder="WVWZZZAUZHW123456" maxlength="17" value="{{ vin }}" onChange="{{ onVin }}">
+      </label>
+
+      <button class="ds-btn ds-btn--md ds-btn--dark" style="flex:none" onClick="{{ noop }}">Знайти машину</button>
+    </section>
+
+
+    <sc-if value="{{ showNotFound }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;gap:var(--space-3);justify-items:start;max-width:66ch">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="danger" hint-size="100%,64px">
+          Не вдалося розпізнати цей VIN або держномер.
+        </x-import>
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="secondary" icon="car-front" hint-size="auto,40px">Перейти до каталогу за авто</x-import>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isNoCatalog }}" hint-placeholder-val="{{ false }}">
+      <section style="display:grid;gap:var(--space-4);max-width:66ch;padding:var(--space-5);border:1px solid var(--line);border-radius:var(--radius-lg)">
+        <div style="display:grid;gap:4px">
+          <p class="t-eyebrow" style="margin:0">Машину розпізнано</p>
+          <p style="margin:0;font-family:var(--font-display);font-size:var(--display-xs);font-weight:600;line-height:1.1;letter-spacing:.01em;text-transform:uppercase;color:var(--text-strong)">Renault Megane III 1.5 dCi</p>
+          <p class="ds-article" style="margin:0;color:var(--text-muted)">VIN VF1BZ0R0642318907</p>
+        </div>
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="info" hint-size="100%,64px">
+          Для цієї машини схем виробника немає. Каталог за авто працює для неї як завжди — оберіть машину там.
+        </x-import>
+        <div style="justify-self:start">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="secondary" icon="car-front" hint-size="auto,40px">Перейти до каталогу за авто</x-import>
+        </div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ hasCar }}" hint-placeholder-val="{{ false }}">
+      <section style="display:grid;gap:var(--space-4)">
+
+        <sc-if value="{{ isUnit }}" hint-placeholder-val="{{ false }}">
+          <p style="margin:0;font-size:var(--text-sm)"><a href="#" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-left" size="15" hint-size="15px,15px"></x-import>
+            Назад до дерева
+          </a></p>
+        </sc-if>
+
+        <div style="display:grid;gap:4px">
+          <p style="margin:0;font-family:var(--font-display);font-size:{{ carTitleSize }};font-weight:600;line-height:1.1;letter-spacing:.01em;text-transform:uppercase;color:var(--text-strong)">Volkswagen Golf VII 1.6 TDI</p>
+          <p class="ds-article" style="margin:0;color:var(--text-muted)">VIN WVWZZZAUZHW123456</p>
+        </div>
+
+        <details data-info open="{{ infoOpen }}">
+          <summary>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="16" hint-size="16px,16px"></x-import>
+            Інформація про автомобіль
+          </summary>
+          <dl>
+            <sc-for list="{{ attributes }}" as="attr" hint-placeholder-count="8">
+              <div>
+                <dt>{{ attr.name }}</dt>
+                <dd data-mono="{{ attr.mono }}">{{ attr.value }}</dd>
+              </div>
+            </sc-for>
+          </dl>
+        </details>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isTree }}" hint-placeholder-val="{{ false }}">
+      <section style="display:grid;gap:var(--space-4)">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.TabStrip" tabs="{{ tabs }}" active="{{ tab }}" onSelect="{{ onTab }}" hint-size="100%,44px"></x-import>
+
+        <div data-panes>
+          <div>
+            <button data-tree-toggle onClick="{{ toggleTree }}" style="display:flex;width:100%;align-items:center;justify-content:space-between;gap:var(--space-3);min-height:44px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:var(--text-sm);font-weight:600;color:var(--text-strong);cursor:pointer">
+              <span>{{ treeToggleLabel }}</span>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="17" hint-size="17px,17px"></x-import>
+            </button>
+
+            <div data-tree-panel data-open="{{ treeOpenAttr }}" style="margin-top:var(--space-3)">
+              <div class="ds-treefield" data-treefield>
+                <span class="ds-treefield__icon" data-treeicon>
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="search" size="16" hint-size="16px,16px"></x-import>
+                </span>
+                <input data-treesearch type="search" aria-label="{{ searchLabel }}" placeholder="{{ searchLabel }}" value="{{ query }}" onChange="{{ onQuery }}">
+              </div>
+
+              <sc-if value="{{ treeEmpty }}" hint-placeholder-val="{{ false }}">
+                <p style="margin:var(--space-3) 0 0;font-size:var(--text-sm);color:var(--text-muted)">Нічого не знайдено.</p>
+              </sc-if>
+
+              <ul data-tree>
+                <sc-for list="{{ treeGroups }}" as="group" hint-placeholder-count="7">
+                  <li>
+                    <div data-groupline>
+                      <button data-toggle type="button" aria-expanded="{{ group.openAttr }}" aria-label="{{ group.toggleLabel }}" onClick="{{ group.toggle }}">
+                        <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-right" size="16" hint-size="16px,16px"></x-import>
+                      </button>
+                      <sc-if value="{{ group.callable }}" hint-placeholder-val="{{ false }}">
+                        <button data-node aria-current="{{ group.current }}" onClick="{{ group.pick }}">{{ group.name }}</button>
+                      </sc-if>
+                      <sc-if value="{{ group.plain }}" hint-placeholder-val="{{ true }}">
+                        <button data-branch type="button" onClick="{{ group.toggle }}">{{ group.name }}</button>
+                      </sc-if>
+                      <span data-count>{{ group.count }}</span>
+                    </div>
+
+                    <sc-if value="{{ group.open }}" hint-placeholder-val="{{ true }}">
+                      <ul data-subtree>
+                        <sc-for list="{{ group.children }}" as="child" hint-placeholder-count="3">
+                          <li>
+                            <sc-if value="{{ child.isNode }}" hint-placeholder-val="{{ true }}">
+                              <button data-node data-depth="1" aria-current="{{ child.current }}" onClick="{{ child.pick }}">{{ child.name }}</button>
+                            </sc-if>
+                            <sc-if value="{{ child.isPlain }}" hint-placeholder-val="{{ false }}">
+                              <span data-plain data-depth="1">{{ child.name }}</span>
+                            </sc-if>
+                          </li>
+                        </sc-for>
+                      </ul>
+                    </sc-if>
+                  </li>
+                </sc-for>
+              </ul>
+            </div>
+          </div>
+
+          <div style="min-width:0;display:grid;gap:var(--space-4);align-content:start">
+
+            <sc-if value="{{ showLimit }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;gap:var(--space-3);justify-items:start">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="warning" hint-size="100%,64px">
+                  Ліміт запитів до каталогу вичерпано, спробуйте за годину.
+                </x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="secondary" size="sm" icon="rotate-ccw" hint-size="auto,34px">Повторити</x-import>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showPreviewEmpty }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0;padding:var(--space-10) var(--space-6);border:1px dashed var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken);text-align:center;font-size:var(--text-sm);color:var(--text-muted)">Оберіть вузол ліворуч, щоб побачити його схему.</p>
+            </sc-if>
+
+            <sc-if value="{{ showQuick }}" hint-placeholder-val="{{ true }}">
+              <div style="display:grid;gap:var(--space-4)">
+                <h2 class="ds-section-title" style="margin:0;font-size:var(--display-xs)">{{ chosenQuick }}</h2>
+
+                <sc-for list="{{ previewUnits }}" as="unit" hint-placeholder-count="2">
+                  <article style="display:grid;gap:var(--space-3);padding:var(--space-4);border:1px solid var(--line);border-radius:var(--radius-lg)">
+                    <a href="#" style="font-size:var(--text-sm);font-weight:600;text-decoration:none">{{ unit.name }}</a>
+
+                    <div style="display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:flex-start">
+                      <div data-ph style="flex:0 0 224px;width:224px;border:1px solid var(--line-subtle);border-radius:var(--radius-md)">
+                        <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="image-off" size="26" hint-size="26px,26px"></x-import>
+                        <em>Знімок вузла</em>
+                      </div>
+
+                      <div style="flex:1 1 320px;min-width:0;display:grid;gap:var(--space-2)">
+                      <div data-tablewrap style="min-width:0;max-height:280px">
+                        <table data-dtable>
+                          <thead>
+                            <tr>
+                              <th scope="col">№</th>
+                              <th scope="col">Назва</th>
+                              <th scope="col">OE-номер</th>
+                              <th scope="col">Специфікація</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <sc-for list="{{ unit.rows }}" as="row" hint-placeholder-count="4">
+                              <tr>
+                                <td data-col="pos">
+                                  <sc-if value="{{ row.showCode }}" hint-placeholder-val="{{ true }}">
+                                    <span>{{ row.code }}</span>
+                                  </sc-if>
+                                </td>
+                                <td>
+                                  <span style="color:var(--text-strong)">{{ row.name }}</span>
+                                  <sc-if value="{{ row.note }}" hint-placeholder-val="{{ false }}">
+                                    <span style="color:var(--text-muted)"> · {{ row.note }}</span>
+                                  </sc-if>
+                                </td>
+                                <td>
+                                  <sc-if value="{{ row.hasOem }}" hint-placeholder-val="{{ true }}">
+                                    <span style="display:flex;align-items:center;gap:6px">
+                                      <a data-oem href="#" target="_blank" rel="noopener" title="відкриється в новій вкладці">{{ row.oem }}</a>
+                                      <button data-copy type="button" aria-label="{{ row.copyLabel }}" onClick="{{ row.copy }}">
+                                        <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ row.copyIcon }}" size="14" hint-size="14px,14px"></x-import>
+                                      </button>
+                                    </span>
+                                  </sc-if>
+                                  <sc-if value="{{ row.absent }}" hint-placeholder-val="{{ false }}">
+                                    <span style="display:block;font-size:var(--text-3xs);color:var(--stock-out)">немає в наявності</span>
+                                  </sc-if>
+                                  <sc-if value="{{ row.held }}" hint-placeholder-val="{{ false }}">
+                                    <span style="display:inline-flex;align-items:center;gap:5px;font-size:var(--text-3xs);font-weight:500;color:var(--stock-in)">
+                                      <span style="width:6px;height:6px;border-radius:var(--radius-full);background:var(--stock-in)"></span>
+                                      є в наявності
+                                    </span>
+                                  </sc-if>
+                                </td>
+                                <td data-col="spec">{{ row.spec }}</td>
+                              </tr>
+                            </sc-for>
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <sc-if value="{{ unit.hasRest }}" hint-placeholder-val="{{ true }}">
+                        <p style="margin:0"><button type="button" class="ds-btn ds-btn--link" onClick="{{ unit.showRest }}">{{ unit.restLabel }}</button></p>
+                      </sc-if>
+                      </div>
+                    </div>
+                  </article>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showCategory }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;gap:var(--space-4)">
+                <h2 class="ds-section-title" style="margin:0;font-size:var(--display-xs)">{{ chosenCategory }}<span class="ds-section-title__count">{{ unitCount }}</span></h2>
+
+                <ul data-units>
+                  <sc-for list="{{ categoryUnits }}" as="unit" hint-placeholder-count="12">
+                    <li>
+                      <a data-unitcard href="#">
+                        <span data-ph>
+                          <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="image-off" size="24" hint-size="24px,24px"></x-import>
+                        </span>
+                        <span>{{ unit.name }}</span>
+                      </a>
+                    </li>
+                  </sc-for>
+                </ul>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isUnit }}" hint-placeholder-val="{{ false }}">
+      <section data-unitwide style="display:grid;gap:var(--space-4)">
+        <h1 style="margin:0;font-family:var(--font-display);font-size:var(--display-xs);font-weight:600;line-height:1.1;letter-spacing:.01em;text-transform:uppercase;color:var(--text-strong)">Тормозная система, перед — диск и колодки</h1>
+
+        <sc-if value="{{ showLimit }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;gap:var(--space-3);justify-items:start;max-width:66ch">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="warning" hint-size="100%,64px">
+              Ліміт запитів до каталогу вичерпано, спробуйте за годину.
+            </x-import>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="secondary" size="sm" icon="rotate-ccw" hint-size="auto,34px">Повторити</x-import>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showUnitBody }}" hint-placeholder-val="{{ true }}">
+          <div data-unitlayout>
+            <div style="display:grid;gap:var(--space-2)">
+              <div data-diagram data-grab="{{ grabAttr }}" ref="{{ diagramRef }}" onPointerDown="{{ onPanStart }}" onPointerMove="{{ onPanMove }}" onPointerUp="{{ onPanEnd }}" onPointerLeave="{{ onPanEnd }}">
+                <div data-diagram-inner style="{{ zoomStyle }}">
+                  <div data-diagram-note>
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="image-off" size="30" hint-size="30px,30px"></x-import>
+                    <em style="font-family:var(--font-sans);font-size:var(--text-3xs);font-style:normal;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint)">Схема виробника</em>
+                  </div>
+                  <sc-for list="{{ hotspots }}" as="hot" hint-placeholder-count="5">
+                    <button data-hot data-sel="{{ hot.sel }}" style="{{ hot.style }}" aria-label="{{ hot.label }}" onClick="{{ hot.pick }}"><i>{{ hot.code }}</i></button>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="display:flex;align-items:center;gap:var(--space-3)">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="minus" label="Зменшити" size="sm" tone="outline" onClick="{{ zoomOut }}" hint-size="36px,36px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="plus" label="Збільшити" size="sm" tone="outline" onClick="{{ zoomIn }}" hint-size="36px,36px"></x-import>
+                <span style="font-size:var(--text-sm);font-family:var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text-muted)">{{ zoomLabel }}</span>
+                <span style="font-size:var(--text-xs);color:var(--text-muted)">{{ zoomHint }}</span>
+              </div>
+            </div>
+
+            <div style="min-width:0;display:grid;gap:var(--space-3);align-content:start">
+              <h2 class="ds-section-title" style="margin:0;font-size:var(--display-xs)">Деталі на схемі<span class="ds-section-title__count">{{ unitRowCount }}</span></h2>
+
+              <div data-tablewrap style="max-height:520px">
+                <table data-dtable>
+                  <thead>
+                    <tr>
+                      <th scope="col">№</th>
+                      <th scope="col">Назва</th>
+                      <th scope="col">OE-номер</th>
+                      <th scope="col">Специфікація</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <sc-for list="{{ unitRows }}" as="row" hint-placeholder-count="8">
+                      <tr data-row data-sel="{{ row.sel }}" onMouseEnter="{{ row.hover }}" onMouseLeave="{{ row.unhover }}" onClick="{{ row.pick }}">
+                        <td data-col="pos">
+                          <sc-if value="{{ row.showCode }}" hint-placeholder-val="{{ true }}">
+                            <button data-posbtn type="button" aria-label="{{ row.posLabel }}" onClick="{{ row.pick }}">{{ row.code }}</button>
+                          </sc-if>
+                        </td>
+                        <td>
+                          <span style="color:var(--text-strong)">{{ row.name }}</span>
+                          <sc-if value="{{ row.note }}" hint-placeholder-val="{{ false }}">
+                            <span style="color:var(--text-muted)"> · {{ row.note }}</span>
+                          </sc-if>
+                        </td>
+                        <td>
+                          <sc-if value="{{ row.hasOem }}" hint-placeholder-val="{{ true }}">
+                            <span style="display:flex;align-items:center;gap:6px">
+                              <a data-oem href="#" target="_blank" rel="noopener" title="відкриється в новій вкладці">{{ row.oem }}</a>
+                              <button data-copy type="button" aria-label="{{ row.copyLabel }}" onClick="{{ row.copy }}">
+                                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ row.copyIcon }}" size="14" hint-size="14px,14px"></x-import>
+                              </button>
+                            </span>
+                          </sc-if>
+                          <sc-if value="{{ row.absent }}" hint-placeholder-val="{{ false }}">
+                            <span style="display:block;font-size:var(--text-3xs);color:var(--stock-out)">немає в наявності</span>
+                          </sc-if>
+                          <sc-if value="{{ row.held }}" hint-placeholder-val="{{ false }}">
+                            <span style="display:inline-flex;align-items:center;gap:5px;font-size:var(--text-3xs);font-weight:500;color:var(--stock-in)">
+                              <span style="width:6px;height:6px;border-radius:var(--radius-full);background:var(--stock-in)"></span>
+                              є в наявності
+                            </span>
+                          </sc-if>
+                        </td>
+                        <td data-col="spec">{{ row.spec }}</td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+      </section>
+    </sc-if>
+
+  </main>
+
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteFooter" hint-size="100%,260px"></x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1260},&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;lookup&quot;,&quot;notfound&quot;,&quot;tree&quot;,&quot;unit&quot;,&quot;nocatalog&quot;],&quot;default&quot;:&quot;tree&quot;,&quot;tsType&quot;:&quot;'lookup' | 'notfound' | 'tree' | 'unit' | 'nocatalog'&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;stockMarks&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;available&quot;,&quot;absent&quot;,&quot;none&quot;],&quot;default&quot;:&quot;available&quot;,&quot;tsType&quot;:&quot;'available' | 'absent' | 'none'&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;vehicleInfoOpen&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;limitReached&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;}}">
+/*
+ * Оригінальні каталоги (/oem). Чотири екрани однієї гілки — вхід за VIN/держномером,
+ * два дерева з переглядом праворуч, сторінка вузла зі схемою, і «каталогу для цієї
+ * машини немає». Логіка й копірайт узяті з репозиторію: назви вузлів і деталей —
+ * постачальникові, швидкі групи — локалізовані, ціни тут не показуються взагалі.
+ */
+const QUICK = [
+  ['Двигун і система охолодження', 0, false],
+  ['Деталі для ТО', 1, true],
+  ['Ремені й ролики', 1, true],
+  ['Прокладки й сальники', 1, true],
+  ['Гальмівна система', 0, true],
+  ['Гальмівні диски й колодки', 1, true],
+  ['Гальмівні шланги й трубки', 1, true],
+  ['ABS і датчики', 1, true],
+  ['Підвіска й рульове керування', 0, false],
+  ['Амортизатори й пружини', 1, true],
+  ['Важелі, опори, стійки стабілізатора', 1, true],
+  ['Рульові тяги й наконечники', 1, true],
+  ['Фільтри й рідини', 0, false],
+  ['Фільтр масляний', 1, true],
+  ['Фільтр повітряний', 1, true],
+  ['Фільтр салону', 1, true],
+  ['Електрика й запалювання', 0, false],
+  ['Свічки й котушки', 1, true],
+  ['Акумулятор і генератор', 1, true],
+]
+
+const CATS = [
+  ['КУЗОВ', 0, false],
+  ['КУЗОВ (ПЕРЕД,КРЫША И ПОЛ)', 1, true],
+  ['ДВЕРИ И КРЫШКА БАГАЖНИКА', 1, true],
+  ['ОБЛИЦОВКА КУЗОВА', 1, true],
+  ['ДВИГАТЕЛЬ', 0, false],
+  ['БЛОК ЦИЛИНДРОВ', 1, true],
+  ['ГОЛОВКА БЛОКА ЦИЛИНДРОВ', 1, true],
+  ['СИСТЕМА СМАЗКИ', 1, true],
+  ['ТОПЛИВНАЯ СИСТЕМА', 1, true],
+  ['ТОРМОЗА', 0, false],
+  ['ТОРМОЗНАЯ СИСТЕМА, ПЕРЕД', 1, true],
+  ['ТОРМОЗНАЯ СИСТЕМА, ЗАД', 1, true],
+  ['ПЕДАЛЬНЫЙ УЗЕЛ', 1, true],
+  ['ХОДОВАЯ ЧАСТЬ', 0, false],
+  ['ПОДВЕСКА, ПЕРЕД', 1, true],
+  ['ПОДВЕСКА, ЗАД', 1, true],
+  ['РУЛЕВОЕ УПРАВЛЕНИЕ', 1, true],
+  ['ОТОПЛЕНИЕ И КОНДИЦИОНЕР', 0, false],
+  ['КОНДИЦИОНЕР', 1, true],
+  ['ОТОПИТЕЛЬ', 1, true],
+]
+
+const CATEGORY_UNITS = [
+  'ТОРМОЗНОЙ ДИСК, ПЕРЕД',
+  'СУППОРТ ТОРМОЗНОЙ, ПЕРЕД',
+  'КОЛОДКИ ТОРМОЗНЫЕ, ПЕРЕД',
+  'ГЛАВНЫЙ ТОРМОЗНОЙ ЦИЛИНДР',
+  'ВАКУУМНЫЙ УСИЛИТЕЛЬ ТОРМОЗОВ',
+  'ТОРМОЗНЫЕ ТРУБКИ, ПЕРЕД',
+  'ШЛАНГ ТОРМОЗНОЙ, ПЕРЕД',
+  'БЛОК УПРАВЛЕНИЯ ABS',
+  'ДАТЧИК ABS, ПЕРЕД',
+  'ЩИТОК ТОРМОЗНОГО ДИСКА',
+  'БАЧОК ТОРМОЗНОЙ ЖИДКОСТИ',
+  'ПЕДАЛЬ ТОРМОЗА',
+]
+
+/* Постачальникова розкладка вузла: код на схемі, назва, OE-номер, примітка, «Специфікація». */
+const UNIT_A = [
+  { code: '1', name: 'Тормозной диск', oem: '5Q0615301F', spec: 'Ø 288 X 25', note: '' },
+  { code: '1', name: 'Тормозной диск', oem: '5Q0615301H', spec: 'Ø 312 X 25', note: '' },
+  { code: '2', name: 'Колодки тормозные, комплект', oem: '5Q0698151C', spec: '', note: 'Прим.: без датчика' },
+  { code: '3', name: 'Датчик износа колодок', oem: '1K0615121B', spec: '', note: 'Прим.: лев.' },
+  { code: '4', name: 'Винт', oem: 'N90813202', spec: 'M6 X 12', note: '' },
+  { code: '4', name: 'Винт', oem: 'N90813203', spec: 'M6 X 16', note: '' },
+  { code: '5', name: 'Щиток тормозного диска', oem: '5Q0615311C', spec: '', note: 'Прим.: лев.' },
+  { code: '', name: 'Комплект не является запчастью, имеется в позиции:', oem: '', spec: '', note: 'Прим.: 2' },
+]
+
+const UNIT_B = [
+  { code: '1', name: 'Тормозной диск', oem: '5Q0615601D', spec: 'Ø 272 X 10', note: '' },
+  { code: '2', name: 'Колодки тормозные, комплект', oem: '5Q0698451A', spec: '', note: '' },
+  { code: '3', name: 'Пружина колодки', oem: '5Q0615479', spec: '', note: 'Прим.: прав.' },
+  { code: '4', name: 'Винт', oem: 'N91125501', spec: 'M8 X 20', note: '' },
+  { code: '5', name: 'Тросик стояночного тормоза', oem: '5Q0609721AB', spec: '', note: 'Прим.: лев.' },
+]
+
+const HOTS = [
+  { code: '1', x: 16, y: 19, w: 24, h: 28 },
+  { code: '2', x: 47, y: 15, w: 17, h: 19 },
+  { code: '3', x: 30, y: 57, w: 15, h: 16 },
+  { code: '4', x: 60, y: 46, w: 19, h: 24 },
+  { code: '5', x: 11, y: 60, w: 13, h: 13 },
+]
+
+const ATTRS = [
+  ['Двигун', 'CLHA 1.6 TDI 81 KW', true],
+  ['КПП', 'MQ200-6F', true],
+  ['Ринок', 'EUROPA', false],
+  ['Кузов', 'HATCHBACK', false],
+  ['Колір кузова', 'LD7X DEEP BLACK PEARL EFFECT', false],
+  ['Колір салона', 'TW TITANSCHWARZ', false],
+  ['Дата випуску', '12.03.2017', false],
+  ['Період виробництва', '2016 — 2020', false],
+  ['Комплектація', 'COMFORTLINE', false],
+  ['Модельный год', '2017', false],
+]
+
+/* Наш каталог тримає не кожен номер зі схеми — позначка малюється до будь-якого натискання. */
+const ABSENT = ['5Q0615301H', 'N90813203', '5Q0615479']
+
+class Component extends DCLogic {
+  state = {
+    tab: 'quick',
+    /* Звуження — своє на кожному табі: голка українською нічого не знайде в дереві виробника. */
+    query: { quick: '', categories: '' },
+    quick: 'Гальмівні диски й колодки',
+    category: 'ТОРМОЗНАЯ СИСТЕМА, ПЕРЕД',
+    treeOpen: false,
+    open: {},
+    rest: {},
+    sel: '1',
+    hover: null,
+    zoom: 1,
+    panX: 0,
+    panY: 0,
+    copied: null,
+    plate: '',
+    vin: 'WVWZZZAUZHW123456',
+  }
+
+  pick = (key, value) => () => this.setState({ [key]: value, treeOpen: false })
+
+  /* Гілки згорнуті, поки їх не відкрили; відкритою за замовчуванням лишається та, у якій обраний вузол. */
+  groupsOf(source) {
+    const out = []
+    source.forEach(([name, depth, callable]) => {
+      if (depth === 0) out.push({ name, callable, children: [] })
+      else out[out.length - 1].children.push({ name, callable })
+    })
+    return out
+  }
+
+  toggleGroup = (key) => () => this.setState((prev) => {
+    const open = Object.assign({}, prev.open)
+    open[key] = !open[key]
+    return { open }
+  })
+
+  stepZoom = (dir) => () => {
+    const next = Math.min(5, Math.max(1, Math.round((this.state.zoom + dir * 0.5) * 100) / 100))
+    this.setState(next === 1 ? { zoom: 1, panX: 0, panY: 0 } : { zoom: next })
+  }
+
+  onPanStart = (event) => {
+    if (this.state.zoom === 1) return
+    this.drag = { x: event.clientX, y: event.clientY, panX: this.state.panX, panY: this.state.panY }
+  }
+
+  onPanMove = (event) => {
+    if (!this.drag) return
+    const limit = (this.state.zoom - 1) * 220
+    const clamp = (v) => Math.min(limit, Math.max(-limit, v))
+    this.setState({
+      panX: clamp(this.drag.panX + event.clientX - this.drag.x),
+      panY: clamp(this.drag.panY + event.clientY - this.drag.y),
+    })
+  }
+
+  onPanEnd = () => { this.drag = null }
+
+  diagramRef = React.createRef()
+
+  /* Колесо мишки треба слухати неспішно (passive: false), інакше сторінка прокручується
+     разом зі схемою — тому це власний слухач, а не onWheel. */
+  componentDidMount() { this.bindWheel() }
+  componentDidUpdate() { this.bindWheel() }
+
+  bindWheel() {
+    const node = this.diagramRef.current
+    if (node === this.wheelNode) return
+    if (this.wheelNode) this.wheelNode.removeEventListener('wheel', this.onWheel)
+    this.wheelNode = node
+    if (node) node.addEventListener('wheel', this.onWheel, { passive: false })
+  }
+
+  onWheel = (event) => {
+    event.preventDefault()
+    const from = this.state.zoom
+    const to = Math.min(5, Math.max(1, Math.round((from + (event.deltaY < 0 ? 0.5 : -0.5)) * 100) / 100))
+    if (to === from) return
+    if (to === 1) return this.setState({ zoom: 1, panX: 0, panY: 0 })
+
+    /* Точка під курсором лишається на місці: pan₂ = c − (c − pan)·(zoom₂ / zoom).
+       c міряється від центру рамки, бо transform-origin — 50% 50%. */
+    const rect = this.wheelNode.getBoundingClientRect()
+    const cx = event.clientX - rect.left - rect.width / 2
+    const cy = event.clientY - rect.top - rect.height / 2
+    const ratio = to / from
+    const limit = (to - 1) * 220
+    const clamp = (v) => Math.min(limit, Math.max(-limit, v))
+    this.setState({
+      zoom: to,
+      panX: clamp(cx - (cx - this.state.panX) * ratio),
+      panY: clamp(cy - (cy - this.state.panY) * ratio),
+    })
+  }
+
+  copy = (oem) => (event) => {
+    event.stopPropagation()
+    this.setState({ copied: oem })
+    clearTimeout(this.copyTimer)
+    this.copyTimer = setTimeout(() => this.setState({ copied: null }), 1400)
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.copyTimer)
+    if (this.wheelNode) this.wheelNode.removeEventListener('wheel', this.onWheel)
+  }
+
+  rows(details, marks, behaviour) {
+    return details.map((detail, index) => {
+      const previous = details[index - 1]
+      const hasOem = detail.oem !== ''
+      const row = {
+        code: detail.code,
+        showCode: detail.code !== '' && (index === 0 || (previous && previous.code !== detail.code)),
+        posLabel: 'Позиція ' + detail.code,
+        name: detail.name,
+        note: detail.note,
+        spec: detail.spec,
+        oem: detail.oem,
+        hasOem,
+        absent: hasOem && marks === 'absent' && ABSENT.indexOf(detail.oem) !== -1,
+        held: hasOem && marks === 'available' && ABSENT.indexOf(detail.oem) === -1,
+        copyIcon: this.state.copied === detail.oem ? 'check' : 'copy',
+        copyLabel: this.state.copied === detail.oem ? 'Скопійовано' : 'Скопіювати номер ' + detail.oem,
+        copy: this.copy(detail.oem),
+      }
+
+      if (!behaviour) return row
+
+      return Object.assign(row, {
+        sel: this.state.sel === detail.code ? 'true' : 'false',
+        hover: () => this.setState({ hover: detail.code }),
+        unhover: () => this.setState({ hover: null }),
+        pick: () => this.setState({ sel: detail.code }),
+      })
+    })
+  }
+
+  renderVals() {
+    const s = this.state
+    const screen = this.props.state ?? 'tree'
+    /* Позначка наявності: «absent» — сірим те, чого немає; «available» — зеленим те, що є;
+       «none» — не питали, і тоді не малюється жодна, бо це третій стан, а не синонім другого. */
+    const marks = this.props.stockMarks ?? 'available'
+    const limit = this.props.limitReached ?? false
+
+    /* «Не розпізнали» живе на самій формі: людині треба перевірити написання тут,
+       а не на іншому екрані. Тому це вхід плюс речення під полем. */
+    const isEntry = screen === 'lookup' || screen === 'notfound'
+    const isTree = screen === 'tree'
+    const isUnit = screen === 'unit'
+    const quickTab = s.tab === 'quick'
+
+    const query = s.query[s.tab] ?? ''
+    const needle = query.trim().toLocaleLowerCase()
+    const searching = needle !== ''
+    const hit = (name) => name.toLocaleLowerCase().includes(needle)
+    const chosen = quickTab ? s.quick : s.category
+    const slot = quickTab ? 'quick' : 'category'
+
+    const child = (node) => ({
+      name: node.name,
+      isNode: node.callable,
+      isPlain: !node.callable,
+      current: chosen === node.name ? 'true' : 'false',
+      pick: this.pick(slot, node.name),
+    })
+
+    const treeGroups = this.groupsOf(quickTab ? QUICK : CATS)
+      .map((group) => {
+        const own = searching && hit(group.name)
+        const children = searching && !own ? group.children.filter((node) => hit(node.name)) : group.children
+        const key = slot + '|' + group.name
+        const holds = group.name === chosen || group.children.some((node) => node.name === chosen)
+        const open = searching ? true : key in s.open ? s.open[key] : holds
+        return {
+          name: group.name,
+          callable: group.callable,
+          plain: !group.callable,
+          count: children.length,
+          current: chosen === group.name ? 'true' : 'false',
+          /* Гілку, яку можна запитати, натискання й обирає, і розкриває — інакше вона
+             виглядає як зламана стрілка. */
+          pick: () => this.setState((prev) => ({
+            [slot]: group.name,
+            treeOpen: false,
+            open: Object.assign({}, prev.open, { [key]: true }),
+          })),
+          open,
+          openAttr: open ? 'true' : 'false',
+          toggleLabel: (open ? 'Згорнути ' : 'Розгорнути ') + group.name,
+          toggle: this.toggleGroup(key),
+          children: children.map(child),
+          visible: !searching || own || children.length > 0,
+        }
+      })
+      .filter((group) => group.visible)
+
+    const previewUnits = [
+      { key: 'a', name: 'ТОРМОЗНОЙ ДИСК/КОЛОДКИ, ПЕРЕД', details: UNIT_A },
+      { key: 'b', name: 'ТОРМОЗНОЙ ДИСК/КОЛОДКИ, ЗАД', details: UNIT_B },
+    ].map((unit) => {
+      const open = s.rest[unit.key] === true
+      const shown = open ? unit.details : unit.details.slice(0, 2)
+      const restCount = unit.details.length - 2
+      return {
+        name: unit.name,
+        rows: this.rows(shown, marks, false),
+        hasRest: !open && restCount > 0,
+        restLabel: 'Показати інші частини вузла (' + restCount + ')',
+        showRest: () => this.setState((prev) => ({ rest: Object.assign({}, prev.rest, { [unit.key]: true }) })),
+      }
+    })
+
+    const crumbs = [{ label: 'Головна', href: '#' }]
+    if (isEntry) crumbs.push({ label: 'Оригінальні каталоги' })
+    else {
+      crumbs.push({ label: 'Оригінальні каталоги', href: '#' })
+      if (screen === 'nocatalog') crumbs.push({ label: 'Renault Megane III' })
+      else if (isUnit) {
+        crumbs.push({ label: 'Volkswagen Golf VII', href: '#' })
+        crumbs.push({ label: 'Тормозная система, перед' })
+      } else crumbs.push({ label: 'Volkswagen Golf VII' })
+    }
+
+    return {
+      cartCount: 2,
+      crumbs,
+      isLookup: isEntry,
+      showNotFound: screen === 'notfound',
+      isNoCatalog: screen === 'nocatalog',
+      isTree,
+      isUnit,
+      hasCar: isTree || isUnit,
+      compactLookup: isEntry ? 'false' : 'true',
+      carTitleSize: isUnit ? 'var(--text-xl)' : 'var(--display-xs)',
+      plate: s.plate,
+      vin: s.vin,
+      onPlate: (event) => this.setState({ plate: event.target.value.toUpperCase() }),
+      onVin: (event) => this.setState({ vin: event.target.value.toUpperCase() }),
+      noop: () => {},
+
+      infoOpen: this.props.vehicleInfoOpen ?? false,
+      attributes: ATTRS.map(([name, value, mono]) => ({ name, value, mono: mono ? 'true' : 'false' })),
+
+      tabs: [
+        { key: 'quick', label: 'Швидкі групи' },
+        { key: 'categories', label: 'Каталог виробника' },
+      ],
+      tab: s.tab,
+      onTab: (key) => this.setState({ tab: key }),
+
+      query,
+      onQuery: (event) => {
+        const value = event.target.value
+        this.setState((prev) => ({ query: Object.assign({}, prev.query, { [prev.tab]: value }) }))
+      },
+      treeGroups,
+      treeEmpty: treeGroups.length === 0,
+      searchLabel: quickTab ? 'Шукати групу' : 'Шукати розділ',
+      treeToggleLabel: quickTab ? 'Швидкі групи' : 'Каталог виробника',
+      treeOpen: s.treeOpen,
+      treeOpenAttr: s.treeOpen ? 'true' : 'false',
+      toggleTree: () => this.setState((prev) => ({ treeOpen: !prev.treeOpen })),
+
+      showLimit: limit,
+      showPreviewEmpty: isTree && !limit && chosen === null,
+      showQuick: isTree && !limit && quickTab && chosen !== null,
+      showCategory: isTree && !limit && !quickTab && chosen !== null,
+      chosenQuick: s.quick,
+      chosenCategory: s.category,
+      previewUnits,
+      categoryUnits: CATEGORY_UNITS.map((name) => ({ name })),
+      unitCount: CATEGORY_UNITS.length,
+
+      showUnitBody: isUnit && !limit,
+      unitRows: this.rows(UNIT_A, marks, true),
+      unitRowCount: UNIT_A.length,
+      hotspots: HOTS.map((hot) => ({
+        code: hot.code,
+        label: 'Позиція ' + hot.code + ' на схемі',
+        sel: s.sel === hot.code ? 'true' : s.hover === hot.code ? 'true' : 'false',
+        style: 'left:' + hot.x + '%;top:' + hot.y + '%;width:' + hot.w + '%;height:' + hot.h + '%',
+        pick: () => this.setState({ sel: hot.code }),
+      })),
+      diagramRef: this.diagramRef,
+      zoomLabel: Math.round(s.zoom * 100) + '%',
+      zoomed: s.zoom > 1,
+      zoomHint: s.zoom > 1 ? 'Тягніть схему лівою кнопкою' : 'Масштаб — колесом мишки',
+      grabAttr: s.zoom > 1 ? 'true' : 'false',
+      zoomStyle: 'transform:translate(' + s.panX + 'px,' + s.panY + 'px) scale(' + s.zoom + ')',
+      zoomIn: this.stepZoom(1),
+      zoomOut: this.stepZoom(-1),
+      onPanStart: this.onPanStart,
+      onPanMove: this.onPanMove,
+      onPanEnd: this.onPanEnd,
+    }
+  }
+}
+
+</script>
+</body>
+</html>

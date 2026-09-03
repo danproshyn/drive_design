@@ -1,0 +1,30 @@
+/* Layout constants. One container width for header, body and footer — the live site had
+   three literals and they drifted, so this is a single token by intention. */
+:root {
+  --container: 1200px;
+  --container-narrow: 720px;
+  --container-pad: var(--space-4);
+  --container-pad-lg: var(--space-6);
+
+  --utilitybar-h: 34px;
+  --header-h: 68px;
+  --sidebar-w: 272px; /* the category tree */
+  --facets-w: 248px; /* the filter panel */
+  --thumb-sm: 64px;
+  --thumb-md: 100px; /* list thumbnails request exactly this */
+  --thumb-lg: 400px;
+
+  --tap-min: 44px; /* never smaller, phone or desktop */
+
+  --z-base: 0; /* @kind other */
+  --z-sticky: 20; /* @kind other */
+  --z-header: 40; /* @kind other */
+  --z-dropdown: 60; /* @kind other */
+  --z-overlay: 80; /* @kind other */
+  --z-modal: 90; /* @kind other */
+  --z-toast: 100; /* @kind other */
+
+  --bp-sm: 640px; /* @kind other */
+  --bp-md: 900px; /* @kind other */
+  --bp-lg: 1120px; /* @kind other */
+}

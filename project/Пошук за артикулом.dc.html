@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/colors.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/space.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/motion.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/layout.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/base.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=3"></script>
+<style>
+
+  [data-facets-toggle] { display: none !important; }
+  [data-sheet-close] { display: none; }
+  [data-layout] { grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 900px) {
+    [data-layout][data-facets="true"] { grid-template-columns: minmax(0, 1fr) 248px !important; }
+  }
+  @media (max-width: 899px) {
+    [data-facets-toggle] { display: inline-flex !important; }
+    [data-facet-panel][data-open="false"] { display: none; }
+    [data-facet-panel][data-open="true"] {
+      position: fixed; inset: 0; z-index: 80;
+      background: var(--surface-overlay);
+    }
+    [data-facet-panel][data-open="true"] > div {
+      position: absolute; inset-block: 0; right: 0; width: min(360px, 100%);
+      overflow-y: auto; border: 0; border-left: 1px solid var(--line); border-radius: 0;
+      box-shadow: var(--shadow-lg);
+      padding: var(--space-4) var(--space-4) var(--space-8);
+    }
+    [data-sheet-close] { display: inline-flex; }
+  }
+  @media (max-width: 639px) {
+    .ds-row { padding-inline: var(--space-3) !important; }
+    .ds-pager { flex-wrap: wrap; }
+  }
+</style>
+</helmet>
+
+<div class="ds-page">
+
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteHeader" cart-count="{{ cartCount }}" hint-size="100%,150px"></x-import>
+
+  <main class="ds-container ds-main">
+
+    <sc-if value="{{ isAnalogs }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;gap:var(--space-4)">
+        <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--space-3)">
+          <h1 class="ds-section-title" style="margin:0">Фільтр масляний</h1>
+          <p class="ds-row__meta" style="margin:0">
+            <span style="font-weight:600;color:var(--text-body)">BOSCH</span>
+            <span class="ds-article">0 986 452 041</span>
+          </p>
+        </div>
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.TabStrip" tabs="{{ partTabs }}" active="analogs" hint-size="100%,44px"></x-import>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isSearch }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;gap:var(--space-3)">
+        <h1 class="ds-section-title" style="margin:0;flex-wrap:wrap">
+          Результати за
+          <span class="ds-article" style="font-size:var(--text-lg)">0986452041</span>
+          <sc-if value="{{ hasList }}" hint-placeholder-val="{{ true }}">
+            <span class="ds-section-title__count">{{ countLabel }}</span>
+          </sc-if>
+        </h1>
+        <sc-if value="{{ noticeResults }}" hint-placeholder-val="{{ true }}">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" hint-size="100%,56px">Цей артикул є в кількох виробників — оберіть потрібного.</x-import>
+        </sc-if>
+        <sc-if value="{{ noticeCross }}" hint-placeholder-val="{{ false }}">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="accent" hint-size="100%,56px">За цим артикулом нічого не знайдено — показуємо аналоги: заміни від постачальників (кроси) і збіги за оригінальним (OE) номером.</x-import>
+        </sc-if>
+        <sc-if value="{{ noticeFuzzy }}" hint-placeholder-val="{{ false }}">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="warning" hint-size="100%,56px">Точного збігу немає. Показуємо схожі артикули.</x-import>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;gap:var(--space-4)">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="package-search" title="За запитом «0986452041» нічого не знайдено" hint-size="100%,180px">Перевірте артикул — можливо, у ньому помилка або цієї деталі немає в каталозі.</x-import>
+
+        <section style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-5);padding:var(--space-5) var(--space-6);border:1px solid var(--line);border-left:3px solid var(--red-500);border-radius:var(--radius-lg);background:var(--surface-sunken)">
+          <div style="flex:1 1 420px;min-width:280px">
+            <p class="t-eyebrow" style="margin:0 0 6px">Запит на пошук автозапчастин</p>
+            <p style="margin:0;font-size:var(--text-lg);font-weight:600;line-height:1.3;color:var(--text-strong)">Надішліть VIN і список потрібного — менеджер підбере деталь вручну</p>
+            <p style="margin:6px 0 0;font-size:var(--text-sm);color:var(--text-muted)">Менеджер підбере запчастини вручну й передзвонить. Список можна написати словами або прикріпити файлом.</p>
+          </div>
+          <button class="ds-btn ds-btn--md ds-btn--primary" style="flex:none">Залишити запит</button>
+        </section>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ hasList }}" hint-placeholder-val="{{ true }}">
+      <div data-layout data-facets="{{ facetsAttr }}" style="display:grid;gap:var(--space-6);align-items:start">
+
+        <div style="min-width:0;display:grid;gap:var(--space-4)">
+
+          <div data-toolbar style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--space-3) var(--space-4)">
+          <sc-if value="{{ showKindFilter }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:1 1 auto;min-width:0;display:grid;gap:var(--space-3)">
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)" data-comment-anchor="aceb17f502-div">
+                <span class="t-eyebrow" style="margin-right:var(--space-2)">Вид</span>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Chip" as="button" active="{{ kindAll }}" onClick="{{ setKindAll }}" hint-size="auto,34px">Усі</x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Chip" as="button" active="{{ kindCross }}" count="{{ countCross }}" onClick="{{ setKindCross }}" hint-size="auto,34px">Аналог (кроси)</x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Chip" as="button" active="{{ kindOe }}" count="{{ countOe }}" onClick="{{ setKindOe }}" hint-size="auto,34px">Аналог (OE номер)</x-import>
+              </div>
+              <sc-if value="{{ kindCross }}" hint-placeholder-val="{{ false }}">
+                <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Постачальник вказує ці деталі як заміну.</p>
+              </sc-if>
+              <sc-if value="{{ kindOe }}" hint-placeholder-val="{{ false }}">
+                <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Знайшли за оригінальним номером: ці деталі заміняють той самий оригінал.</p>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <div style="flex:0 1 auto;margin-left:auto;display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)">
+            <div class="ds-sortfield" data-sortfield>
+              <button type="button" class="ds-sortfield__trigger" data-sorttrigger aria-haspopup="listbox" aria-expanded="{{ sortOpenAttr }}" onClick="{{ toggleSort }}">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-down" size="15" hint-size="15px,15px"></x-import>
+                <span>{{ sortLabel }}</span>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="15" hint-size="15px,15px"></x-import>
+              </button>
+              <sc-if value="{{ sortOpen }}" hint-placeholder-val="{{ false }}">
+                <ul class="ds-sortfield__menu" data-sortmenu role="listbox">
+                  <sc-for list="{{ sortOptions }}" as="opt" hint-placeholder-count="4">
+                    <li role="option" aria-selected="{{ opt.selectedAttr }}" data-selected="{{ opt.selectedAttr }}" onClick="{{ opt.pick }}">{{ opt.label }}</li>
+                  </sc-for>
+                </ul>
+              </sc-if>
+            </div>
+            <button data-facets-toggle onClick="{{ toggleFacets }}" style="align-items:center;gap:8px;min-height:44px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:var(--text-sm);font-weight:600;color:var(--text-strong);cursor:pointer" style-hover="background:var(--surface-sunken);border-color:var(--ink-300)">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="sliders-horizontal" size="17" hint-size="17px,17px"></x-import>
+              Фільтри
+              <span style="color:var(--text-muted);font-weight:400">{{ activeFilterLabel }}</span>
+            </button>
+          </div>
+          </div>
+
+          <sc-if value="{{ hasRows }}" hint-placeholder-val="{{ true }}">
+            <div style="display:grid;gap:var(--space-5)">
+              <ul class="ds-rows" data-list="results" style="list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
+                <sc-for list="{{ rows }}" as="row" hint-placeholder-count="4">
+                  <li class="ds-row" style="display:grid;grid-template-columns:minmax(0,216px) minmax(0,1fr);gap:var(--space-3) var(--space-5);align-items:start;padding-block:var(--space-3)">
+                    <div style="display:flex;gap:var(--space-3);min-width:0">
+                      <a href="#" style="flex:none">
+                        <x-import component-from-global-scope="DesignSystem_d7c4f4.PartThumb" size="{{ thumbSize }}" hint-size="64px,64px"></x-import>
+                      </a>
+                      <div style="min-width:0;display:grid;gap:2px;align-content:start">
+                        <span class="ds-row__meta" style="gap:6px">
+                          <span style="font-weight:600;color:var(--text-body)">{{ row.brand }}</span>
+                          <sc-if value="{{ row.isOem }}" hint-placeholder-val="{{ true }}">
+                            <x-import component-from-global-scope="DesignSystem_d7c4f4.Badge" tone="oem" hint-size="auto,20px">Оригінал</x-import>
+                          </sc-if>
+                        </span>
+                        <a href="#" class="ds-row__title" style="font-size:var(--text-sm)">{{ row.name }}</a>
+                        <span class="ds-article">{{ row.article }}</span>
+                        <p style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 0">
+                          <sc-if value="{{ row.kind }}" hint-placeholder-val="{{ true }}">
+                            <x-import component-from-global-scope="DesignSystem_d7c4f4.Badge" tone="analog" hint-size="auto,20px">{{ row.kindLabel }}</x-import>
+                          </sc-if>
+                        </p>
+                      </div>
+                    </div>
+
+                    <div style="min-width:0;display:grid;gap:var(--space-2)">
+                      <div class="ds-offers" data-offers>
+                        <sc-for list="{{ row.offers }}" as="offer" hint-placeholder-count="2">
+                          <div class="ds-offerline" data-offer data-primary="{{ offer.primaryAttr }}">
+                            <div data-cell="ship" style="min-width:0;display:grid;gap:1px">
+                              <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="{{ offer.shipDate }}" relative="{{ offer.shipRelative }}" cutoff="{{ offer.shipCutoff }}" hint-size="auto,34px"></x-import>
+                              <sc-if value="{{ offer.warehouse }}" hint-placeholder-val="{{ false }}">
+                                <span style="font-size:var(--text-2xs);color:var(--amber-600)">{{ offer.warehouse }}</span>
+                              </sc-if>
+                            </div>
+
+                            <div data-cell="stock" style="min-width:0;display:grid;justify-items:center;gap:3px">
+                              <span class="ds-stock ds-stock--in">{{ offer.qtyLabel }}</span>
+                              <sc-if value="{{ offer.minQtyLabel }}" hint-placeholder-val="{{ false }}">
+                                <span class="ds-minqty">{{ offer.minQtyLabel }}</span>
+                              </sc-if>
+                            </div>
+
+                            <div data-cell="marks" style="display:flex;flex-wrap:wrap;gap:4px">
+                              <sc-if value="{{ offer.bestPrice }}" hint-placeholder-val="{{ true }}">
+                                <x-import component-from-global-scope="DesignSystem_d7c4f4.Badge" tone="best-price" icon="tag" hint-size="auto,20px">Найкраща ціна</x-import>
+                              </sc-if>
+                              <sc-if value="{{ offer.bestDate }}" hint-placeholder-val="{{ false }}">
+                                <x-import component-from-global-scope="DesignSystem_d7c4f4.Badge" tone="best-date" icon="zap" hint-size="auto,20px">Найшвидше</x-import>
+                              </sc-if>
+                            </div>
+
+                            <div data-cell="price" style="display:grid;justify-items:end;gap:1px">
+                              <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ offer.price }}" size="md" hint-size="auto,24px"></x-import>
+                              <sc-if value="{{ offer.sellerPrice }}" hint-placeholder-val="{{ false }}">
+                                <span style="font-size:var(--text-sm);font-weight:600;color:var(--amber-600)">{{ offer.sellerPrice }}</span>
+                              </sc-if>
+                            </div>
+
+                            <div data-cell="btn" onClick="{{ offer.onAdd }}">
+                              <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="primary" size="sm" icon="shopping-cart" hint-size="auto,34px">В кошик</x-import>
+                            </div>
+                          </div>
+                        </sc-for>
+                      </div>
+
+                      <sc-if value="{{ row.noOffers }}" hint-placeholder-val="{{ false }}">
+                        <p class="ds-stock ds-stock--out" style="margin:0;padding-inline:var(--space-3)">Немає в наявності</p>
+                      </sc-if>
+                      <sc-if value="{{ row.hasRest }}" hint-placeholder-val="{{ false }}">
+                        <div style="padding-inline:var(--space-3)">
+                          <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="link" onClick="{{ row.expand }}" hint-size="auto,24px">{{ row.restLabel }}</x-import>
+                        </div>
+                      </sc-if>
+                    </div>
+                  </li>
+                </sc-for>
+              </ul>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Pager" page="1" pages="2" hint-size="100%,60px"></x-import>
+
+              <section style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-5);padding:var(--space-5) var(--space-6);border:1px solid var(--line);border-left:3px solid var(--red-500);border-radius:var(--radius-lg);background:var(--surface-sunken)">
+                <div style="flex:1 1 420px;min-width:280px">
+                  <p class="t-eyebrow" style="margin:0 0 6px">Запит на пошук автозапчастин</p>
+                  <p style="margin:0;font-size:var(--text-lg);font-weight:600;line-height:1.3;color:var(--text-strong)">Не знайшли деталь у каталозі — надішліть VIN і список потрібного</p>
+                  <p style="margin:6px 0 0;font-size:var(--text-sm);color:var(--text-muted)">Менеджер підбере запчастини вручну й передзвонить. Список можна написати словами або прикріпити файлом.</p>
+                </div>
+                <button class="ds-btn ds-btn--md ds-btn--primary" style="flex:none">Залишити запит</button>
+              </section>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ noRows }}" hint-placeholder-val="{{ false }}">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="filter" title="Під ці фільтри нічого не підходить" action="{{ clearAction }}" hint-size="100%,200px">Зніміть частину умов — і список повернеться.</x-import>
+          </sc-if>
+
+        </div>
+
+        <sc-if value="{{ showFacets }}" hint-placeholder-val="{{ true }}">
+          <aside data-facet-panel data-open="{{ facetsOpenAttr }}" onClick="{{ closeSheetOnScrim }}" style="min-width:0">
+            <div style="padding:var(--space-4);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface)">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-3)">
+                <p class="t-eyebrow" style="margin:0">Фільтри</p>
+                <sc-if value="{{ hasFilters }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ clearFilters }}" style="border:0;background:none;padding:0;font:inherit;font-size:var(--text-xs);color:var(--text-muted);text-decoration:underline;text-underline-offset:2px;cursor:pointer" style-hover="color:var(--text-strong)">Очистити</button>
+                </sc-if>
+                <span data-sheet-close style="margin-left:auto" onClick="{{ toggleFacets }}">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="x" label="Закрити фільтри" size="md" tone="plain" hint-size="44px,44px"></x-import>
+                </span>
+              </div>
+
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Тип" hint-size="100%,90px">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Оригінал" count="{{ countOem }}" checked="{{ oemOnly }}" onChange="{{ toggleOemOnly }}" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Аналог" count="{{ countAnalog }}" checked="{{ analogOnly }}" onChange="{{ toggleAnalogOnly }}" hint-size="100%,28px"></x-import>
+              </x-import>
+
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Бренд" more-count="{{ brandMoreCount }}" hint-size="100%,200px">
+                <div style="position:relative;margin-bottom:var(--space-2)">
+                  <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);display:inline-flex;color:var(--text-faint);pointer-events:none">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="search" size="15" hint-size="15px,15px"></x-import>
+                  </span>
+                  <input type="search" placeholder="Пошук бренду" aria-label="Пошук бренду" value="{{ brandQuery }}" onChange="{{ onBrandQuery }}" style="width:100%;box-sizing:border-box;height:36px;padding:0 10px 0 30px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:var(--text-sm);color:var(--text-strong)">
+                </div>
+                <sc-for list="{{ brandFacets }}" as="b" hint-placeholder-count="5">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="{{ b.name }}" count="{{ b.count }}" checked="{{ b.checked }}" onChange="{{ b.toggle }}" hint-size="100%,28px"></x-import>
+                </sc-for>
+                <sc-if value="{{ noBrandMatch }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Такого бренду тут немає</p>
+                </sc-if>
+              </x-import>
+
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Ціна, ₴" hint-size="100%,150px">
+                <div style="display:grid;gap:var(--space-3)">
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:var(--space-2)">
+                    <input type="text" inputMode="numeric" aria-label="Ціна від" value="{{ draftMin }}" onChange="{{ onDraftMinText }}" style="min-width:0;height:40px;padding:0 10px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:var(--text-sm);color:var(--text-strong)">
+                    <span style="color:var(--text-faint)">—</span>
+                    <input type="text" inputMode="numeric" aria-label="Ціна до" value="{{ draftMax }}" onChange="{{ onDraftMaxText }}" style="min-width:0;height:40px;padding:0 10px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:var(--text-sm);color:var(--text-strong)">
+                  </div>
+
+                  <div class="ds-range" data-range>
+                    <span style="left:0;right:0;background:var(--line)"></span>
+                    <span style="left:{{ fillLeft }};width:{{ fillWidth }};background:var(--ink-800)"></span>
+                    <input type="range" aria-label="Ціна від" min="{{ priceFloor }}" max="{{ priceCeil }}" value="{{ draftMin }}" onChange="{{ onDraftMin }}">
+                    <input type="range" aria-label="Ціна до" min="{{ priceFloor }}" max="{{ priceCeil }}" value="{{ draftMax }}" onChange="{{ onDraftMax }}">
+                  </div>
+
+                  <div onClick="{{ applyPrice }}">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="secondary" size="sm" block="{{ true }}" hint-size="100%,34px">Застосувати</x-import>
+                  </div>
+                </div>
+              </x-import>
+
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Відправка" hint-size="100%,110px">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Сьогодні" count="{{ countShipToday }}" checked="{{ shipToday }}" onChange="{{ setShipToday }}" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Завтра" count="{{ countShipTomorrow }}" checked="{{ shipTomorrow }}" onChange="{{ setShipTomorrow }}" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="До 3 днів" count="{{ countShipWeek }}" checked="{{ shipWeek }}" onChange="{{ setShipWeek }}" hint-size="100%,28px"></x-import>
+              </x-import>
+
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Висота, мм" more-count="4" hint-size="100%,140px">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="79" count="4" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="86" count="3" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="95" count="2" hint-size="100%,28px"></x-import>
+              </x-import>
+
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Діаметр різьби" hint-size="100%,110px">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="M20 x 1,5" count="9" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="3/4-16 UNF" count="2" hint-size="100%,28px"></x-import>
+              </x-import>
+
+              <div data-sheet-close style="margin-top:var(--space-5)" onClick="{{ toggleFacets }}">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="dark" size="lg" block="{{ true }}" hint-size="100%,48px">Показати результати</x-import>
+              </div>
+            </div>
+          </aside>
+        </sc-if>
+
+      </div>
+    </sc-if>
+
+  </main>
+
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteFooter" hint-size="100%,260px"></x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1150},&quot;context&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;search&quot;,&quot;analogs&quot;],&quot;default&quot;:&quot;search&quot;,&quot;tsType&quot;:&quot;'search' | 'analogs'&quot;,&quot;section&quot;:&quot;Де стоїть список&quot;},&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;results&quot;,&quot;crossref&quot;,&quot;fuzzy&quot;,&quot;empty&quot;],&quot;default&quot;:&quot;results&quot;,&quot;tsType&quot;:&quot;'results' | 'crossref' | 'fuzzy' | 'empty'&quot;,&quot;section&quot;:&quot;Де стоїть список&quot;},&quot;staffView&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Де стоїть список&quot;},&quot;showFacets&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Де стоїть список&quot;}}">
+/*
+ * Дві вибірки, бо це два різні стани сервера:
+ * EXACT  — артикул знайдено в кількох виробників (аналогів тут немає, вони на картці деталі);
+ * ANALOG — артикул не знайдено або збіг нечіткий, і список складається з аналогів.
+ * `isOem` — ознака (оригінал), `kind` — вид аналога. Це дві незалежні речі, тому дві мітки.
+ */
+const EXACT = [
+  {
+    id: 'bosch', brand: 'BOSCH', article: '0 986 452 041', name: 'Фільтр масляний', isOem: true, kind: null, inStock: true,
+    offers: [
+      { key: 'b1', price: 284, qty: 10, qtyCapped: true, day: 0, cutoff: '21:00' },
+      { key: 'b2', price: 312, qty: 4, day: 0 },
+      { key: 'b3', price: 356, qty: 10, qtyCapped: true, day: 1 },
+      { key: 'b4', price: 301, qty: 2, day: 3, date: '4 вер, пт' },
+      { key: 'b5', price: 329, qty: 6, day: 3, date: '4 вер, пт' },
+      { key: 'b6', price: 344, qty: 1, day: 5, date: '8 вер, вт' },
+      { key: 'b7', price: 388, qty: 12, qtyCapped: true, day: 5, date: '8 вер, вт' }
+    ]
+  },
+  {
+    id: 'automega', brand: 'AUTOMEGA', article: '0 986 452 041', name: 'Фільтр масляний', isOem: false, kind: null, inStock: true,
+    offers: [
+      { key: 'a1', price: 214, qty: 10, qtyCapped: true, day: 1 },
+      { key: 'a2', price: 236, qty: 5, day: 0, cutoff: '18:00' }
+    ]
+  }
+]
+
+const ANALOG = [
+  {
+    id: 'mann', brand: 'MANN-FILTER', article: 'W 610/3', name: 'Фільтр масляний', isOem: false, kind: 'cross', inStock: true,
+    offers: [
+      { key: 'm1', price: 249, qty: 10, qtyCapped: true, day: 0, cutoff: '21:00' },
+      { key: 'm2', price: 268, qty: 7, day: 0 },
+      { key: 'm3', price: 292, qty: 3, day: 1 },
+      { key: 'm4', price: 305, qty: 9, day: 4, date: '5 вер, сб' },
+      { key: 'm5', price: 341, qty: 2, day: 6, date: '9 вер, ср' }
+    ]
+  },
+  {
+    id: 'filtron', brand: 'FILTRON', article: 'OP 592/1', name: 'Фільтр масляний', isOem: false, kind: 'cross', inStock: true,
+    offers: [
+      { key: 'f1', price: 231, qty: 6, day: 1 },
+      { key: 'f2', price: 245, qty: 10, qtyCapped: true, day: 0, cutoff: '18:00' },
+      { key: 'f3', price: 259, qty: 1, day: 0 }
+    ]
+  },
+  {
+    id: 'mahle', brand: 'MAHLE', article: 'OC 981', name: 'Фільтр масляний', isOem: true, kind: 'oe', inStock: true,
+    offers: [
+      { key: 'h1', price: 372, qty: 3, day: 0, cutoff: '21:00' },
+      { key: 'h2', price: 410, qty: 10, qtyCapped: true, day: 3, date: '4 вер, пт' }
+    ]
+  },
+  {
+    id: 'wix', brand: 'WIX FILTERS', article: 'WL7160', name: 'Фільтр масляний', isOem: false, kind: 'oe', inStock: true,
+    offers: [
+      { key: 'w1', price: 268, qty: 8, minQty: 4, day: 1 },
+      { key: 'w2', price: 289, qty: 10, qtyCapped: true, day: 2, date: '3 вер, чт' }
+    ]
+  },
+  {
+    id: 'jc', brand: 'JC PREMIUM', article: 'B1G019PR', name: 'Фільтр масляний', isOem: false, kind: 'cross', inStock: false,
+    offers: []
+  },
+  {
+    id: 'purflux', brand: 'PURFLUX', article: 'LS867B', name: 'Фільтр масляний', isOem: false, kind: 'cross', inStock: true,
+    offers: [{ key: 'p1', price: 277, qty: 2, day: 2, date: '3 вер, чт' }]
+  },
+  {
+    id: 'bando', brand: 'BANDO', article: '6PK2000', isOem: false, kind: 'cross', inStock: true,
+    name: 'Ремень поликліновий Tucson (09-)/IX35/Sportage (G6BA-G) (6PK2000) (25212-37182) Bando',
+    offers: [
+      { key: 'n1', price: 486, qty: 4, day: 0, cutoff: '18:00' },
+      { key: 'n2', price: 512, qty: 10, day: 2, date: '3 вер, чт' }
+    ]
+  }
+]
+
+const KIND_LABEL = { cross: 'Аналог (кроси)', oe: 'Аналог (OE номер)' }
+
+const WAREHOUSES = ['Київ · ELIT', 'Одеса · Автологістика', 'Запоріжжя · власний склад', 'Львів · Інтеркарс']
+
+function plural(n) {
+  const ten = n % 10
+  const hundred = n % 100
+  if (ten === 1 && hundred !== 11) return 'позиція'
+  if (ten >= 2 && ten <= 4 && (hundred < 12 || hundred > 14)) return 'позиції'
+  return 'позицій'
+}
+
+function offersPlural(n) {
+  const ten = n % 10
+  const hundred = n % 100
+  if (ten === 1 && hundred !== 11) return 'пропозиція'
+  if (ten >= 2 && ten <= 4 && (hundred < 12 || hundred > 14)) return 'пропозиції'
+  return 'пропозицій'
+}
+
+function minPrice(row) {
+  return row.offers.length === 0 ? Infinity : Math.min(...row.offers.map((o) => o.price))
+}
+
+function minDay(row) {
+  return row.offers.length === 0 ? Infinity : Math.min(...row.offers.map((o) => o.day))
+}
+
+const SORTS = [
+  { id: 'popularity', label: 'За популярністю' },
+  { id: 'price_asc', label: 'Спочатку дешевші' },
+  { id: 'price_desc', label: 'Спочатку дорожчі' },
+  { id: 'ship_date', label: 'За датою відправлення' }
+]
+
+class Component extends DCLogic {
+  state = {
+    sort: 'popularity',
+    kind: null,
+    brands: [],
+    isOem: null,
+    brandQuery: '',
+    /* draft* — положення повзунків, price* — застосований діапазон */
+    draftMin: null,
+    draftMax: null,
+    priceMin: null,
+    priceMax: null,
+    /* Максимальна кількість днів до відправки; null — без обмеження */
+    shipMax: null,
+    expanded: {},
+    facetsOpen: false,
+    cart: 2
+  }
+
+  setSort = (sort) => () => this.setState({ sort })
+  toggleSort = () => this.setState((s) => ({ sortOpen: !s.sortOpen }))
+  setKind = (kind) => () => this.setState((s) => ({ kind: s.kind === kind ? null : kind }))
+
+  toggleBrand = (name) => () =>
+    this.setState((s) => ({
+      brands: s.brands.includes(name) ? s.brands.filter((b) => b !== name) : [...s.brands, name]
+    }))
+
+  /* Ознака — взаємовиключна пара: оригінал або аналог. Повторний клік знімає фільтр. */
+  toggleOem = (value) => () => this.setState((s) => ({ isOem: s.isOem === value ? null : value }))
+
+  setShip = (value) => () => this.setState((s) => ({ shipMax: s.shipMax === value ? null : value }))
+
+  clear = () =>
+    this.setState({
+      brands: [], isOem: null, kind: null, brandQuery: '',
+      draftMin: null, draftMax: null, priceMin: null, priceMax: null, shipMax: null
+    })
+
+  expand = (id) => () => this.setState((s) => ({ expanded: { ...s.expanded, [id]: true } }))
+
+  add = () => this.setState((s) => ({ cart: s.cart + 1 }))
+
+  renderVals() {
+    const { sort, kind, brands, isOem, expanded, facetsOpen, cart, brandQuery, priceMin, priceMax, shipMax } = this.state
+    const context = this.props.context ?? 'search'
+    const view = this.props.state ?? 'results'
+    const staffView = this.props.staffView ?? false
+    const showFacets = this.props.showFacets ?? true
+    const isAnalogs = context === 'analogs'
+    const showKindFilter = isAnalogs || view === 'crossref'
+
+    const base = isAnalogs || view !== 'results' ? ANALOG : EXACT
+
+    let rows = base
+    if (showKindFilter && kind !== null) rows = rows.filter((r) => r.kind === kind)
+    if (brands.length > 0) rows = rows.filter((r) => brands.includes(r.brand))
+    if (isOem !== null) rows = rows.filter((r) => r.isOem === isOem)
+    /* Ціна й відправка — властивості пропозиції, тому фільтруємо самі пропозиції,
+       а рядок лишається лише якщо в ньому щось уціліло. */
+    const offerFilters = priceMin !== null || shipMax !== null
+    if (offerFilters) {
+      rows = rows
+        .map((r) => ({
+          ...r,
+          offers: r.offers.filter(
+            (o) =>
+              (priceMin === null || (o.price >= priceMin && o.price <= priceMax)) &&
+              (shipMax === null || o.day <= shipMax)
+          )
+        }))
+        .filter((r) => r.offers.length > 0)
+    }
+
+    const ordered = [...rows]
+    if (sort === 'price_asc') ordered.sort((a, b) => minPrice(a) - minPrice(b))
+    if (sort === 'price_desc') ordered.sort((a, b) => minPrice(b) - minPrice(a))
+    if (sort === 'ship_date') ordered.sort((a, b) => minDay(a) - minDay(b))
+
+    const drawn = ordered.map((row) => {
+      const all = row.offers
+      const best = minPrice(row)
+      const soonest = minDay(row)
+      /* Мітки незалежні: якщо найдешевша пропозиція водночас найшвидша, вона отримує обидві.
+         При одній пропозиції порівнювати нема з чим — мітки не ставимо. */
+      const comparable = all.length > 1
+      const bestPriceKey = comparable ? (all.find((o) => o.price === best) || {}).key : null
+      const bestDateKey = comparable ? (all.find((o) => o.day === soonest) || {}).key : null
+      const isOpen = expanded[row.id] === true
+
+      /* Сортування впорядковує лише товари. Пропозиції всередині рядка завжди
+         лишаються в порядку сервера. */
+      const orderedOffers = [...all]
+
+      const sorted = isOpen ? orderedOffers : orderedOffers.slice(0, 3)
+      const rest = orderedOffers.slice(3)
+
+      const restCount = isOpen ? 0 : rest.length
+      const restFrom = rest.length > 0 ? Math.min(...rest.map((o) => o.price)) : 0
+
+      return {
+        ...row,
+        /* Нечіткий збіг — це все ще пошук за номером, тому вид аналога тут не показуємо. */
+        kind: view === 'fuzzy' && !isAnalogs ? null : row.kind,
+        kindLabel: KIND_LABEL[row.kind],
+        outOfStock: row.inStock === false,
+        noOffers: all.length === 0,
+        hasRest: restCount > 0,
+        restLabel: 'ще ' + restCount + ' ' + offersPlural(restCount) + ' від ' + restFrom + ' ₴',
+        expand: this.expand(row.id),
+        offers: sorted.map((offer, index) => {
+          /* Рекомендація сервера прив'язана до пропозиції, а не до позиції: при зміні сортування вона їде разом із рядком. */
+          const primary = offer.key === all[0].key
+          return {
+            key: offer.key,
+            price: offer.price,
+            shipDate: offer.date || '',
+            shipRelative: offer.day === 0 ? 'today' : offer.day === 1 ? 'tomorrow' : 'later',
+            /* У вигляді продавця час відсічення не дублюємо — він у назві складу. */
+            shipCutoff: !staffView && offer.cutoff ? offer.cutoff : '',
+            /* Кількість показуємо максимум 10 шт — рішення власника, без «більше». */
+            qtyLabel: offer.qty + ' шт',
+            minQtyLabel: offer.minQty > 1 ? 'від ' + offer.minQty + ' шт' : '',
+            bestPrice: offer.key === bestPriceKey,
+            bestDate: offer.key === bestDateKey,
+            primaryAttr: primary ? 'true' : 'false',
+            onAdd: this.add,
+            /* Дані персоналу стоять у тих самих колонках: склад під відправленням, ціна продавця під ціною. */
+            warehouse: staffView
+              ? WAREHOUSES[index % WAREHOUSES.length] + (offer.cutoff ? ' · до ' + offer.cutoff : '')
+              : '',
+            sellerPrice: staffView ? Math.round(offer.price * 0.74) + ' ₴' : ''
+          }
+        })
+      }
+    })
+
+    const allBrands = [...new Set(base.map((r) => r.brand))]
+    const matchedBrands = allBrands.filter((name) => name.toLowerCase().includes(brandQuery.trim().toLowerCase()))
+    const brandFacets = matchedBrands.slice(0, 5).map((name) => ({
+      name,
+      count: base.filter((r) => r.brand === name).length,
+      checked: brands.includes(name),
+      toggle: this.toggleBrand(name)
+    }))
+
+    const prices = base.flatMap((r) => r.offers.map((o) => o.price))
+    const priceFloor = prices.length > 0 ? Math.min(...prices) : 0
+    const priceCeil = prices.length > 0 ? Math.max(...prices) : 0
+    const draftMin = this.state.draftMin ?? priceFloor
+    const draftMax = this.state.draftMax ?? priceCeil
+    const span = Math.max(priceCeil - priceFloor, 1)
+    const pct = (v) => Math.round(((v - priceFloor) / span) * 100)
+
+    const filterCount =
+      brands.length + (isOem === null ? 0 : 1) + (priceMin === null ? 0 : 1) + (shipMax === null ? 0 : 1)
+
+    return {
+      cartCount: cart,
+      thumbSize: 64,
+      isAnalogs,
+      isSearch: !isAnalogs,
+      isEmpty: view === 'empty',
+      hasList: view !== 'empty',
+      showKindFilter,
+      noticeResults: !isAnalogs && view === 'results',
+      noticeCross: !isAnalogs && view === 'crossref',
+      noticeFuzzy: !isAnalogs && view === 'fuzzy',
+      countLabel: drawn.length + ' ' + plural(drawn.length),
+      partTabs: [
+        { key: 'analogs', label: 'Аналоги', count: ANALOG.length },
+        { key: 'specs', label: 'Характеристики' },
+        { key: 'oe', label: 'Оригінальні номери' },
+        { key: 'vehicles', label: 'Застосовність' }
+      ],
+      rows: drawn,
+      hasRows: drawn.length > 0,
+      noRows: drawn.length === 0,
+      showFacets,
+      facetsAttr: showFacets ? 'true' : 'false',
+      facetsOpenAttr: facetsOpen ? 'true' : 'false',
+      toggleFacets: () => this.setState((s) => ({ facetsOpen: !s.facetsOpen })),
+      /* У режимі шторки (< 900 px) сама aside — це затемнення: клік по ньому закриває панель. */
+      closeSheetOnScrim: (event) => {
+        if (event.target === event.currentTarget) this.setState({ facetsOpen: false })
+      },
+      activeFilterLabel: filterCount > 0 ? String(filterCount) : '',
+      hasFilters: filterCount > 0 || kind !== null || brandQuery !== '',
+      clearFilters: this.clear,
+      brandFacets,
+      brandMoreCount: Math.max(matchedBrands.length - 5, 0),
+      noBrandMatch: matchedBrands.length === 0,
+      brandQuery,
+      onBrandQuery: (e) => this.setState({ brandQuery: e.target.value }),
+      priceFloor,
+      priceCeil,
+      draftMin,
+      draftMax,
+      fillLeft: pct(draftMin) + '%',
+      fillWidth: Math.max(pct(draftMax) - pct(draftMin), 0) + '%',
+      onDraftMin: (e) => this.setState({ draftMin: Math.min(Number(e.target.value), draftMax) }),
+      onDraftMax: (e) => this.setState({ draftMax: Math.max(Number(e.target.value), draftMin) }),
+      onDraftMinText: (e) => this.setState({ draftMin: Number(e.target.value.replace(/\D/g, '')) || priceFloor }),
+      onDraftMaxText: (e) => this.setState({ draftMax: Number(e.target.value.replace(/\D/g, '')) || priceCeil }),
+      applyPrice: () => this.setState({ priceMin: draftMin, priceMax: draftMax }),
+      shipToday: shipMax === 0,
+      shipTomorrow: shipMax === 1,
+      shipWeek: shipMax === 3,
+      setShipToday: this.setShip(0),
+      setShipTomorrow: this.setShip(1),
+      setShipWeek: this.setShip(3),
+      countShipToday: base.filter((r) => minDay(r) === 0).length,
+      countShipTomorrow: base.filter((r) => minDay(r) <= 1).length,
+      countShipWeek: base.filter((r) => minDay(r) <= 3).length,
+      oemOnly: isOem === true,
+      analogOnly: isOem === false,
+      toggleOemOnly: this.toggleOem(true),
+      toggleAnalogOnly: this.toggleOem(false),
+      countOem: base.filter((r) => r.isOem).length,
+      countAnalog: base.filter((r) => !r.isOem).length,
+      sortOpen: this.state.sortOpen === true,
+      sortOpenAttr: this.state.sortOpen === true ? 'true' : 'false',
+      toggleSort: this.toggleSort,
+      sortLabel: (SORTS.find((o) => o.id === sort) || SORTS[0]).label,
+      sortOptions: SORTS.map((o) => ({
+        label: o.label,
+        selectedAttr: sort === o.id ? 'true' : 'false',
+        pick: () => this.setState({ sort: o.id, sortOpen: false })
+      })),
+      sortPopularity: sort === 'popularity',
+      sortPriceAsc: sort === 'price_asc',
+      sortPriceDesc: sort === 'price_desc',
+      sortShip: sort === 'ship_date',
+      setSortPopularity: this.setSort('popularity'),
+      setSortPriceAsc: this.setSort('price_asc'),
+      setSortPriceDesc: this.setSort('price_desc'),
+      setSortShip: this.setSort('ship_date'),
+      kindAll: kind === null,
+      kindCross: kind === 'cross',
+      kindOe: kind === 'oe',
+      countCross: base.filter((r) => r.kind === 'cross').length,
+      countOe: base.filter((r) => r.kind === 'oe').length,
+      setKindAll: () => this.setState({ kind: null }),
+      setKindCross: this.setKind('cross'),
+      setKindOe: this.setKind('oe'),
+      clearAction: React.createElement(
+        window.DesignSystem_d7c4f4.Button,
+        { variant: 'secondary', onClick: this.clear },
+        'Скинути фільтри'
+      )
+    }
+  }
+}
+
+</script>
+</body>
+</html>

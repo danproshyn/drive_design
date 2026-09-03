@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/colors.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/space.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/motion.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/layout.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/base.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=3"></script>
+<style>
+  @media (max-width: 639px) {
+  }
+</style>
+</helmet>
+
+<div class="ds-page">
+
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteHeader" active="account" cart-count="{{ cartCount }}" hint-size="100%,150px"></x-import>
+
+  <main class="ds-container ds-main" style="justify-items:center">
+    <div style="width:100%;max-width:430px">
+
+      <h1 class="t-display-md" style="margin:0">Вхід у кабінет</h1>
+
+      <sc-if value="{{ signOutFailed }}" hint-placeholder-val="{{ false }}">
+        <p class="ds-notice ds-notice--warning" style="margin:var(--space-5) 0 0" role="alert">Не вдалося завершити сесію. Закрийте браузер, щоб вийти напевно.</p>
+      </sc-if>
+
+      <sc-if value="{{ stepPhone }}" hint-placeholder-val="{{ true }}">
+        <section style="margin-top:var(--space-6)">
+          <p class="t-eyebrow" style="margin:0 0 8px">Код у SMS</p>
+          <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Введіть номер телефону — надішлемо код у SMS.</p>
+
+          <label class="ds-field" style="display:block;margin-top:var(--space-5)">
+            <span class="ds-field__label">Телефон</span>
+            <input class="ds-input ds-input--mono" inputMode="tel" autoComplete="tel" value="{{ phone }}" onChange="{{ onPhone }}" onFocus="{{ onPhoneCaret }}" onClick="{{ onPhoneCaret }}">
+          </label>
+
+          <button class="ds-btn ds-btn--md ds-btn--dark ds-btn--block" style="margin-top:var(--space-4)" disabled="{{ sendDisabled }}" onClick="{{ onSend }}">{{ sendLabel }}</button>
+
+          <sc-if value="{{ waiting }}" hint-placeholder-val="{{ false }}">
+            <p class="t-caption" style="margin:8px 0 0">{{ waitLabel }}</p>
+          </sc-if>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ stepCode }}" hint-placeholder-val="{{ false }}">
+        <section style="margin-top:var(--space-6)">
+          <p style="margin:0;font-size:var(--text-sm);color:var(--text-body)">Код надіслано на <span class="t-mono" style="font-weight:600;color:var(--text-strong)">{{ sentPhone }}</span></p>
+
+          <sc-if value="{{ codeLive }}" hint-placeholder-val="{{ true }}">
+            <div style="margin-top:var(--space-5)">
+              <label class="ds-field" style="display:block">
+                <span class="ds-field__label">Код</span>
+                <input class="{{ codeInputClass }}" inputMode="numeric" autoComplete="one-time-code" maxlength="6" placeholder="––––––" value="{{ code }}" onChange="{{ onCode }}" style="font-size:22px;letter-spacing:.32em;font-weight:600">
+                <sc-if value="{{ codeError }}" hint-placeholder-val="{{ false }}">
+                  <span class="ds-field__error">{{ codeError }}</span>
+                </sc-if>
+                <sc-if value="{{ codeHint }}" hint-placeholder-val="{{ true }}">
+                  <span class="ds-field__hint">Шість цифр. Діє 5 хвилин.</span>
+                </sc-if>
+              </label>
+
+              <button class="ds-btn ds-btn--md ds-btn--dark ds-btn--block" style="margin-top:var(--space-4)" disabled="{{ verifyDisabled }}" onClick="{{ onVerify }}">{{ verifyLabel }}</button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ codeSpent }}" hint-placeholder-val="{{ false }}">
+            <p class="ds-notice ds-notice--danger" style="margin:var(--space-5) 0 0" role="alert">{{ spentText }}</p>
+          </sc-if>
+
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-5);margin-top:var(--space-5)">
+            <button class="ds-btn ds-btn--link" style="font-size:var(--text-sm)" disabled="{{ resendDisabled }}" onClick="{{ onSend }}">Надіслати ще раз</button>
+            <button class="ds-btn ds-btn--link" style="font-size:var(--text-sm);color:var(--text-muted)" onClick="{{ onChangeNumber }}">Змінити номер</button>
+          </div>
+
+          <sc-if value="{{ waiting }}" hint-placeholder-val="{{ false }}">
+            <p class="t-caption" style="margin:8px 0 0">{{ waitLabel }}</p>
+          </sc-if>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ stepDone }}" hint-placeholder-val="{{ false }}">
+        <section style="margin-top:var(--space-6);padding:var(--space-5) var(--space-6);border:1px solid var(--line);border-left:3px solid var(--ink-800);border-radius:var(--radius-lg);background:var(--surface-sunken)">
+          <p style="margin:0;font-size:var(--text-md);font-weight:600;color:var(--text-strong)">Ви увійшли в кабінет</p>
+          <p style="margin:6px 0 0;font-size:var(--text-sm);color:var(--text-muted)">Номер <span class="t-mono">{{ sentPhone }}</span> підтверджено.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-5)">
+            <a class="ds-btn ds-btn--md ds-btn--dark" href="#">Мій кабінет</a>
+            <a class="ds-btn ds-btn--md ds-btn--ghost" href="Головна.dc.html">На головну</a>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ showPassword }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;align-items:center;gap:var(--space-5);margin-block:var(--space-8)">
+          <span style="height:1px;flex:1;background:var(--line)"></span>
+          <span class="t-eyebrow" style="flex:none">або</span>
+          <span style="height:1px;flex:1;background:var(--line)"></span>
+        </div>
+
+        <section>
+          <h2 class="t-display-xs" style="margin:0">Пошта й пароль</h2>
+
+          <label class="ds-field" style="display:block;margin-top:var(--space-5)">
+            <span class="ds-field__label">Пошта</span>
+            <input class="ds-input" type="email" autoComplete="email" value="{{ email }}" onChange="{{ onEmail }}">
+          </label>
+
+          <label class="ds-field" style="display:block;margin-top:var(--space-4)">
+            <span class="ds-field__label">Пароль</span>
+            <input class="ds-input" type="password" autoComplete="current-password" value="{{ password }}" onChange="{{ onPassword }}">
+          </label>
+
+          <button class="ds-btn ds-btn--md ds-btn--secondary ds-btn--block" style="margin-top:var(--space-4)" disabled="{{ pwDisabled }}" onClick="{{ onPasswordLogin }}">Увійти з паролем</button>
+
+          <sc-if value="{{ pwFailed }}" hint-placeholder-val="{{ false }}">
+            <p class="ds-notice ds-notice--danger" style="margin:var(--space-4) 0 0" role="alert">Пошта або пароль не підходять. Якщо пароль ви не задавали — увійдіть за кодом.</p>
+          </sc-if>
+
+          <p style="margin:var(--space-4) 0 0;font-size:var(--text-sm);color:var(--text-muted)">Забули пароль? Увійдіть кодом на телефон вище, а потім задайте новий пароль у кабінеті, у розділі «Профіль».</p>
+        </section>
+      </sc-if>
+
+    </div>
+  </main>
+
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteFooter" hint-size="100%,260px"></x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1000},&quot;passwordPanel&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Вхід&quot;},&quot;demoError&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Немає&quot;,&quot;options&quot;:[&quot;Немає&quot;,&quot;Код невірний&quot;,&quot;Спроби вичерпано&quot;,&quot;Сесію не завершено&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Вхід&quot;}}">
+const RESEND_SECONDS = 60
+
+let tickTimer = null
+
+class Component extends DCLogic {
+  state = {
+    step: 'phone',
+    phoneDigits: '',
+    sentDigits: '',
+    code: '',
+    sending: false,
+    verifying: false,
+    codeError: null,
+    codeSpent: false,
+    attempts: 0,
+    wait: 0,
+    email: '',
+    password: '',
+    pwFailed: false,
+  }
+
+  componentDidMount() {
+    // The countdown is an affordance only — the server decides. One tick for the whole screen.
+    tickTimer = setInterval(() => {
+      if (this.state.wait > 0) this.setState((s) => ({ wait: Math.max(0, s.wait - 1) }))
+    }, 1000)
+  }
+
+  componentWillUnmount() {
+    if (tickTimer) clearInterval(tickTimer)
+  }
+
+  formatPhone = (digits) => {
+    const d = (digits + '_________').slice(0, 9)
+    return '+38 (0' + d.slice(0, 2) + ') ' + d.slice(2, 5) + '-' + d.slice(5, 7) + '-' + d.slice(7, 9)
+  }
+
+  caretToSlot = (el, digits) => {
+    const s = this.formatPhone(digits)
+    const i = s.indexOf('_')
+    const pos = i === -1 ? s.length : i
+    requestAnimationFrame(() => { try { el.setSelectionRange(pos, pos) } catch (err) {} })
+  }
+
+  send = () => {
+    if (this.state.sending || this.state.wait > 0 || this.state.phoneDigits.length < 9) return
+    this.setState({ sending: true })
+    setTimeout(() => {
+      this.setState((s) => ({
+        sending: false,
+        step: 'code',
+        sentDigits: s.phoneDigits,
+        code: '',
+        codeError: null,
+        codeSpent: false,
+        attempts: 0,
+        wait: RESEND_SECONDS,
+      }))
+    }, 700)
+  }
+
+  verify = () => {
+    if (this.state.code.length < 6 || this.state.verifying) return
+    this.setState({ verifying: true })
+    setTimeout(() => {
+      const wrong = this.props.demoError === 'Код невірний'
+      if (!wrong) return this.setState({ verifying: false, step: 'done' })
+      const attempts = this.state.attempts + 1
+      this.setState({
+        verifying: false,
+        attempts,
+        codeSpent: attempts >= 5,
+        codeError: attempts >= 5 ? null : 'Код невірний',
+        code: '',
+      })
+    }, 700)
+  }
+
+  renderVals() {
+    const s = this.state
+    const codeSpent = s.codeSpent || this.props.demoError === 'Спроби вичерпано'
+
+    return {
+      cartCount: 2,
+
+      signOutFailed: this.props.demoError === 'Сесію не завершено',
+
+      stepPhone: s.step === 'phone',
+      stepCode: s.step === 'code',
+      stepDone: s.step === 'done',
+
+      phone: this.formatPhone(s.phoneDigits),
+      sentPhone: this.formatPhone(s.sentDigits),
+      onPhone: (e) => {
+        const prev = s.phoneDigits
+        const raw = e.target.value
+        let digits = raw.replace(/\D/g, '').replace(/^380?/, '').slice(0, 9)
+        if (raw.length < this.formatPhone(prev).length && digits.length === prev.length) digits = digits.slice(0, -1)
+        const el = e.target
+        this.setState({ phoneDigits: digits }, () => this.caretToSlot(el, digits))
+      },
+      onPhoneCaret: (e) => this.caretToSlot(e.target, s.phoneDigits),
+
+      sendDisabled: s.sending || s.wait > 0 || s.phoneDigits.length < 9,
+      sendLabel: s.sending ? 'Надсилаємо…' : 'Надіслати код',
+      onSend: this.send,
+
+      waiting: s.wait > 0,
+      waitLabel: 'Надіслати ще раз можна через ' + s.wait + ' с',
+      resendDisabled: s.sending || s.wait > 0,
+
+      code: s.code,
+      onCode: (e) => this.setState({ code: e.target.value.replace(/\D/g, '').slice(0, 6), codeError: null }),
+      codeInputClass: 'ds-input ds-input--mono ds-input--lg' + (s.codeError ? ' ds-input--invalid' : ''),
+      codeError: s.codeError,
+      codeHint: !s.codeError,
+      codeLive: !codeSpent,
+      codeSpent,
+      spentText: 'Спроби вичерпано. Запросіть новий код.',
+      verifyDisabled: s.verifying || s.code.length < 6,
+      verifyLabel: s.verifying ? 'Входимо…' : 'Увійти',
+      onVerify: this.verify,
+      onChangeNumber: () => this.setState({ step: 'phone', code: '', codeError: null, codeSpent: false, attempts: 0, wait: 0 }),
+
+      showPassword: (this.props.passwordPanel ?? true) && s.step !== 'done',
+      email: s.email,
+      onEmail: (e) => this.setState({ email: e.target.value, pwFailed: false }),
+      password: s.password,
+      onPassword: (e) => this.setState({ password: e.target.value, pwFailed: false }),
+      pwDisabled: s.email.trim().length === 0 || s.password.length === 0,
+      pwFailed: s.pwFailed,
+      onPasswordLogin: () => this.setState({ pwFailed: true }),
+    }
+  }
+}
+
+</script>
+</body>
+</html>

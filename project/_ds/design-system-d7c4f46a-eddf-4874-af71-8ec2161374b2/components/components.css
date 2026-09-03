@@ -1,0 +1,588 @@
+/* Драйв component styles.
+   Every reusable primitive in components/**.jsx applies classes from this file. Component
+   JSX never carries a hard-coded colour or size — it carries a class, and the values live
+   in tokens/. Hover, press, focus and disabled states are all here, in one place. */
+
+/* ═══ Button ══════════════════════════════════════════════════════════════ */
+.ds-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-weight: var(--weight-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--transition-colors), transform var(--dur-instant) var(--ease-out);
+}
+.ds-btn:hover { text-decoration: none; }
+.ds-btn:active { transform: translateY(1px); }
+.ds-btn:disabled,
+.ds-btn[aria-disabled='true'] { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+.ds-btn--sm { min-height: 34px; padding: 0 var(--space-3); font-size: var(--text-sm); }
+.ds-btn--md { min-height: 44px; padding: 0 var(--space-5); font-size: var(--text-md); }
+.ds-btn--lg { min-height: 52px; padding: 0 var(--space-6); font-size: var(--text-lg); }
+.ds-btn--block { width: 100%; }
+
+.ds-btn--primary { background: var(--action); color: var(--action-fg); }
+.ds-btn--primary:hover:not(:disabled) { background: var(--action-hover); color: var(--action-fg); }
+.ds-btn--primary:active:not(:disabled) { background: var(--action-active); }
+
+.ds-btn--dark { background: var(--action-dark); color: var(--action-dark-fg); }
+.ds-btn--dark:hover:not(:disabled) { background: var(--action-dark-hover); color: var(--action-dark-fg); }
+
+.ds-btn--secondary { background: var(--surface); color: var(--text-strong); border-color: var(--line); }
+.ds-btn--secondary:hover:not(:disabled) { background: var(--surface-sunken); border-color: var(--ink-300); color: var(--text-strong); }
+
+.ds-btn--ghost { background: transparent; color: var(--text-strong); }
+.ds-btn--ghost:hover:not(:disabled) { background: var(--surface-sunken); color: var(--text-strong); }
+
+.ds-btn--link {
+  background: none; padding: 0; min-height: 0; color: var(--text-action);
+  font-weight: var(--weight-medium);
+}
+.ds-btn--link:hover:not(:disabled) { color: var(--text-action-hover); text-decoration: underline; text-underline-offset: 2px; }
+.ds-btn--link:active { transform: none; }
+
+.ds-spin { animation: ds-spin 0.8s linear infinite; }
+@keyframes ds-spin { to { transform: rotate(360deg); } }
+
+/* ═══ Icon button ═════════════════════════════════════════════════════════ */
+.ds-iconbtn {
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid transparent; border-radius: var(--radius-md);
+  background: transparent; color: var(--text-body); cursor: pointer;
+  transition: var(--transition-colors);
+}
+.ds-iconbtn:hover:not(:disabled) { background: var(--surface-sunken); color: var(--text-strong); }
+.ds-iconbtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.ds-iconbtn--sm { width: 34px; height: 34px; }
+.ds-iconbtn--md { width: 44px; height: 44px; }
+.ds-iconbtn--bordered { border-color: var(--line); background: var(--surface); }
+.ds-iconbtn--bordered:hover:not(:disabled) { border-color: var(--ink-300); }
+.ds-iconbtn--inverse { color: var(--text-inverse-muted); }
+.ds-iconbtn--inverse:hover:not(:disabled) { background: rgb(255 255 255 / 0.1); color: var(--text-inverse); }
+
+/* ═══ Badge ═══════════════════════════════════════════════════════════════ */
+.ds-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px var(--space-2);
+  border: 1px solid transparent; border-radius: var(--radius-xs);
+  font-size: var(--text-2xs); font-weight: var(--weight-semibold);
+  line-height: 1.35; white-space: nowrap;
+}
+.ds-badge--oem { background: var(--ink-800); color: var(--white); }
+.ds-badge--analog { background: var(--surface); color: var(--text-muted); border-color: var(--line); }
+.ds-badge--best-price { background: var(--red-50); color: var(--red-700); border-color: var(--red-200); }
+.ds-badge--best-date { background: var(--green-50); color: var(--green-600); border-color: rgb(21 127 62 / 0.24); }
+.ds-badge--neutral { background: var(--surface-sunken); color: var(--text-muted); border-color: var(--line-subtle); }
+.ds-badge--staff { background: var(--amber-50); color: var(--amber-600); border-color: rgb(178 106 0 / 0.24); }
+
+/* ═══ Chip (filter / sort — they are links, so they work unhydrated) ══════ */
+.ds-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 34px; padding: 0 var(--space-3);
+  border: 1px solid var(--line); border-radius: var(--radius-full);
+  background: var(--surface); color: var(--text-muted);
+  font-size: var(--text-sm); font-weight: var(--weight-medium);
+  cursor: pointer; text-decoration: none;
+  transition: var(--transition-colors);
+}
+.ds-chip:hover { background: var(--surface-sunken); color: var(--text-strong); border-color: var(--ink-300); text-decoration: none; }
+.ds-chip[aria-pressed='true'],
+.ds-chip[data-active='true'] {
+  background: var(--ink-800); border-color: var(--ink-800); color: var(--white);
+}
+.ds-chip[aria-pressed='true']:hover,
+.ds-chip[data-active='true']:hover { background: var(--ink-900); color: var(--white); }
+.ds-chip__count { color: inherit; opacity: 0.6; font-variant-numeric: tabular-nums; }
+
+/* ═══ Notice ══════════════════════════════════════════════════════════════ */
+.ds-notice {
+  display: flex; gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  font-size: var(--text-sm); line-height: var(--leading-normal); color: var(--text-body);
+}
+.ds-notice__icon { flex: none; margin-top: 1px; }
+.ds-notice--danger { background: var(--danger-bg); border-color: var(--danger-line); color: var(--red-800); }
+.ds-notice--success { background: var(--success-bg); border-color: rgb(21 127 62 / 0.22); color: #10592c; }
+.ds-notice--warning { background: var(--warning-bg); border-color: rgb(178 106 0 / 0.22); color: #7a4a00; }
+.ds-notice--accent { background: var(--surface-inverse); border-color: var(--surface-inverse); color: var(--white); }
+
+/* ═══ Skeleton ════════════════════════════════════════════════════════════ */
+.ds-skeleton {
+  background: linear-gradient(90deg, var(--ink-100) 0%, var(--ink-50) 50%, var(--ink-100) 100%);
+  background-size: 200% 100%;
+  border-radius: var(--radius-sm);
+  animation: ds-shimmer 1.4s var(--ease-in-out) infinite;
+}
+@keyframes ds-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .ds-skeleton { animation: none; } }
+
+/* ═══ Empty state ═════════════════════════════════════════════════════════ */
+.ds-empty {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: var(--space-3); padding: var(--space-12) var(--space-6);
+  border: 1px dashed var(--line); border-radius: var(--radius-lg);
+  background: var(--surface-sunken);
+}
+.ds-empty__title { font-family: var(--font-display); text-transform: uppercase; font-size: var(--display-xs); font-weight: 600; letter-spacing: var(--tracking-display); color: var(--text-strong); }
+.ds-empty__body { font-size: var(--text-sm); color: var(--text-muted); max-width: 46ch; margin: 0; }
+
+/* ═══ Fields ══════════════════════════════════════════════════════════════ */
+.ds-field { display: block; }
+.ds-field__label {
+  display: block; margin-bottom: 6px;
+  font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--text-body);
+}
+.ds-field__hint { margin: 6px 0 0; font-size: var(--text-xs); color: var(--text-muted); }
+.ds-field__error { margin: 6px 0 0; font-size: var(--text-xs); color: var(--danger); font-weight: var(--weight-medium); }
+
+.ds-input {
+  width: 100%; min-height: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  background: var(--surface); color: var(--text-strong);
+  font-size: var(--text-md);
+  transition: var(--transition-colors);
+}
+.ds-input::placeholder { color: var(--text-faint); }
+.ds-input:hover:not(:disabled) { border-color: var(--ink-300); }
+.ds-input:focus { outline: none; border-color: var(--ink-800); box-shadow: 0 0 0 3px rgb(36 33 29 / 0.08); }
+.ds-input:disabled { background: var(--surface-sunken); color: var(--text-faint); cursor: not-allowed; }
+.ds-input--invalid { border-color: var(--danger); }
+.ds-input--invalid:focus { border-color: var(--danger); box-shadow: var(--shadow-focus); }
+.ds-input--mono { font-family: var(--font-mono); letter-spacing: var(--tracking-mono); }
+.ds-input--lg { min-height: 52px; font-size: var(--text-lg); padding: 0 var(--space-4); }
+
+.ds-select {
+  width: 100%; min-height: 44px;
+  padding: 0 var(--space-8) 0 var(--space-3);
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  background-color: var(--surface); color: var(--text-strong);
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-500) 50%), linear-gradient(135deg, var(--ink-500) 50%, transparent 50%);
+  background-position: right 18px center, right 13px center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  font-size: var(--text-md);
+  appearance: none; cursor: pointer;
+  transition: var(--transition-colors);
+}
+.ds-select:hover:not(:disabled) { border-color: var(--ink-300); }
+.ds-select:focus { outline: none; border-color: var(--ink-800); box-shadow: 0 0 0 3px rgb(36 33 29 / 0.08); }
+.ds-select:disabled { background-color: var(--surface-sunken); color: var(--text-faint); cursor: not-allowed; opacity: 1; }
+.ds-select[data-settled='true'] { border-color: var(--ink-800); font-weight: var(--weight-medium); }
+
+.ds-check { display: flex; align-items: center; gap: var(--space-2); min-height: 28px; cursor: pointer; font-size: var(--text-sm); color: var(--text-body); }
+.ds-check:hover { color: var(--text-strong); }
+.ds-check input {
+  appearance: none; flex: none; width: 17px; height: 17px; margin: 0;
+  border: 1px solid var(--ink-300); border-radius: var(--radius-xs);
+  background: var(--surface); cursor: pointer; transition: var(--transition-colors);
+}
+.ds-check input:hover { border-color: var(--ink-500); }
+.ds-check input:checked {
+  background: var(--ink-800) no-repeat center;
+  border-color: var(--ink-800);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+}
+.ds-check__count { color: var(--text-faint); font-variant-numeric: tabular-nums; }
+
+/* ═══ Search field ════════════════════════════════════════════════════════ */
+.ds-search { position: relative; display: flex; gap: var(--space-2); width: 100%; }
+.ds-search__wrap { position: relative; flex: 1; min-width: 0; }
+.ds-search__icon { position: absolute; left: var(--space-3); top: 50%; transform: translateY(-50%); color: var(--text-faint); pointer-events: none; }
+.ds-search__input { padding-left: 42px; font-family: var(--font-mono); letter-spacing: var(--tracking-mono); }
+.ds-search--hero .ds-search__input { padding-left: 50px; }
+.ds-search--hero .ds-search__icon { left: var(--space-4); }
+.ds-suggest {
+  position: absolute; inset-inline: 0; top: calc(100% + 6px);
+  z-index: var(--z-dropdown);
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  background: var(--surface); box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.ds-suggest__head { padding: var(--space-2) var(--space-4); border-bottom: 1px solid var(--line-subtle); font-size: var(--text-2xs); color: var(--text-muted); }
+.ds-suggest__row {
+  display: flex; align-items: baseline; gap: var(--space-3);
+  width: 100%; padding: var(--space-3) var(--space-4);
+  border: 0; background: none; text-align: left; cursor: pointer;
+  box-shadow: inset 3px 0 0 transparent;
+  transition: var(--transition-colors);
+}
+.ds-suggest__row:hover { background: var(--surface-sunken); box-shadow: var(--keyline-red); }
+
+/* ═══ Quantity stepper ════════════════════════════════════════════════════ */
+.ds-qty { display: inline-flex; align-items: stretch; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); overflow: hidden; }
+.ds-qty button {
+  width: 40px; border: 0; background: none; color: var(--text-body);
+  cursor: pointer; font-size: var(--text-lg); line-height: 1;
+  transition: var(--transition-colors);
+}
+.ds-qty button:hover:not(:disabled) { background: var(--surface-sunken); color: var(--text-strong); }
+.ds-qty button:disabled { color: var(--ink-300); cursor: not-allowed; }
+.ds-qty input {
+  width: 52px; min-height: 42px; border: 0; border-inline: 1px solid var(--line);
+  text-align: center; font-size: var(--text-md); font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums; color: var(--text-strong); background: none;
+}
+.ds-qty input:focus { outline: none; background: var(--surface-sunken); }
+
+/* ═══ Price ═══════════════════════════════════════════════════════════════ */
+.ds-price { font-variant-numeric: tabular-nums; color: var(--text-strong); font-weight: var(--weight-bold); letter-spacing: -0.015em; white-space: nowrap; }
+.ds-price--sm { font-size: var(--text-md); }
+.ds-price--md { font-size: var(--text-xl); }
+.ds-price--lg { font-size: var(--text-3xl); font-family: var(--font-display); font-weight: 600; letter-spacing: var(--tracking-display); }
+.ds-price--stale { color: var(--text-faint); font-weight: var(--weight-medium); }
+.ds-price__cur { font-weight: var(--weight-medium); color: var(--text-muted); margin-left: 2px; }
+
+/* Мінімальна партія — тиха пілюля під ціною чи кнопкою. У колонці кількості трек
+   фіксований (72 px), тому пілюля не змінює ширину колонки від деталі до деталі. */
+.ds-minqty {
+  display: inline-flex; align-items: center; padding: 2px var(--space-2);
+  border: 1px solid var(--line); border-radius: var(--radius-full);
+  font-size: var(--text-2xs); color: var(--text-muted); white-space: nowrap;
+}
+
+/* ═══ Stock / dispatch ════════════════════════════════════════════════════ */
+.ds-stock { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-sm); font-weight: var(--weight-medium); }
+.ds-stock--in { color: var(--stock-in); }
+.ds-stock--out { color: var(--stock-out); font-weight: var(--weight-regular); }
+.ds-stock__dot { width: 6px; height: 6px; border-radius: var(--radius-full); background: currentColor; flex: none; }
+/* Dispatch date, and under it the cutoff that makes it conditional. Two rows always, in
+   every list — the cutoff never sits inline, so rows keep one vertical rhythm. */
+.ds-ship {
+  display: inline-grid; grid-template-columns: auto minmax(min-content, auto); align-items: center;
+  justify-content: start; gap: 0 6px; font-size: var(--text-sm); color: var(--text-body);
+}
+.ds-ship > svg { grid-row: 1; }
+.ds-ship__date { white-space: nowrap; }
+/* «сьогодні» / «завтра» — зелений `--stock-in` у списках деталей (каталог за авто, кошик):
+   там дата стоїть одна на рядок і працює як обіцянка. */
+.ds-ship--soon { color: var(--stock-in); font-weight: var(--weight-medium); }
+/* У таблиці пропозицій дат багато й майже всі близькі, тому зелений там нічого не
+   виділяє — лишається тільки вага. */
+.ds-offerline .ds-ship--soon { color: var(--text-strong); }
+.ds-cutoff { grid-column: 2; color: var(--cutoff); font-size: var(--text-xs); font-weight: var(--weight-regular); white-space: nowrap; }
+
+/* ═══ Article number ══════════════════════════════════════════════════════ */
+.ds-article { font-family: var(--font-mono); font-size: var(--text-sm); letter-spacing: var(--tracking-mono); color: var(--text-strong); font-weight: var(--weight-medium); }
+
+/* ═══ Thumbs ══════════════════════════════════════════════════════════════ */
+.ds-thumb {
+  display: grid; place-items: center; flex: none; overflow: hidden;
+  border: 1px solid var(--line-subtle); border-radius: var(--radius-md);
+  background: var(--surface-sunken); color: var(--text-faint);
+}
+.ds-thumb img { width: 100%; height: 100%; object-fit: contain; }
+
+/* ═══ Rows (the two catalogue designs) ════════════════════════════════════ */
+.ds-row {
+  position: relative; display: block;
+  padding: var(--row-pad-y) var(--row-pad-x);
+  border-bottom: 1px solid var(--line-subtle);
+  background: var(--surface);
+  box-shadow: inset 3px 0 0 transparent;
+  transition: background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+.ds-row:last-child { border-bottom: 0; }
+.ds-row:hover { background: var(--surface-sunken); box-shadow: var(--keyline-red); }
+.ds-row__title { display: block; font-size: var(--text-md); font-weight: var(--weight-semibold); color: var(--text-strong); text-decoration: none; }
+.ds-row__title:hover { color: var(--text-strong); text-decoration: underline; text-underline-offset: 2px; }
+.ds-row__meta { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-xs); color: var(--text-muted); }
+
+.ds-offer {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-4);
+  padding: var(--space-3);
+  border: 1px solid var(--line-subtle); border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  transition: var(--transition-colors);
+}
+.ds-offer:hover { border-color: var(--line); background: var(--white); }
+.ds-offer--primary { background: var(--white); border-color: var(--ink-200); box-shadow: var(--keyline-ink); }
+.ds-offer__staff {
+  flex-basis: 100%; display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4);
+  margin-top: 2px; padding-top: var(--space-2);
+  border-top: 1px dashed var(--line);
+  font-size: var(--text-xs); color: var(--amber-600);
+}
+
+/* ═══ Cards ═══════════════════════════════════════════════════════════════ */
+.ds-card { border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); }
+.ds-card--sunken { background: var(--surface-sunken); }
+.ds-card--flush { border-radius: var(--radius-lg); overflow: hidden; }
+.ds-card__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-4) var(--card-pad); border-bottom: 1px solid var(--line-subtle); }
+.ds-card__body { padding: var(--card-pad); }
+
+/* ═══ Garage ══════════════════════════════════════════════════════════════ */
+.ds-garage {
+  display: flex; gap: var(--space-4); align-items: flex-start;
+  padding: var(--space-4);
+  border: 1px solid var(--line); border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: inset 3px 0 0 transparent;
+  transition: var(--transition-colors);
+}
+.ds-garage:hover { border-color: var(--ink-300); box-shadow: var(--keyline-red); }
+.ds-garage--active { border-color: var(--ink-800); box-shadow: var(--keyline-red); }
+
+/* ═══ Category tree ═══════════════════════════════════════════════════════ */
+.ds-tree { font-size: var(--text-sm); }
+.ds-tree__branch > summary {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: 7px var(--space-2); border-radius: var(--radius-sm);
+  cursor: pointer; list-style: none;
+  font-weight: var(--weight-semibold); color: var(--text-strong);
+  transition: var(--transition-colors);
+}
+.ds-tree__branch > summary::-webkit-details-marker { display: none; }
+.ds-tree__branch > summary:hover { background: var(--surface-sunken); }
+.ds-tree__caret { flex: none; color: var(--text-faint); transition: transform var(--dur-fast) var(--ease-out); }
+.ds-tree__branch[open] > summary > .ds-tree__caret { transform: rotate(90deg); }
+.ds-tree__kids { padding-left: var(--space-4); margin-left: 9px; border-left: 1px solid var(--line-subtle); }
+.ds-tree__leaf {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-2);
+  padding: 7px var(--space-2); border-radius: var(--radius-sm);
+  color: var(--text-body); text-decoration: none;
+  box-shadow: inset 3px 0 0 transparent;
+  transition: var(--transition-colors);
+}
+.ds-tree__leaf:hover { background: var(--surface-sunken); color: var(--text-strong); text-decoration: none; box-shadow: var(--keyline-red); }
+.ds-tree__leaf[aria-current='page'] { background: var(--surface-sunken); color: var(--text-strong); font-weight: var(--weight-semibold); box-shadow: var(--keyline-red); }
+.ds-tree__count { color: var(--text-faint); font-size: var(--text-xs); font-variant-numeric: tabular-nums; }
+
+/* ═══ Tabs ════════════════════════════════════════════════════════════════ */
+.ds-tabs { display: flex; gap: var(--space-6); border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+.ds-tabs::-webkit-scrollbar { display: none; }
+.ds-tab {
+  position: relative; display: inline-flex; align-items: center; gap: 6px;
+  padding: var(--space-3) 0 var(--space-3);
+  border: 0; background: none; cursor: pointer; white-space: nowrap;
+  font-family: var(--font-display); text-transform: uppercase; letter-spacing: var(--tracking-display);
+  font-size: var(--text-md); font-weight: 500; color: var(--text-muted);
+  text-decoration: none; transition: var(--transition-colors);
+}
+.ds-tab::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; background: transparent; transition: background-color var(--dur-fast) var(--ease-out); }
+.ds-tab:hover { color: var(--text-strong); text-decoration: none; }
+.ds-tab[aria-selected='true'], .ds-tab[data-active='true'] { color: var(--text-strong); font-weight: 600; }
+.ds-tab[aria-selected='true']::after, .ds-tab[data-active='true']::after { background: var(--red-500); }
+.ds-tab__count { font-family: var(--font-sans); font-size: var(--text-xs); color: var(--text-faint); letter-spacing: 0; }
+
+/* ═══ Breadcrumbs ═════════════════════════════════════════════════════════ */
+.ds-crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: var(--text-xs); color: var(--text-muted); }
+.ds-crumbs a { color: var(--text-muted); text-decoration: none; }
+.ds-crumbs a:hover { color: var(--text-strong); text-decoration: underline; text-underline-offset: 2px; }
+.ds-crumbs__sep { color: var(--ink-300); }
+
+/* ═══ Pager ═══════════════════════════════════════════════════════════════ */
+.ds-pager { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding-top: var(--space-5); border-top: 1px solid var(--line-subtle); }
+.ds-pager__state { font-size: var(--text-sm); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+/* ═══ Header / footer ═════════════════════════════════════════════════════ */
+.ds-utilitybar { background: var(--ink-800); color: var(--text-inverse-muted); font-size: var(--text-2xs); }
+.ds-utilitybar a { color: var(--text-inverse-muted); text-decoration: none; }
+.ds-utilitybar a:hover { color: var(--white); text-decoration: none; }
+.ds-header { position: sticky; top: 0; z-index: var(--z-header); background: var(--surface); border-bottom: 1px solid var(--line); }
+.ds-header__nav { display: flex; align-items: center; gap: var(--space-5); }
+.ds-navlink {
+  position: relative; display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 0; color: var(--text-body); text-decoration: none;
+  font-size: var(--text-sm); font-weight: var(--weight-medium);
+  transition: var(--transition-colors);
+}
+.ds-navlink::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: transparent; transition: background-color var(--dur-fast) var(--ease-out); }
+.ds-navlink:hover { color: var(--text-strong); text-decoration: none; }
+.ds-navlink:hover::after, .ds-navlink[data-active='true']::after { background: var(--red-500); }
+.ds-navlink[data-active='true'] { color: var(--text-strong); font-weight: var(--weight-semibold); }
+.ds-footer { margin-top: var(--space-20); background: var(--ink-800); color: var(--text-inverse-muted); font-size: var(--text-sm); }
+.ds-footer a { color: var(--text-inverse-muted); text-decoration: none; }
+.ds-footer a:hover { color: var(--white); text-decoration: underline; text-underline-offset: 2px; }
+.ds-footer__title { font-family: var(--font-display); text-transform: uppercase; letter-spacing: var(--tracking-eyebrow); font-size: var(--text-2xs); color: var(--white); margin-bottom: var(--space-3); }
+
+/* ═══ Cashback banner (the only promo surface on the site) ════════════════ */
+.ds-cashback {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  background: var(--ink-800); color: var(--white);
+  font-size: var(--text-sm); font-weight: var(--weight-medium);
+}
+.ds-cashback__pct { font-family: var(--font-display); font-size: var(--display-xs); font-weight: 700; color: var(--red-400); line-height: 1; letter-spacing: var(--tracking-display); }
+
+/* ═══ Section heading ═════════════════════════════════════════════════════ */
+.ds-section-title {
+  display: flex; align-items: baseline; gap: var(--space-3);
+  font-family: var(--font-display); text-transform: uppercase;
+  font-size: var(--display-sm); font-weight: 600; letter-spacing: var(--tracking-display);
+  color: var(--text-strong);
+}
+.ds-section-title__count { font-family: var(--font-sans); font-size: var(--text-sm); font-weight: var(--weight-regular); color: var(--text-muted); letter-spacing: 0; }
+
+/* ═══ Page shell ══════════════════════════════════════════════════════════ */
+/* Every storefront screen is this: header, one container-width main, footer. The paddings
+   live here so no two screens can disagree about the space under the header. */
+.ds-page { display: flex; flex-direction: column; min-height: 100vh; font-family: var(--font-sans); color: var(--text-body); }
+.ds-main {
+  flex: 1; width: 100%; padding-block: var(--space-6) var(--space-16);
+  display: grid; gap: var(--space-6); align-content: start;
+}
+.ds-main--wide { gap: var(--space-10); }
+
+/* ═══ Header utility bar and nav (owned by SiteHeader) ════════════════════ */
+.ds-utilitybar__inner { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-5); min-height: var(--utilitybar-h); }
+.ds-utilitybar__promo { display: inline-flex; align-items: center; gap: 6px; color: var(--text-inverse); }
+.ds-utilitybar__promo strong { color: var(--red-500); font-weight: var(--weight-semibold); }
+.ds-phonemenu { position: relative; margin-left: auto; }
+.ds-phonemenu__trigger {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 8px;
+  border: 0; border-radius: var(--radius-sm); background: none;
+  font-size: var(--text-2xs); font-weight: var(--weight-semibold); color: var(--white);
+  cursor: pointer; transition: var(--transition-colors);
+}
+.ds-phonemenu__trigger:hover { background: var(--surface-inverse-raised); }
+.ds-phonemenu__list {
+  position: absolute; right: 0; top: calc(100% + 4px); z-index: 60; padding: 6px;
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  background: var(--surface); box-shadow: var(--shadow-md);
+}
+.ds-phonemenu__list a {
+  display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px 0 10px;
+  white-space: nowrap; border-radius: var(--radius-sm);
+  color: var(--text-strong); font-size: var(--text-sm); font-weight: var(--weight-semibold);
+}
+.ds-phonemenu__list a:hover { background: var(--surface-sunken); color: var(--text-strong); text-decoration: none; }
+.ds-phonemenu__mark {
+  flex: none; width: 24px; height: 24px; border-radius: var(--radius-full);
+  background: var(--ink-800); color: var(--white);
+  font-family: var(--font-display); font-size: 12px; font-weight: var(--weight-semibold);
+  display: grid; place-items: center;
+}
+.ds-navlink__count {
+  min-width: 19px; height: 19px; padding: 0 5px; border-radius: var(--radius-full);
+  background: var(--red-500); color: var(--white);
+  font-size: var(--text-3xs); font-weight: var(--weight-bold);
+  display: inline-grid; place-items: center;
+}
+@media (max-width: 899px) { .ds-header__nav { gap: var(--space-3); } }
+@media (max-width: 639px) {
+  .ds-utilitybar { display: none; }
+  .ds-header__nav { flex-wrap: wrap; column-gap: var(--space-4); row-gap: var(--space-1); justify-content: flex-start; margin-left: 0 !important; }
+}
+
+/* ═══ Footer content (owned by SiteFooter) ════════════════════════════════ */
+.ds-footer__grid { display: grid; gap: var(--space-8); grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); padding-block: var(--space-12); }
+.ds-footer__logo { height: 34px; width: auto; display: block; }
+.ds-footer__cta {
+  display: block; margin-top: var(--space-4); padding: 14px 16px;
+  border-left: 3px solid var(--red-500); background: rgb(255 255 255 / 0.06);
+  color: var(--white); font-size: var(--text-sm); font-weight: var(--weight-semibold); line-height: 1.35;
+}
+.ds-footer__cta:hover { background: rgb(255 255 255 / 0.14); color: var(--white); text-decoration: none; }
+.ds-footer__map { color: var(--white); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgb(255 255 255 / 0.45); }
+.ds-footer__map:hover { color: var(--white); text-decoration-color: var(--white); }
+.ds-footer__hours { display: grid; grid-template-columns: auto auto; justify-content: start; column-gap: var(--space-3); row-gap: 2px; margin: var(--space-2) 0 0; }
+.ds-footer__links { display: grid; gap: 4px; justify-items: start; margin: 0; }
+.ds-footer__phone { display: inline-flex; align-items: center; gap: 8px; }
+.ds-footer__mark {
+  flex: none; width: 20px; height: 20px; border-radius: var(--radius-full);
+  background: rgb(255 255 255 / 0.14); color: var(--white);
+  font-family: var(--font-display); font-size: 11px; font-weight: var(--weight-semibold);
+  display: grid; place-items: center;
+}
+.ds-footer__bottom { border-top: 1px solid var(--line-inverse); padding-block: var(--space-4); display: flex; gap: var(--space-4); align-items: center; font-size: var(--text-2xs); }
+.ds-footer__ship { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; }
+
+/* ═══ Row lists ═══════════════════════════════════════════════════════════ */
+/* Rows are mounted through a wrapper element, so `.ds-row:last-child` never matches.
+   The list carries the rule instead. */
+.ds-rows { list-style: none; margin: 0; padding: 0; }
+.ds-rows > * > .ds-row { border-bottom: 1px solid var(--line-subtle); }
+.ds-rows > *:last-child > .ds-row, .ds-rows > .ds-row:last-child { border-bottom: 0; }
+
+/* ═══ Sort field ══════════════════════════════════════════════════════════ */
+/* One compact field, not a row of pills — sorts are black when active, never red. */
+.ds-sortfield { position: relative; }
+.ds-sortfield__trigger {
+  display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 var(--space-3);
+  border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface);
+  font: inherit; font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--text-strong);
+  cursor: pointer; transition: var(--transition-colors);
+}
+.ds-sortfield__trigger:hover { border-color: var(--ink-300); background: var(--surface-sunken); }
+.ds-sortfield__trigger[aria-expanded='true'] { border-color: var(--ink-800); box-shadow: inset 0 0 0 1px var(--ink-800); }
+.ds-sortfield__trigger svg { color: var(--text-faint); }
+.ds-sortfield__menu {
+  position: absolute; z-index: 30; top: calc(100% + 4px); right: 0; min-width: 100%;
+  list-style: none; margin: 0; padding: var(--space-1) 0; white-space: nowrap;
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  background: var(--surface); box-shadow: var(--shadow-md);
+}
+.ds-sortfield__menu li {
+  display: flex; align-items: center; min-height: 40px; padding: 0 var(--space-4);
+  border-left: 3px solid transparent; font-size: var(--text-sm); color: var(--text-body);
+  cursor: pointer; transition: var(--transition-colors);
+}
+.ds-sortfield__menu li:hover { background: var(--surface-sunken); border-left-color: var(--red-500); color: var(--text-strong); }
+.ds-sortfield__menu li[data-selected='true'] { font-weight: var(--weight-semibold); color: var(--text-strong); }
+
+/* ═══ Offer table (article search results, analogs, part card) ════════════ */
+/* Fixed tracks: дата, кількість, ціна й кнопка мають однакову ширину в кожній пропозиції
+   кожної деталі; вільне місце забирає колонка бейджів. Columns are shared by every offer of every part, so prices and dates line up down the
+   whole list. The five-column line needs ~870 px of list width, which the catalogue column
+   only has from 1200 px up; below that it folds to two columns and three rows. */
+.ds-offers { display: grid; grid-template-columns: 186px 68px minmax(132px, 1fr) 76px 126px; gap: 2px; list-style: none; margin: 0; padding: 0; }
+.ds-offerline {
+  display: grid; grid-column: 1 / -1; grid-template-columns: subgrid;
+  align-items: center; column-gap: var(--space-3); row-gap: 2px;
+  padding: 6px var(--space-3); border-radius: var(--radius-md); transition: var(--transition-colors);
+}
+/* Кнопка стоїть трохи далі від ціни, ніж решта колонок одна від одної. */
+.ds-offerline > [data-cell='btn'] { margin-left: 4px; }
+.ds-offerline:hover { background: var(--surface-sunken); }
+.ds-offerline[data-primary='true'] { background: var(--surface-sunken); box-shadow: inset 3px 0 0 var(--ink-800); }
+@media (max-width: 1199px) {
+  .ds-offers { grid-template-columns: minmax(0, 1fr) !important; }
+  .ds-offerline { grid-template-columns: minmax(120px, 1fr) max-content !important; row-gap: 6px !important; padding-block: var(--space-2) !important; }
+  .ds-offerline > [data-cell='ship'] { grid-column: 1; grid-row: 1; }
+  .ds-offerline > [data-cell='stock'] { grid-column: 2; grid-row: 1; justify-self: end; justify-items: end !important; }
+  .ds-offerline > [data-cell='marks'] { grid-column: 1; grid-row: 2; align-self: center; }
+  .ds-offerline > [data-cell='price'] { grid-column: 2; grid-row: 2; justify-self: end; }
+  .ds-offerline > [data-cell='btn'] { grid-column: 1 / -1; grid-row: 3; justify-self: end; }
+}
+
+/* ═══ Tree search field ═══════════════════════════════════════════════════ */
+/* The icon sits inside the field so the field is not read as a column heading. */
+.ds-treefield {
+  display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 var(--space-3);
+  border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface);
+  transition: var(--transition-colors);
+}
+.ds-treefield:hover { border-color: var(--ink-300); }
+.ds-treefield:focus-within { border-color: var(--ink-800); box-shadow: inset 0 0 0 1px var(--ink-800); }
+.ds-treefield__icon { display: inline-flex; flex: none; color: var(--text-faint); pointer-events: none; }
+.ds-treefield input { flex: 1; min-width: 0; height: 100%; padding: 0; border: 0 !important; background: none; font: inherit; font-size: var(--text-sm); color: var(--text-strong); }
+.ds-treefield input:focus, .ds-treefield input:focus-visible { outline: none !important; box-shadow: none !important; }
+
+/* ═══ Price range (two thumbs on one track) ═══════════════════════════════ */
+.ds-range { position: relative; height: 24px; }
+.ds-range input { position: absolute; inset: 0; width: 100%; height: 24px; margin: 0; appearance: none; -webkit-appearance: none; background: transparent; accent-color: var(--ink-800); pointer-events: none; }
+.ds-range input:focus { outline: none; }
+.ds-range input:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--red-500); }
+.ds-range input::-webkit-slider-thumb { -webkit-appearance: none; pointer-events: auto; width: 16px; height: 16px; border-radius: 50%; background: var(--ink-800); border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--ink-800); cursor: pointer; }
+.ds-range input::-moz-range-thumb { pointer-events: auto; width: 14px; height: 14px; border-radius: 50%; background: var(--ink-800); border: 2px solid var(--surface); cursor: pointer; }
+.ds-range > span { position: absolute; top: 11px; height: 2px; border-radius: 2px; }
+
+/* ═══ Side sheet (facets below 1120 px, any secondary panel on a phone) ═══ */
+.ds-sheet[data-open='false'] { display: none; }
+.ds-sheet[data-open='true'] { position: fixed; inset: 0; z-index: 80; background: var(--surface-overlay); }
+.ds-sheet[data-open='true'] > div {
+  position: absolute; inset-block: 0; right: 0; width: min(360px, 100%); overflow-y: auto;
+  border: 0; border-left: 1px solid var(--line); border-radius: 0;
+  box-shadow: var(--shadow-lg); padding: var(--space-4) var(--space-4) var(--space-8);
+}

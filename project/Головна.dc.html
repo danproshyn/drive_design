@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/colors.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/space.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/motion.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/layout.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/base.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=3"></script>
+<style>
+  [data-garage-grid] { grid-auto-rows: 1fr; }
+  [data-garage-grid] > .sc-host-x, [data-garage-grid] > .sc-host-x > li { height: 100%; }
+  @media (max-width: 639px) {
+    [data-garage-grid] { grid-template-columns: minmax(0, 1fr) !important; }
+    .ds-garage { flex-wrap: wrap; }
+    .ds-garage > .ds-thumb { width: 88px !important; height: 60px !important; }
+  }
+</style>
+</helmet>
+
+<div class="ds-page">
+
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteHeader" active="home" cart-count="{{ cartCount }}" hint-size="100%,150px"></x-import>
+
+  <main class="ds-container ds-main ds-main--wide">
+
+    <section style="display:grid;gap:var(--space-4)">
+      <h2 class="ds-section-title">Підбір за авто</h2>
+
+      <div id="vin" style="scroll-margin-top:96px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--space-4);padding:var(--space-4) var(--space-5);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)">
+        <div class="ds-field" style="flex:0 0 auto">
+          <span class="ds-field__label">Держномер</span>
+          <div style="display:inline-flex;align-items:stretch;height:44px;border:2px solid var(--ink-800);border-radius:6px;background:var(--white);overflow:hidden">
+            <div style="width:28px;flex:none;background:#0057B7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding-block:4px">
+              <span style="display:block;width:14px;height:10px;background:linear-gradient(#0057B7 50%, #FFD700 50%);border:1px solid rgba(255,255,255,.55);box-sizing:border-box"></span>
+              <span style="font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.04em;color:#fff;line-height:1">UA</span>
+            </div>
+            <input aria-label="Державний номер" placeholder="AA 0000 AA" maxlength="11" value="{{ plate }}" onChange="{{ onPlate }}" style="width:150px;border:0;outline:none;background:none;font-family:var(--font-mono);font-size:19px;font-weight:600;letter-spacing:.06em;color:var(--ink-800);text-align:center;text-transform:uppercase">
+          </div>
+        </div>
+
+        <div style="flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;height:44px;justify-content:center">
+          <span style="width:1px;flex:1;background:var(--line)"></span>
+          <span class="t-eyebrow">або</span>
+          <span style="width:1px;flex:1;background:var(--line)"></span>
+        </div>
+
+        <label class="ds-field" style="flex:1 1 260px;min-width:220px">
+          <span class="ds-field__label">VIN-код</span>
+          <input class="ds-input ds-input--mono" placeholder="WBAVB13506PT22180" maxlength="17" value="{{ vin }}" onChange="{{ onVin }}">
+        </label>
+
+        <button class="ds-btn ds-btn--md ds-btn--dark" style="flex:none" onClick="{{ onResolve }}">Знайти машину</button>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:var(--space-5);margin-block:var(--space-3)">
+        <span style="height:1px;flex:1;background:var(--line)"></span>
+        <span class="t-eyebrow" style="flex:none">або оберіть вручну</span>
+        <span style="height:1px;flex:1;background:var(--line)"></span>
+      </div>
+
+      <div style="border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;background:var(--surface)">
+
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:10px var(--space-5);border-bottom:1px solid var(--line);background:var(--surface-sunken)">
+          <sc-for list="{{ crumbs }}" as="crumb" hint-placeholder-count="5">
+            <button onClick="{{ crumb.pick }}" style="{{ crumb.style }}">{{ crumb.label }}</button>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ picking }}" hint-placeholder-val="{{ true }}">
+          <div style="padding:var(--space-5)" data-comment-anchor="e130003576-div">
+            <sc-if value="{{ hasSearch }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--space-4);margin-bottom:13px">
+                <label class="ds-field" style="flex:1 1 320px;max-width:480px">
+                  <input class="ds-input" placeholder="{{ stepPlaceholder }}" value="{{ query }}" onChange="{{ onQuery }}">
+                </label>
+                <p style="margin:0 0 10px;font-size:var(--text-xs);color:var(--text-muted)">{{ countLabel }}</p>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ hasFilters }}" hint-placeholder-val="{{ true }}">
+              <div style="{{ filterRowStyle }}">
+                <sc-for list="{{ filters }}" as="f" hint-placeholder-count="14">
+                  <button onClick="{{ f.pick }}" style="{{ f.style }}">{{ f.label }}</button>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showPopularGroup }}" hint-placeholder-val="{{ false }}">
+              <div style="margin:-11px -12px 2px">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))">
+                  <sc-for list="{{ popular }}" as="pm" hint-placeholder-count="14">
+                    <button onClick="{{ pm.pick }}" style="display:block;width:100%;text-align:left;min-height:44px;padding:11px 12px;border:0;border-left:3px solid transparent;background:none;font:inherit;font-size:var(--text-sm);font-weight:500;color:var(--text-strong);cursor:pointer;transition:background var(--dur-fast,120ms) var(--ease,cubic-bezier(.2,.8,.3,1))" style-hover="background:var(--surface-sunken);border-left-color:var(--red-500)">{{ pm.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showOthersToggle }}" hint-placeholder-val="{{ false }}">
+              <div style="margin:0 -12px -11px">
+                <button onClick="{{ onToggleOthers }}" style="display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:11px 12px;border:0;border-top:1px solid var(--line-subtle);background:none;font:inherit;font-size:var(--text-sm);font-weight:500;color:var(--text-action);cursor:pointer" style-hover="background:var(--surface-sunken)">{{ othersLabel }}<span style="{{ chevronStyle }}"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="16" hint-size="16px,16px"></x-import></span></button>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isGrid }}" hint-placeholder-val="{{ true }}">
+              <div style="{{ gridStyle }}">
+                <sc-for list="{{ options }}" as="o" hint-placeholder-count="24">
+                  <button onClick="{{ o.pick }}" style="display:block;width:100%;text-align:left;min-height:44px;padding:11px 12px;border:0;border-left:3px solid transparent;background:none;font:inherit;font-size:var(--text-sm);color:var(--text-body);cursor:pointer;transition:background var(--dur-fast,120ms) var(--ease,cubic-bezier(.2,.8,.3,1))" style-hover="background:var(--surface-sunken);border-left-color:var(--red-500);color:var(--text-strong)">{{ o.label }}</button>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isSpec }}" hint-placeholder-val="{{ false }}">
+              <div style="margin:-13px -12px;overflow-x:auto;overflow-y:hidden">
+                <table style="width:100%;min-width:720px;border-collapse:collapse;font-size:var(--text-sm)">
+                  <tbody>
+                    <sc-for list="{{ specs }}" as="s" hint-placeholder-count="4">
+                      <tr onClick="{{ s.pick }}" style="cursor:pointer;border-bottom:1px solid var(--line-subtle)" style-hover="background:var(--surface-sunken)">
+                        <td style="padding:13px 16px 13px 12px;border-left:3px solid transparent;color:var(--text-strong);font-weight:500;white-space:nowrap">{{ s.name }}</td>
+                        <td style="padding:13px 16px;color:var(--text-body);white-space:nowrap">{{ s.engine }}</td>
+                        <td style="padding:13px 16px;color:var(--text-body);white-space:nowrap;font-variant-numeric:tabular-nums">{{ s.volume }}</td>
+                        <td style="padding:13px 16px;color:var(--text-body);white-space:nowrap;font-variant-numeric:tabular-nums">{{ s.power }}</td>
+                        <td style="padding:13px 16px;color:var(--text-body)">{{ s.drive }}</td>
+                        <td style="padding:13px 12px 13px 16px;color:var(--text-muted);white-space:nowrap;font-variant-numeric:tabular-nums">{{ s.period }}</td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:14px;padding:var(--space-8);border-radius:var(--radius-lg);background:var(--surface-sunken);text-align:center">
+                <p style="margin:0;font-size:var(--text-sm);color:var(--text-body)">{{ emptyText }}</p>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ done }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-5);padding:var(--space-5)">
+            <div style="flex:1 1 320px;min-width:260px">
+              <p class="t-eyebrow" style="margin:0 0 4px">Машину визначено</p>
+              <p style="margin:0;font-size:var(--text-xl);font-weight:600;color:var(--text-strong)">{{ doneName }}</p>
+              <p style="margin:4px 0 0;font-size:var(--text-sm);color:var(--text-muted)">{{ doneSpec }}</p>
+              <p style="margin:8px 0 0;font-size:var(--text-xs);color:var(--text-muted)">Машина вже в гаражі — окремо додавати не треба.</p>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:var(--space-3)">
+              <button class="ds-btn ds-btn--md ds-btn--dark">Каталог для цієї машини</button>
+              <button class="ds-btn ds-btn--md ds-btn--ghost" onClick="{{ onRestart }}">Обрати іншу машину</button>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </section>
+
+    <sc-if value="{{ showGarageBlock }}" hint-placeholder-val="{{ true }}">
+    <section style="display:grid;gap:var(--space-4)">
+      <h2 class="ds-section-title">Мій гараж</h2>
+      <ul data-garage-grid="" style="list-style:none;margin:0;padding:0;display:grid;gap:var(--space-3);grid-template-columns:repeat(2,minmax(0,1fr))">
+        <sc-for list="{{ garage }}" as="car" hint-placeholder-count="2">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.GarageCard" name="{{ car.name }}" spec="{{ car.spec }}" vin="{{ car.vin }}" active="{{ car.active }}" oem-href="#" href="#" on-remove="{{ car.remove }}" style="width:100%" hint-size="100%,110px"></x-import>
+        </sc-for>
+      </ul>
+      <sc-if value="{{ garageEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:var(--space-6);border:1px dashed var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)">
+          <p style="margin:0;font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Гараж поки порожній</p>
+          <p style="margin:4px 0 0;font-size:var(--text-sm);color:var(--text-muted)">Знайдіть машину за номером, VIN або вручну — вона збережеться тут, і наступного разу підбір почнеться з неї.</p>
+        </div>
+      </sc-if>
+    </section>
+    </sc-if>
+
+    <section id="request" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-5);padding:var(--space-5) var(--space-6);border:1px solid var(--line);border-left:3px solid var(--red-500);border-radius:var(--radius-lg);background:var(--surface-sunken);scroll-margin-top:96px">
+      <div style="flex:1 1 420px;min-width:280px">
+        <p class="t-eyebrow" style="margin:0 0 6px">Запит на підбір запчастин</p>
+        <p style="margin:0;font-size:var(--text-lg);font-weight:600;line-height:1.3;color:var(--text-strong)">Не знайшли деталь у каталозі — надішліть VIN і список потрібного</p>
+        <p style="margin:6px 0 0;font-size:var(--text-sm);color:var(--text-muted)">Менеджер підбере запчастини вручну й передзвонить. Список можна написати словами або прикріпити файлом.</p>
+      </div>
+      <button class="ds-btn ds-btn--md ds-btn--primary" style="flex:none" onClick="{{ onOpenRequest }}">Залишити запит</button>
+    </section>
+
+  </main>
+
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteFooter" on-request="{{ onOpenRequest }}" hint-size="100%,260px"></x-import>
+
+  <sc-if value="{{ requestOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ onCloseRequest }}" style="position:fixed;inset:0;z-index:80;display:flex;align-items:flex-start;justify-content:center;padding:var(--space-8) var(--space-4);overflow-y:auto;background:var(--surface-overlay)">
+      <div onClick="{{ stop }}" style="width:100%;max-width:560px;border-radius:var(--radius-xl);background:var(--white);box-shadow:var(--shadow-lg);overflow:hidden">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4);padding:var(--space-5) var(--space-6);border-bottom:1px solid var(--line)">
+          <div>
+            <h3 class="t-display-sm" style="margin:0">Запит на підбір запчастин</h3>
+            <p style="margin:8px 0 0;font-size:var(--text-sm);color:var(--text-muted)">Ми передзвонимо протягом робочого дня й підтвердимо ціни та наявність.</p>
+          </div>
+          <div style="flex:none" onClick="{{ onCloseRequest }}">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="x" label="Закрити" size="md" tone="plain" hint-size="44px,44px"></x-import>
+          </div>
+        </div>
+
+        <div style="display:grid;gap:var(--space-4);padding:var(--space-6)">
+          <label class="ds-field">
+            <span class="ds-field__label">VIN-код</span>
+            <input class="ds-input ds-input--mono" placeholder="WBAVB13506PT22180" maxlength="17" value="{{ reqVin }}" onChange="{{ onReqVin }}">
+            <span class="ds-field__hint">17 символів, латиниця. VIN є у техпаспорті та під лобовим склом.</span>
+          </label>
+
+          <label class="ds-field">
+            <span class="ds-field__label">Що потрібно підібрати</span>
+            <textarea class="ds-input" rows="4" placeholder="Наприклад: передні гальмівні колодки, фільтр салону, права опора двигуна" value="{{ reqList }}" onChange="{{ onReqList }}" style="resize:vertical;min-height:104px;padding-block:11px"></textarea>
+          </label>
+
+          <div class="ds-field">
+            <span class="ds-field__label">Файл зі списком</span>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3);padding:14px 16px;border:1px dashed var(--line);border-radius:var(--radius-md);background:var(--surface-sunken)">
+              <span style="flex:1 1 200px;font-size:var(--text-sm);color:var(--text-muted)">{{ reqFileLabel }}</span>
+              <button class="ds-btn ds-btn--sm ds-btn--secondary" style="flex:none" onClick="{{ onPickFile }}">Обрати файл</button>
+            </div>
+            <span class="ds-field__hint">Необовʼязково. Фото та PDF — до 5 файлів по 10 МБ</span>
+          </div>
+
+          <label class="ds-field">
+            <span class="ds-field__label">Телефон</span>
+            <input class="ds-input ds-input--mono" inputMode="tel" value="{{ reqPhone }}" onChange="{{ onReqPhone }}" onFocus="{{ onPhoneCaret }}" onClick="{{ onPhoneCaret }}">
+          </label>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:var(--space-3);padding:var(--space-5) var(--space-6);border-top:1px solid var(--line);background:var(--surface-sunken)">
+          <button class="ds-btn ds-btn--md ds-btn--ghost" onClick="{{ onCloseRequest }}">Скасувати</button>
+          <button class="ds-btn ds-btn--md ds-btn--primary" onClick="{{ onSubmitRequest }}">Надіслати запит</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1000},&quot;garageBlock&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Головна&quot;}}">
+const MODELS = {
+  'Acura': ['MDX', 'RDX', 'TLX', 'ZDX'],
+  'Alfa Romeo': ['147', '156', '159', 'Giulia', 'Giulietta', 'Stelvio'],
+  'Audi': ['A1', 'A3', 'A4', 'A4 Allroad', 'A5', 'A6', 'A6 Allroad', 'A7', 'A8', 'Q2', 'Q3', 'Q5', 'Q7', 'Q8', 'TT', 'e-tron'],
+  'BMW': ['1 серія', '3 серія', '5 серія', '7 серія', 'X1', 'X3', 'X5', 'X6', 'i3'],
+  'Cadillac': ['CTS', 'Escalade', 'SRX', 'XT5'],
+  'Chery': ['Amulet', 'Tiggo 2', 'Tiggo 4', 'Tiggo 7', 'Tiggo 8'],
+  'Chevrolet': ['Aveo', 'Captiva', 'Cruze', 'Epica', 'Lacetti', 'Malibu', 'Tahoe'],
+  'Chrysler': ['300C', 'Pacifica', 'Voyager'],
+  'Citroen': ['Berlingo', 'C3', 'C4', 'C5', 'Jumper', 'Jumpy'],
+  'Dacia': ['Duster', 'Logan', 'Sandero'],
+  'Daewoo': ['Lanos', 'Matiz', 'Nexia', 'Sens'],
+  'Dodge': ['Caliber', 'Journey', 'RAM'],
+  'Fiat': ['500', 'Doblo', 'Ducato', 'Panda', 'Punto'],
+  'Ford': ['C-Max', 'Connect', 'Escape', 'Fiesta', 'Focus', 'Fusion', 'Kuga', 'Mondeo', 'Transit'],
+  'Geely': ['Atlas', 'Coolray', 'Emgrand', 'Tugella'],
+  'Honda': ['Accord', 'CR-V', 'Civic', 'HR-V', 'Jazz', 'Pilot'],
+  'Hyundai': ['Accent', 'Elantra', 'i30', 'Kona', 'Santa Fe', 'Sonata', 'Tucson'],
+  'Infiniti': ['FX35', 'Q50', 'QX60'],
+  'Jaguar': ['F-Pace', 'XE', 'XF'],
+  'Jeep': ['Cherokee', 'Compass', 'Grand Cherokee', 'Renegade', 'Wrangler'],
+  'KIA': ['Ceed', 'Niro', 'Optima', 'Rio', 'Sorento', 'Soul', 'Sportage', 'Stonic'],
+  'Land Rover': ['Defender', 'Discovery', 'Freelander', 'Range Rover', 'Range Rover Sport'],
+  'Lexus': ['ES', 'GX', 'IS', 'NX', 'RX', 'UX'],
+  'Mazda': ['3', '6', 'CX-3', 'CX-5', 'CX-7', 'CX-9', 'MX-5'],
+  'Mercedes-Benz': ['A-Class', 'C-Class', 'E-Class', 'GLC', 'GLE', 'ML', 'S-Class', 'Sprinter', 'Vito'],
+  'MG': ['MG3', 'ZS', 'ZS EV'],
+  'MINI': ['Clubman', 'Cooper', 'Countryman'],
+  'Mitsubishi': ['ASX', 'Colt', 'L200', 'Lancer', 'Outlander', 'Pajero'],
+  'Nissan': ['Juke', 'Leaf', 'Micra', 'Navara', 'Note', 'Qashqai', 'X-Trail'],
+  'Opel': ['Astra', 'Combo', 'Corsa', 'Insignia', 'Meriva', 'Mokka', 'Vectra', 'Vivaro', 'Zafira'],
+  'Peugeot': ['206', '208', '307', '308', '3008', 'Boxer', 'Expert', 'Partner'],
+  'Porsche': ['Cayenne', 'Macan', 'Panamera'],
+  'Renault': ['Captur', 'Clio', 'Duster', 'Kangoo', 'Logan', 'Master', 'Megane', 'Scenic', 'Trafic'],
+  'Seat': ['Alhambra', 'Ibiza', 'Leon', 'Toledo'],
+  'Skoda': ['Fabia', 'Karoq', 'Kodiaq', 'Octavia', 'Rapid', 'Roomster', 'Superb', 'Yeti'],
+  'Smart': ['ForFour', 'ForTwo'],
+  'SsangYong': ['Actyon', 'Korando', 'Rexton'],
+  'Subaru': ['Forester', 'Impreza', 'Legacy', 'Outback', 'XV'],
+  'Suzuki': ['Grand Vitara', 'Jimny', 'SX4', 'Swift', 'Vitara'],
+  'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y'],
+  'Toyota': ['Auris', 'Avensis', 'Camry', 'Corolla', 'Highlander', 'Land Cruiser', 'Prius', 'RAV4', 'Yaris'],
+  'Volkswagen': ['Caddy', 'Crafter', 'Golf', 'Jetta', 'Passat', 'Polo', 'T-Roc', 'Tiguan', 'Touareg', 'Transporter'],
+  'Volvo': ['S60', 'S80', 'V40', 'V70', 'XC60', 'XC90'],
+  'ВАЗ': ['2101', '2107', '2109', '2110', 'Niva'],
+  'ЗАЗ': ['Lanos', 'Sens', 'Славута', 'Таврія'],
+}
+
+const scriptRank = (s) => (/[0-9]/.test(s[0]) ? 0 : /[A-Za-z]/.test(s[0]) ? 1 : 2)
+const MAKES = Object.keys(MODELS).sort((a, b) => scriptRank(a) - scriptRank(b) || a.localeCompare(b, 'uk'))
+const POPULAR = ['Volkswagen', 'Skoda', 'Renault', 'Toyota', 'BMW', 'Mercedes-Benz', 'Audi', 'Nissan', 'Hyundai', 'KIA', 'Ford', 'Opel', 'Mazda', 'Peugeot']
+
+const SUV = /(Q[2-8]|X[1-6]|XC|GL|ML|MDX|RDX|ZDX|QX|FX|NX|RX|UX|GX|CX-|Tiguan|Touareg|T-Roc|RAV4|CR-V|HR-V|Tucson|Kona|Santa|Kuga|Escape|Sportage|Sorento|Stonic|Niro|Soul|Duster|Captur|Cayenne|Macan|Kodiaq|Karoq|Yeti|Outlander|ASX|Pajero|Jimny|Vitara|Land Cruiser|Highlander|Captiva|Tahoe|Escalade|SRX|XT5|Rexton|Korando|Actyon|Cherokee|Compass|Renegade|Wrangler|Defender|Discovery|Freelander|Range|Forester|XV|Juke|Qashqai|X-Trail|Mokka|Tiggo|Atlas|Coolray|Tugella|Stelvio|F-Pace|Countryman|Model X|Model Y|Niva|Caliber|Journey|RAM|Navara|L200|Pilot)/i
+const VAN = /(Transporter|Caddy|Crafter|Sprinter|Vito|Ducato|Boxer|Jumper|Jumpy|Expert|Partner|Berlingo|Combo|Vivaro|Trafic|Master|Kangoo|Connect|Transit|Doblo|Voyager|Alhambra|Scenic|Zafira|Meriva|Pacifica|Roomster|QX60)/i
+const HATCH = /(Golf|Polo|Fabia|Corsa|Astra|Clio|Yaris|Micra|Note|Swift|Panda|Punto|500|206|208|307|308|Matiz|Fiesta|Focus|C3|C4|i30|Rio|Ceed|Colt|Jazz|Civic|Auris|Corolla|Cooper|ForTwo|ForFour|Leaf|i3|e-tron|MG3|ZS)/i
+
+const BODY_HINTS = [
+  ['Кросовер', 'Позашляховик'],
+  ['Мінівен', 'Фургон'],
+  ['Хетчбек', 'Седан', 'Універсал'],
+  ['Седан', 'Універсал', 'Ліфтбек', 'Хетчбек'],
+]
+
+const ENGINES = [
+  { v: '1.4', p: 125, fuel: 'Бензин', code: 'CZCA', drive: 'Передній привід', tag: 'TSI' },
+  { v: '1.6', p: 110, fuel: 'Бензин', code: 'CWVA', drive: 'Передній привід', tag: 'MPI' },
+  { v: '1.5', p: 130, fuel: 'Мʼякий гібрид', code: 'DACA', drive: 'Передній привід', tag: 'eTSI' },
+  { v: '2.0', p: 150, fuel: 'Дизель', code: 'DFGA', drive: 'Передній привід', tag: 'TDI' },
+  { v: '2.0', p: 190, fuel: 'Бензин', code: 'CZPA', drive: 'Привід на всі колеса', tag: 'TSI' },
+  { v: '2.0', p: 184, fuel: 'Дизель', code: 'DEUA', drive: 'Привід на всі колеса', tag: 'TDI' },
+]
+
+const AUDI_ALLROAD = [
+  { name: 'Audi A6 Allroad C8 (4AH) 45 TDI Mild Hybrid quattro', engine: 'Мʼякий гібридний привід DDVE', volume: '3.0 Л', power: '231 к.с.', drive: 'Привід на всі колеса', period: '11.2018 - тепер. час', fuel: 'Гібрид' },
+  { name: 'Audi A6 Allroad C8 (4AH) 50 TDI Mild Hybrid quattro', engine: 'Мʼякий гібридний привід DDVB, DMGA', volume: '3.0 Л', power: '286 к.с.', drive: 'Привід на всі колеса', period: '11.2018 - тепер. час', fuel: 'Гібрид' },
+  { name: 'Audi A6 Allroad C8 (4AH) 55 TDI Mild Hybrid', engine: 'Мʼякий гібридний привід DMKD', volume: '3.0 Л', power: '345 к.с.', drive: 'Привід на всі колеса', period: '11.2020 - тепер. час', fuel: 'Гібрид' },
+  { name: 'Audi A6 Allroad C8 (4AH) 55 TDI Mild Hybrid quattro', engine: 'Мʼякий гібридний привід DEWA', volume: '3.0 Л', power: '349 к.с.', drive: 'Привід на всі колеса', period: '03.2019 - тепер. час', fuel: 'Гібрид' },
+]
+
+
+const LEVELS = [
+  { key: 'mark', title: 'Марка', label: 'За маркою:', placeholder: 'Шукайте за маркою', all: 'Всі марки авто', unit: ['марка', 'марки', 'марок'] },
+  { key: 'model', title: 'Модель', label: 'За моделлю:', placeholder: 'Шукайте за моделлю', all: 'Всі моделі', unit: ['модель', 'моделі', 'моделей'] },
+  { key: 'year', title: 'Рік', label: 'За роком випуску:', placeholder: 'Введіть рік', all: 'Всі роки', unit: ['рік', 'роки', 'років'] },
+  { key: 'body', title: 'Кузов', label: 'За кузовом:', placeholder: 'Шукайте за кузовом', all: 'Всі кузови', unit: ['кузов', 'кузови', 'кузовів'] },
+  { key: 'engine', title: 'Обʼєм і пальне', label: 'За двигуном:', placeholder: 'Шукайте за двигуном', all: 'Усі двигуни', unit: ['двигун', 'двигуни', 'двигунів'] },
+  { key: 'spec', title: 'Модифікація', label: 'За модифікацією:', placeholder: 'Шукайте за модифікацією або кодом', all: 'Усі модифікації', unit: ['модифікація', 'модифікації', 'модифікацій'] },
+]
+
+function plural(n, forms) {
+  const a = Math.abs(n) % 100
+  const b = a % 10
+  if (a > 10 && a < 20) return forms[2]
+  if (b > 1 && b < 5) return forms[1]
+  if (b === 1) return forms[0]
+  return forms[2]
+}
+
+function bodiesFor(model) {
+  if (VAN.test(model)) return BODY_HINTS[1]
+  if (SUV.test(model)) return BODY_HINTS[0]
+  if (HATCH.test(model)) return BODY_HINTS[2]
+  return BODY_HINTS[3]
+}
+
+function specsFor(mark, model, year, body) {
+  if (mark === 'Audi' && model === 'A6 Allroad') return AUDI_ALLROAD
+  const from = Math.max(1998, Number(year) || 2015)
+  return ENGINES.map((e, i) => ({
+    name: mark + ' ' + model + ' ' + body + ' ' + e.v + ' ' + e.tag,
+    engine: e.fuel + ' ' + e.code,
+    volume: e.v + ' Л',
+    power: e.p + ' к.с.',
+    drive: e.drive,
+    period: String((i % 9) + 1).padStart(2, '0') + '.' + from + ' - тепер. час',
+    fuel: e.fuel.indexOf('гібрид') > -1 ? 'Гібрид' : e.fuel,
+  }))
+}
+
+const CHIP_BASE = {
+  minWidth: 34, minHeight: 32, padding: '0 10px', border: '1px solid var(--line)', borderRadius: 'var(--radius-full)',
+  background: 'var(--white)', font: 'inherit', fontSize: 'var(--text-sm)', fontWeight: 500,
+  color: 'var(--text-body)', cursor: 'pointer',
+}
+
+class Component extends DCLogic {
+  state = {
+    chosen: {},
+    step: 0,
+    query: '',
+    filter: null,
+    done: false,
+    showOthers: false,
+    requestOpen: false,
+    reqVin: '',
+    reqList: '',
+    reqPhoneDigits: '672148830',
+    reqFile: null,
+    vin: '',
+    plate: '',
+    garage: [{ id: 1, name: 'Skoda Octavia A7 1.6 TDI', spec: 'Універсал · 2015 · 110 к.с. · дизель', vin: 'TMBJG7NE0F0123456' }],
+  }
+
+  pick = (levelIndex, value) => {
+    const key = LEVELS[levelIndex].key
+    const chosen = { ...this.state.chosen, [key]: value }
+    if (levelIndex === 5) {
+      const car = { id: Date.now(), name: value.name, spec: [chosen.body, chosen.year, value.power, value.volume].join(' · '), vin: '', active: true }
+      return this.setState((s) => ({ chosen, done: true, step: 6, query: '', filter: null, garage: [car, ...s.garage.map((c) => ({ ...c, active: false }))] }))
+    }
+    this.setState({ chosen, step: levelIndex + 1, query: '', filter: null })
+  }
+
+  goTo = (index) => this.setState((s) => {
+    const chosen = { ...s.chosen }
+    LEVELS.forEach((lv, i) => { if (i >= index) chosen[lv.key] = null })
+    return { chosen, step: index, done: false, query: '', filter: null }
+  })
+
+  restart = () => this.setState({ chosen: {}, step: 0, query: '', filter: null, done: false })
+
+  resolve = () => {
+    const spec = {
+      name: 'Volkswagen Passat B8 2.0 TDI', engine: 'Дизель DFGA', volume: '2.0 Л', power: '150 к.с.',
+      drive: 'Передній привід', period: '08.2017 - тепер. час', fuel: 'Дизель',
+    }
+    const chosen = { mark: 'Volkswagen', model: 'Passat', year: '2017', body: 'Універсал', engine: '2.0 Л · Дизель', spec }
+    const car = { id: Date.now(), name: spec.name, spec: 'Універсал · 2017 · 150 к.с. · дизель', vin: this.state.vin || 'WVWZZZ3CZHE072814', active: true }
+    this.setState((s) => ({ chosen, done: true, step: 6, garage: [car, ...s.garage.map((c) => ({ ...c, active: false }))] }))
+  }
+
+  formatPhone = (digits) => {
+    const d = (digits + '_________').slice(0, 9)
+    return '+38 (0' + d.slice(0, 2) + ') ' + d.slice(2, 5) + '-' + d.slice(5, 7) + '-' + d.slice(7, 9)
+  }
+
+  caretToSlot = (el, digits) => {
+    const s = this.formatPhone(digits)
+    const i = s.indexOf('_')
+    const pos = i === -1 ? s.length : i
+    requestAnimationFrame(() => { try { el.setSelectionRange(pos, pos) } catch (err) {} })
+  }
+
+  formatPlate = (raw) => {
+    const clean = raw.toUpperCase().replace(/[^A-ZА-ЯІЇЄ0-9]/gi, '').slice(0, 8)
+    const a = clean.slice(0, 2)
+    const b = clean.slice(2, 6)
+    const c = clean.slice(6, 8)
+    return [a, b, c].filter(Boolean).join(' ')
+  }
+
+  rawOptions() {
+    const { chosen, step } = this.state
+    if (step === 0) return MAKES
+    if (step === 1) return (MODELS[chosen.mark] || []).slice().sort((a, b) => scriptRank(a) - scriptRank(b) || a.localeCompare(b, 'uk'))
+    if (step === 2) {
+      const years = []
+      for (let y = 2026; y >= 1998; y--) years.push(String(y))
+      return years
+    }
+    if (step === 3) return bodiesFor(chosen.model || '')
+    const rows = specsFor(chosen.mark, chosen.model, chosen.year, chosen.body)
+    if (step === 4) {
+      const combos = []
+      rows.forEach((r) => {
+        const label = r.volume + ' · ' + r.fuel
+        if (combos.indexOf(label) === -1) combos.push(label)
+      })
+      return combos
+    }
+    return rows.filter((r) => r.volume + ' · ' + r.fuel === chosen.engine)
+  }
+
+  filterDefs(items) {
+    const { step } = this.state
+    if (step === 0) {
+      const seen = []
+      items.forEach((n) => {
+        const ch = /[0-9]/.test(n[0]) ? '0-9' : n[0].toUpperCase()
+        if (seen.indexOf(ch) === -1) seen.push(ch)
+      })
+      const rank = (c) => (c === '0-9' ? 0 : /[A-Z]/.test(c) ? 1 : 2)
+      return seen.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b, 'uk'))
+    }
+    if (step === 2) return ['2020-ті', '2010-ті', '2000-ні', '1990-ті']
+    return []
+  }
+
+  matches(item, filter) {
+    const { step } = this.state
+    if (step === 0) {
+      const ch = /[0-9]/.test(item[0]) ? '0-9' : item[0].toUpperCase()
+      return ch === filter
+    }
+    if (step === 2) return String(Math.floor(Number(item) / 10) * 10).slice(0, 3) === filter.slice(0, 3)
+    return true
+  }
+
+  renderVals() {
+    const { chosen, step, query, filter, done } = this.state
+    const q = query.trim().toLowerCase()
+    const level = LEVELS[Math.min(step, 5)]
+    const isSpec = step === 5
+    const raw = done ? [] : this.rawOptions()
+
+    let list = raw
+    if (q) list = list.filter((it) => (isSpec ? (it.name + ' ' + it.engine).toLowerCase() : String(it).toLowerCase()).indexOf(q) > -1)
+    if (filter) list = list.filter((it) => this.matches(it, filter))
+
+    const crumbs = LEVELS.map((lv, i) => {
+      const value = chosen[lv.key]
+      const isDone = Boolean(value) && (i < 5 || done)
+      const active = !done && step === i
+      const label = value ? (i === 5 ? value.power : value) : lv.title
+      const style = {
+        minHeight: 34, padding: isDone ? '0 12px' : '0 4px', whiteSpace: 'nowrap',
+        border: 0, borderBottom: active ? '3px solid var(--red-500)' : '3px solid transparent',
+        borderRadius: isDone ? 'var(--radius-full)' : 0,
+        font: 'inherit', fontSize: 'var(--text-sm)', fontWeight: 500, cursor: isDone || active ? 'pointer' : 'default',
+        background: isDone ? 'var(--ink-800)' : 'none',
+        color: isDone ? 'var(--white)' : active ? 'var(--text-strong)' : 'var(--text-faint)',
+      }
+      return { label, style, pick: isDone || active ? () => this.goTo(i) : () => {} }
+    })
+
+    const filters = this.filterDefs(raw).map((f) => ({
+      label: f,
+      style: {
+        ...CHIP_BASE,
+        background: filter === f ? 'var(--ink-800)' : 'var(--white)',
+        borderColor: filter === f ? 'var(--ink-800)' : 'var(--line)',
+        color: filter === f ? 'var(--white)' : 'var(--text-body)',
+      },
+      pick: () => this.setState({ filter: filter === f ? null : f }),
+    }))
+
+    const showPopularGroup = step === 0 && !q && !filter
+    const others = showPopularGroup ? list.filter((m) => POPULAR.indexOf(m) === -1) : list
+    const gridList = showPopularGroup && !this.state.showOthers ? [] : others
+
+    return {
+      cartCount: 2,
+      showArticleBlock: this.props.articleSearchBlock ?? true,
+      showGarageBlock: this.props.garageBlock ?? true,
+      crumbs,
+      picking: !done,
+      done,
+      hasSearch: step === 0,
+      hideSearch: step !== 0,
+      stepLabel: level.label,
+      stepPlaceholder: level.placeholder,
+      allLabel: level.all,
+      countLabel: list.length + ' ' + plural(list.length, level.unit),
+      query,
+      onQuery: (e) => this.setState({ query: e.target.value }),
+      onAllFilters: () => this.setState({ filter: null, query: '' }),
+      hasFilters: filters.length > 0,
+      filterRowStyle: {
+        display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6,
+        margin: (step === 0 ? '0' : '-20px') + ' -20px 13px',
+        padding: '9px 20px', borderBottom: '1px solid var(--line)', background: 'var(--surface-sunken)',
+      },
+      filters,
+      showPopularGroup,
+      popular: showPopularGroup
+        ? POPULAR.filter((m) => MODELS[m])
+            .slice()
+            .sort((a, b) => scriptRank(a) - scriptRank(b) || a.localeCompare(b, 'uk'))
+            .map((m) => ({ label: m, pick: () => this.pick(0, m) }))
+        : [],
+      showOthersToggle: showPopularGroup,
+      othersLabel: this.state.showOthers ? 'Згорнути' : 'Інші марки (' + others.length + ')',
+      chevronStyle: { display: 'inline-flex', transition: 'transform 120ms cubic-bezier(.2,.8,.3,1)', transform: this.state.showOthers ? 'rotate(180deg)' : 'none' },
+      onToggleOthers: () => this.setState((s) => ({ showOthers: !s.showOthers })),
+      isGrid: !isSpec && gridList.length > 0,
+      gridStyle: {
+        display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))',
+        margin: (showPopularGroup ? '2px' : '-11px') + ' -12px -11px',
+      },
+      options: isSpec ? [] : gridList.map((o) => ({ label: o, pick: () => this.pick(step, o) })),
+      isSpec: isSpec && list.length > 0,
+      specs: isSpec ? list.map((s) => ({ ...s, pick: () => this.pick(5, s) })) : [],
+      isEmpty: !done && list.length === 0,
+      emptyText: 'Нічого не знайшли за цим запитом. Перевірте написання або скиньте фільтр — ' + level.all.toLowerCase() + '.',
+      doneName: chosen.spec ? chosen.spec.name : [chosen.mark, chosen.model, chosen.body].filter(Boolean).join(' '),
+      doneSpec: chosen.spec
+        ? [chosen.body, chosen.year, chosen.spec.engine, chosen.spec.power, chosen.spec.drive].filter(Boolean).join(' · ')
+        : 'Універсал · 2017 · Дизель DFGA · Передній привід',
+      onRestart: this.restart,
+      requestOpen: this.state.requestOpen,
+      onOpenRequest: () => this.setState({ requestOpen: true, reqVin: this.state.vin }),
+      onCloseRequest: () => this.setState({ requestOpen: false }),
+      stop: (e) => e.stopPropagation(),
+      reqVin: this.state.reqVin,
+      onReqVin: (e) => this.setState({ reqVin: e.target.value.toUpperCase() }),
+      reqList: this.state.reqList,
+      onReqList: (e) => this.setState({ reqList: e.target.value }),
+      reqPhone: this.formatPhone(this.state.reqPhoneDigits),
+      onReqPhone: (e) => {
+        const prev = this.state.reqPhoneDigits
+        const raw = e.target.value
+        let digits = raw.replace(/\D/g, '').replace(/^380?/, '').slice(0, 9)
+        if (raw.length < this.formatPhone(prev).length && digits.length === prev.length) digits = digits.slice(0, -1)
+        const el = e.target
+        this.setState({ reqPhoneDigits: digits }, () => this.caretToSlot(el, digits))
+      },
+      onPhoneCaret: (e) => this.caretToSlot(e.target, this.state.reqPhoneDigits),
+      reqFileLabel: this.state.reqFile || 'Файл не обрано',
+      onPickFile: () => this.setState({ reqFile: 'список-запчастин.pdf · 240 КБ' }),
+      onSubmitRequest: () => this.setState({ requestOpen: false }),
+      vin: this.state.vin,
+      onVin: (e) => this.setState({ vin: e.target.value.toUpperCase() }),
+      plate: this.state.plate,
+      onPlate: (e) => this.setState({ plate: this.formatPlate(e.target.value) }),
+      onResolve: this.resolve,
+      garageEmpty: this.state.garage.length === 0,
+      garage: this.state.garage.map((c) => ({ ...c, remove: () => this.setState((s) => ({ garage: s.garage.filter((x) => x.id !== c.id) })) })),
+    }
+  }
+}
+
+</script>
+</body>
+</html>

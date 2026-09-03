@@ -1,0 +1,76 @@
+/* Type. Two voices: Oswald condensed for anything that shouts (it echoes the logo's
+   condensed italic wordmark), Onest for everything a customer reads. IBM Plex Mono is
+   reserved for article numbers, VINs and OE numbers — strings that get compared character
+   by character. */
+:root {
+  --font-display: 'Oswald', 'Arial Narrow', 'Helvetica Neue', sans-serif;
+  --font-sans: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', monospace;
+
+  /* Body / UI scale */
+  --text-3xs: 11px;
+  --text-2xs: 12px;
+  --text-xs: 13px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 21px;
+  --text-2xl: 26px;
+  --text-3xl: 32px;
+
+  /* Display scale (Oswald, uppercase, tight leading) */
+  --display-xs: 22px;
+  --display-sm: 28px;
+  --display-md: 38px;
+  --display-lg: 52px;
+  --display-xl: 68px;
+
+  --leading-tight: 1.05;
+  --leading-snug: 1.2;
+  --leading-normal: 1.45;
+  --leading-relaxed: 1.6;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --tracking-display: 0.01em;
+  --tracking-eyebrow: 0.09em;
+  --tracking-mono: 0.01em;
+  --tracking-tight: -0.011em;
+}
+
+/* Ready-made text roles. Use these classes in HTML mocks; in JSX components the same
+   values are applied through the custom properties above. */
+.t-display-xl,
+.t-display-lg,
+.t-display-md,
+.t-display-sm,
+.t-display-xs {
+  font-family: var(--font-display);
+  font-weight: var(--weight-600, 600);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+  color: var(--text-strong);
+  margin: 0;
+}
+.t-display-xl { font-size: var(--display-xl); font-weight: 700; }
+.t-display-lg { font-size: var(--display-lg); font-weight: 700; }
+.t-display-md { font-size: var(--display-md); font-weight: 600; }
+.t-display-sm { font-size: var(--display-sm); font-weight: 600; }
+.t-display-xs { font-size: var(--display-xs); font-weight: 600; }
+
+.t-eyebrow {
+  font-family: var(--font-display);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.t-body { font-size: var(--text-md); line-height: var(--leading-normal); color: var(--text-body); }
+.t-body-sm { font-size: var(--text-sm); line-height: var(--leading-normal); color: var(--text-body); }
+.t-caption { font-size: var(--text-xs); line-height: var(--leading-normal); color: var(--text-muted); }
+.t-mono { font-family: var(--font-mono); letter-spacing: var(--tracking-mono); font-variant-ligatures: none; }

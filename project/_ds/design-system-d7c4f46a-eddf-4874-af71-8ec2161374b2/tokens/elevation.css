@@ -1,0 +1,22 @@
+/* Elevation is almost absent by design: this is a catalogue, and a page of floating cards
+   reads as a page of adverts. Structure comes from hairlines; shadow is reserved for things
+   that genuinely sit above the page (suggest list, sticky header once scrolled, lightbox).
+   All shadows are warm-tinted from the ink, never pure black. */
+:root {
+  --shadow-none: none;
+  --shadow-xs: 0 1px 2px rgb(36 33 29 / 0.06);
+  --shadow-sm: 0 1px 3px rgb(36 33 29 / 0.08), 0 1px 2px rgb(36 33 29 / 0.04);
+  --shadow-md: 0 4px 12px rgb(36 33 29 / 0.09);
+  --shadow-lg: 0 14px 34px rgb(36 33 29 / 0.13);
+  --shadow-focus: 0 0 0 3px rgb(232 27 33 / 0.25);
+  --shadow-focus-inverse: 0 0 0 3px rgb(255 255 255 / 0.4);
+
+  /* Hairline as a shadow, so it can sit on an element that already has a border */
+  --hairline-bottom: inset 0 -1px 0 var(--line);
+  --hairline-top: inset 0 1px 0 var(--line);
+
+  /* The one signature: a 3 px red keyline that slides in on the left of an active or
+     hovered row. Derived from the logo's speed lines. */
+  --keyline-red: inset 3px 0 0 var(--red-500);
+  --keyline-ink: inset 3px 0 0 var(--ink-800);
+}
