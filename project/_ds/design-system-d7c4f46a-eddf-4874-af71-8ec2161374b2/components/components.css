@@ -541,8 +541,15 @@
   color: var(--white); font-size: var(--text-sm); font-weight: var(--weight-semibold); line-height: 1.35;
 }
 .ds-footer__cta:hover { background: rgb(255 255 255 / 0.14); color: var(--white); text-decoration: none; }
-.ds-footer__map { color: var(--white); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgb(255 255 255 / 0.45); }
-.ds-footer__map:hover { color: var(--white); text-decoration-color: var(--white); }
+/* Адреса — посилання на карту, тому підкреслення стоїть завжди, а не лише на hover.
+   Селектор має бути не слабший за `.ds-footer a`, інакше те скидає підкреслення. */
+.ds-footer a.ds-footer__map {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--white); text-decoration: underline; text-underline-offset: 3px;
+  text-decoration-color: rgb(255 255 255 / 0.45);
+}
+.ds-footer a.ds-footer__map > svg { flex: none; }
+.ds-footer a.ds-footer__map:hover { color: var(--white); text-decoration-color: var(--white); }
 .ds-footer__hours { display: grid; grid-template-columns: auto auto; justify-content: start; column-gap: var(--space-3); row-gap: 2px; margin: var(--space-2) 0 0; }
 .ds-footer__links { display: grid; gap: 4px; justify-items: start; margin: 0; }
 .ds-footer__phone { display: inline-flex; align-items: center; gap: 8px; }
@@ -602,7 +609,13 @@
 /* Кнопка стоїть трохи далі від ціни, ніж решта колонок одна від одної. */
 .ds-offerline > [data-cell='btn'] { margin-left: 4px; }
 .ds-offerline:hover { background: var(--surface-sunken); }
+/* Рекомендований набір: сервер закріплює кілька пропозицій нагорі списку. Усі вони стоять
+   на притопленому тлі; чорну кілю має тільки найкраща — перша. Пропозиції, які користувач
+   розкрив кнопкою «ще N», лишаються на білому. */
+.ds-offerline[data-pinned='true'] { background: var(--surface-sunken); }
 .ds-offerline[data-primary='true'] { background: var(--surface-sunken); box-shadow: inset 3px 0 0 var(--ink-800); }
+.ds-offerline[data-pinned='true']:hover,
+.ds-offerline[data-primary='true']:hover { background: var(--surface-muted); }
 @media (max-width: 1199px) {
   .ds-offers { grid-template-columns: minmax(0, 1fr) !important; }
   .ds-offerline { grid-template-columns: minmax(120px, 1fr) max-content !important; row-gap: 6px !important; padding-block: var(--space-2) !important; }

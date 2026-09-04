@@ -3615,7 +3615,7 @@ function SiteFooter({
         h('p', { style: { margin: 0 } },
           h('a', {
             className: 'ds-footer__map', href: SHOP.mapHref, target: '_blank', rel: 'noopener',
-          }, SHOP.address)),
+          }, h(__ds_scope.Icon, { name: 'map-pin', size: 15 }), h('span', null, SHOP.address))),
         h('p', { className: 'ds-footer__hours' }, SHOP.hours.map(([day, time]) => h(React.Fragment, { key: day },
           h('span', null, day), h('span', null, time))))),
       h('div', null,

@@ -129,12 +129,6 @@
   }
   [data-hot]:hover { border-color: var(--red-500); background: rgb(232 27 33 / .1); }
   [data-hot][data-sel="true"] { border-color: var(--ink-800); border-width: 2px; background: rgb(36 33 29 / .07); }
-  [data-hot] i {
-    position: absolute; top: -10px; left: -10px; display: grid; place-items: center;
-    width: 20px; height: 20px; border-radius: var(--radius-full); background: var(--ink-800);
-    color: var(--white); font-family: var(--font-mono); font-size: 11px; font-style: normal; line-height: 1;
-  }
-  [data-hot][data-sel="true"] i { background: var(--red-600); }
 
   /* Сторінка вузла: схема й перелік деталей поруч від 900 px, нижче — одне під одним.
      Схему читають із ПК, тому від 1360 px контейнер цієї сторінки ширший за решту сайту
@@ -464,7 +458,7 @@
                     <em style="font-family:var(--font-sans);font-size:var(--text-3xs);font-style:normal;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint)">Схема виробника</em>
                   </div>
                   <sc-for list="{{ hotspots }}" as="hot" hint-placeholder-count="5">
-                    <button data-hot data-sel="{{ hot.sel }}" style="{{ hot.style }}" aria-label="{{ hot.label }}" onClick="{{ hot.pick }}"><i>{{ hot.code }}</i></button>
+                    <button data-hot data-sel="{{ hot.sel }}" style="{{ hot.style }}" aria-label="{{ hot.label }}" onClick="{{ hot.pick }}"></button>
                   </sc-for>
                 </div>
               </div>

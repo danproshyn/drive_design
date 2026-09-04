@@ -194,7 +194,7 @@
                     <div style="min-width:0;display:grid;gap:var(--space-2)">
                       <div class="ds-offers" data-offers>
                         <sc-for list="{{ row.offers }}" as="offer" hint-placeholder-count="2">
-                          <div class="ds-offerline" data-offer data-primary="{{ offer.primaryAttr }}">
+                          <div class="ds-offerline" data-offer data-pinned="{{ offer.pinnedAttr }}" data-primary="{{ offer.primaryAttr }}">
                             <div data-cell="ship" style="min-width:0;display:grid;gap:1px">
                               <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="{{ offer.shipDate }}" relative="{{ offer.shipRelative }}" cutoff="{{ offer.shipCutoff }}" hint-size="auto,34px"></x-import>
                               <sc-if value="{{ offer.warehouse }}" hint-placeholder-val="{{ false }}">
@@ -550,10 +550,9 @@ class Component extends DCLogic {
       const best = minPrice(row)
       const soonest = minDay(row)
       /* Мітки незалежні: якщо найдешевша пропозиція водночас найшвидша, вона отримує обидві.
-         При одній пропозиції порівнювати нема з чим — мітки не ставимо. */
-      const comparable = all.length > 1
-      const bestPriceKey = comparable ? (all.find((o) => o.price === best) || {}).key : null
-      const bestDateKey = comparable ? (all.find((o) => o.day === soonest) || {}).key : null
+         Єдина пропозиція теж отримує обидві — вона і найдешевша, і найшвидша. */
+      const bestPriceKey = (all.find((o) => o.price === best) || {}).key
+      const bestDateKey = (all.find((o) => o.day === soonest) || {}).key
       const isOpen = expanded[row.id] === true
 
       /* Сортування впорядковує лише товари. Пропозиції всередині рядка завжди
@@ -579,7 +578,11 @@ class Component extends DCLogic {
         offers: sorted.map((offer, index) => {
           /* Рекомендація сервера прив'язана до пропозиції, а не до позиції: при зміні сортування вона їде разом із рядком. */
           const primary = offer.key === all[0].key
+          /* Закріплений (рекомендований) набір — перші три пропозиції сервера; розкриті
+             кнопкою «ще N» лишаються на білому. */
+          const pinned = orderedOffers.slice(0, 3).some((o) => o.key === offer.key)
           return {
+            pinnedAttr: pinned ? 'true' : 'false',
             key: offer.key,
             price: offer.price,
             shipDate: offer.date || '',

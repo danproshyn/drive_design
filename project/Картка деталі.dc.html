@@ -25,7 +25,8 @@
   [data-part] { display: grid; gap: var(--space-6) var(--space-8); align-items: start; grid-template-columns: minmax(0, 1fr); }
   @media (min-width: 900px) { [data-part] { grid-template-columns: 380px minmax(0, 1fr); } }
   /* Стрічки з горизонтальним скролом: мініатюри галереї та останні переглянуті */
-  [data-strip] { display: flex; gap: var(--space-2); margin: 0; padding: 0; list-style: none; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: thin; }
+  /* 3 px паддингу — щоб рамка вибраної мініатюри не обрізалася скролом стрічки. */
+  [data-strip] { display: flex; gap: var(--space-2); margin: 0; padding: 3px; list-style: none; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: thin; }
   [data-strip] > * { scroll-snap-align: start; }
   [data-carousel] { display: flex; gap: var(--space-3); margin: 0; padding: 0 1px 4px; list-style: none; overflow-x: auto; scroll-behavior: smooth; scroll-snap-type: x mandatory; scrollbar-width: thin; }
   [data-carousel] > li { flex: 0 0 clamp(168px, 16vw, 196px); scroll-snap-align: start; }
@@ -68,7 +69,7 @@
             <ul data-strip ref="{{ thumbStrip }}" style="flex:1;min-width:0">
               <sc-for list="{{ photos }}" as="photo" hint-placeholder-count="10">
                 <li style="flex:none">
-                  <button type="button" onClick="{{ photo.select }}" aria-label="{{ photo.label }}" aria-current="{{ photo.current }}" style="display:block;padding:0;border:0;background:none;border-radius:var(--radius-md);cursor:pointer;box-shadow:{{ photo.ring }}">
+                  <button type="button" onClick="{{ photo.select }}" aria-label="{{ photo.label }}" aria-current="{{ photo.current }}" style="display:block;padding:0;border:0;background:none;border-radius:var(--radius-md);cursor:pointer;box-shadow:{{ photo.ring }};opacity:{{ photo.dim }};transition:opacity 120ms cubic-bezier(.2,.8,.3,1)" style-hover="opacity:1">
                     <x-import component-from-global-scope="DesignSystem_d7c4f4.PartThumb" size="{{ thumbSize }}" hint-size="64px,64px"></x-import>
                   </button>
                 </li>
@@ -139,7 +140,7 @@
 
             <ul class="ds-offers" data-offers>
               <sc-for list="{{ offers }}" as="offer" hint-placeholder-count="3">
-                <li class="ds-offerline" data-offer data-primary="{{ offer.primaryAttr }}">
+                <li class="ds-offerline" data-offer data-pinned="{{ offer.pinnedAttr }}" data-primary="{{ offer.primaryAttr }}">
                   <div data-cell="ship" style="min-width:0;display:grid;gap:1px">
                     <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="{{ offer.shipDate }}" relative="{{ offer.shipRelative }}" cutoff="{{ offer.shipCutoff }}" hint-size="auto,34px"></x-import>
                     <sc-if value="{{ offer.warehouse }}" hint-placeholder-val="{{ false }}">
@@ -261,7 +262,7 @@
                                 <ul style="list-style:none;margin:0 0 var(--space-2);padding:0">
                                   <sc-for list="{{ type.vehicles }}" as="vehicle" hint-placeholder-count="2">
                                     <li>
-                                      <a href="#" target="_blank" rel="noopener" style="display:grid;grid-template-columns:132px 76px 72px minmax(0,1fr);align-items:baseline;gap:2px var(--space-3);min-height:34px;padding:5px var(--space-4) 5px var(--space-16);color:var(--text-body);text-decoration:none;box-shadow:inset 3px 0 0 transparent;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);box-shadow:var(--keyline-red);color:var(--text-strong);text-decoration:none">
+                                      <a href="#" target="_blank" rel="noopener" style="display:grid;grid-template-columns:minmax(176px,max-content) 76px 72px minmax(0,1fr);align-items:baseline;gap:2px var(--space-3);min-height:34px;padding:5px var(--space-4) 5px var(--space-16);color:var(--text-body);text-decoration:none;box-shadow:inset 3px 0 0 transparent;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);box-shadow:var(--keyline-red);color:var(--text-strong);text-decoration:none">
                                         <span style="font-size:var(--text-sm);font-weight:500;color:var(--text-strong)">{{ vehicle.engine }}</span>
                                         <span style="font-size:var(--text-xs);color:var(--text-muted)">{{ vehicle.fuel }}</span>
                                         <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-mono);color:var(--text-muted);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right">{{ vehicle.power }}</span>
@@ -575,12 +576,13 @@ class Component extends DCLogic {
 
     const all = outOfStock ? [] : single ? [OFFERS[0]] : OFFERS
 
-    /* Мітки вважаються по ВСІХ пропозиціях деталі; при одній порівнювати нема з чим. */
-    const comparable = all.length > 1
-    const best = comparable ? Math.min(...all.map((o) => o.price)) : null
-    const soonest = comparable ? Math.min(...all.map((o) => o.day)) : null
-    const bestPriceKey = comparable ? (all.find((o) => o.price === best) || {}).key : null
-    const bestDateKey = comparable ? (all.find((o) => o.day === soonest) || {}).key : null
+    /* Мітки вважаються по ВСІХ пропозиціях деталі. Єдина пропозиція отримує обидві —
+       вона і найдешевша, і найшвидша. */
+    const hasAny = all.length > 0
+    const best = hasAny ? Math.min(...all.map((o) => o.price)) : null
+    const soonest = hasAny ? Math.min(...all.map((o) => o.day)) : null
+    const bestPriceKey = hasAny ? (all.find((o) => o.price === best) || {}).key : null
+    const bestDateKey = hasAny ? (all.find((o) => o.day === soonest) || {}).key : null
 
     let ordered = all
     if (sort === 'price') ordered = [...all].sort((a, b) => a.price - b.price)
@@ -602,6 +604,8 @@ class Component extends DCLogic {
       minQtyLabel: offer.minQty > 1 ? 'від ' + offer.minQty + ' шт' : '',
       bestPrice: offer.key === bestPriceKey,
       bestDate: offer.key === bestDateKey,
+      /* Закріплений (рекомендований) набір — ті пропозиції, які сервер показує відразу. */
+      pinnedAttr: offer.visible === true ? 'true' : 'false',
       primaryAttr: offer.primary === true ? 'true' : 'false',
       warehouse: staffView ? WAREHOUSES[index % WAREHOUSES.length] + (offer.cutoff ? ' · до ' + offer.cutoff : '') : '',
       sellerPrice: staffView ? Math.round(offer.price * 0.74) + ' ₴' : ''
@@ -704,7 +708,12 @@ class Component extends DCLogic {
       photos: Array.from({ length: PHOTO_COUNT }, (unused, index) => ({
         label: 'Показати фото ' + (index + 1),
         current: index === photo ? 'true' : 'false',
-        ring: index === photo ? 'inset 0 0 0 2px var(--ink-800)' : 'inset 0 0 0 1px var(--line)',
+        /* Вибране фото: чорна рамка на всю мініатюру. Решта — світліші й притлумлені,
+           щоб вибір читався з відстані, а не тільки при порівнянні рамок. */
+        /* Рамка малюється НАВКОЛО мініатюри, а не всередині: у PartThumb непрозоре тло,
+           тому inset-тінь ховається під ним. */
+        ring: index === photo ? '0 0 0 3px var(--ink-800)' : '0 0 0 1px var(--line)',
+        dim: index === photo ? 1 : 0.7,
         select: () => this.setState({ photo: index })
       })),
       photoPosition: 'Фото ' + (photo + 1) + ' з ' + PHOTO_COUNT,
