@@ -8,6 +8,11 @@
 
   --utilitybar-h: 34px;
   --header-h: 68px;
+  /* Що насправді стоїть над сторінкою, коли вона прокручена: службова смуга, шапка й
+     її волосяна лінія. Саме це, а не --header-h, є відступом для sticky-елементів.
+     Значення тут — запас на випадок, коли скрипт ще не виміряв шапку; SiteHeader
+     перезаписує його живою висотою (навігація переходить у два рядки до ~1050 px). */
+  --header-total: calc(var(--utilitybar-h) + var(--header-h) + 1px);
   --sidebar-w: 272px; /* the category tree */
   --facets-w: 248px; /* the filter panel */
   --thumb-sm: 64px;

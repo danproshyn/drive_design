@@ -221,7 +221,11 @@
                             <div data-cell="price" style="display:grid;justify-items:end;gap:1px">
                               <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ offer.price }}" size="md" hint-size="auto,24px"></x-import>
                               <sc-if value="{{ offer.sellerPrice }}" hint-placeholder-val="{{ false }}">
-                                <span style="font-size:var(--text-sm);font-weight:600;color:var(--amber-600)">{{ offer.sellerPrice }}</span>
+                                <span title="Офлайн-ціна · закупівельна" style="display:flex;align-items:baseline;gap:5px;white-space:nowrap;font-size:var(--text-sm);font-weight:600;font-variant-numeric:tabular-nums">
+                                  <span style="color:var(--amber-600)">{{ offer.sellerPrice }}</span>
+                                  <span style="color:var(--text-faint);font-weight:400">/</span>
+                                  <span style="color:var(--text-muted)">{{ offer.purchasePrice }}</span>
+                                </span>
                               </sc-if>
                             </div>
 
@@ -433,7 +437,9 @@ const ANALOG = [
 
 const KIND_LABEL = { cross: 'Аналог (кроси)', oe: 'Аналог (OE номер)' }
 
-const WAREHOUSES = ['Київ · ELIT', 'Одеса · Автологістика', 'Запоріжжя · власний склад', 'Львів · Інтеркарс']
+/* Назви складів приходять з прайсу постачальника в його ж форматі: строк, час відправлення,
+ * (час відсічення), код постачальника та склад. Персонал читає їх саме так. */
+const WAREHOUSES = ['1д 17:00 (17:00) ЕЛ (ЦЕНТР)', '2д 10:00 (18:00) АЛ (ОДЕСА)', '0д 14:00 (12:00) ВЛ (ЗАПОРІЖЖЯ)', '3д 09:00 (16:00) ІК (ЛЬВІВ)']
 
 function plural(n) {
   const ten = n % 10
@@ -596,11 +602,13 @@ class Component extends DCLogic {
             bestDate: offer.key === bestDateKey,
             primaryAttr: primary ? 'true' : 'false',
             onAdd: this.add,
-            /* Дані персоналу стоять у тих самих колонках: склад під відправленням, ціна продавця під ціною. */
-            warehouse: staffView
-              ? WAREHOUSES[index % WAREHOUSES.length] + (offer.cutoff ? ' · до ' + offer.cutoff : '')
-              : '',
-            sellerPrice: staffView ? Math.round(offer.price * 0.74) + ' ₴' : ''
+            /* Дані персоналу стоять у тих самих колонках: склад під відправленням, ціни під ціною.
+             * Рядок складу вже містить час відсічення, тому нічого не додаємо. */
+            warehouse: staffView ? WAREHOUSES[index % WAREHOUSES.length] : '',
+            /* Три ціни, але два рядки: чорна онлайн-ціна зверху, під нею одним рядком
+             * бурштинова офлайн і сіра закупівельна — символ гривні лишаємо один. */
+            sellerPrice: staffView ? String(Math.round(offer.price * 0.74)) : '',
+            purchasePrice: staffView ? Math.round(offer.price * 0.61) + ' ₴' : ''
           }
         })
       }

@@ -21,6 +21,7 @@
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
 <script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=3"></script>
 <style>
+  @keyframes drive-skel { 0%, 100% { opacity: 1 } 50% { opacity: .45 } }
   [data-garage-grid] { grid-auto-rows: 1fr; }
   [data-garage-grid] > .sc-host-x, [data-garage-grid] > .sc-host-x > li { height: 100%; }
   @media (max-width: 639px) {
@@ -48,7 +49,7 @@
               <span style="display:block;width:14px;height:10px;background:linear-gradient(#0057B7 50%, #FFD700 50%);border:1px solid rgba(255,255,255,.55);box-sizing:border-box"></span>
               <span style="font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.04em;color:#fff;line-height:1">UA</span>
             </div>
-            <input aria-label="Державний номер" placeholder="AA 0000 AA" maxlength="11" value="{{ plate }}" onChange="{{ onPlate }}" style="width:150px;border:0;outline:none;background:none;font-family:var(--font-mono);font-size:19px;font-weight:600;letter-spacing:.06em;color:var(--ink-800);text-align:center;text-transform:uppercase">
+            <input aria-label="Державний номер" placeholder="AA 0000 AA" value="{{ plate }}" onChange="{{ onPlate }}" onFocus="{{ onPlateCaret }}" onClick="{{ onPlateCaret }}" style="width:150px;border:0;outline:none;background:none;font-family:var(--font-mono);font-size:19px;font-weight:600;letter-spacing:.06em;color:var(--ink-800);text-align:center;text-transform:uppercase">
           </div>
         </div>
 
@@ -58,9 +59,13 @@
           <span style="width:1px;flex:1;background:var(--line)"></span>
         </div>
 
-        <label class="ds-field" style="flex:1 1 260px;min-width:220px">
+        <label class="ds-field" style="position:relative;flex:1 1 260px;min-width:220px">
           <span class="ds-field__label">VIN-код</span>
-          <input class="ds-input ds-input--mono" placeholder="WBAVB13506PT22180" maxlength="17" value="{{ vin }}" onChange="{{ onVin }}">
+          <input class="ds-input ds-input--mono" placeholder="WBAVB13506PT22180" value="{{ vin }}" onChange="{{ onVin }}" onFocus="{{ onVinCaret }}" onClick="{{ onVinCaret }}" style="padding-right:38px">
+          <span tabindex="0" role="button" aria-label="17 символів, латиниця. VIN є у техпаспорті та під лобовим склом." onMouseEnter="{{ onVinHintOn }}" onMouseLeave="{{ onVinHintOff }}" onFocus="{{ onVinHintOn }}" onBlur="{{ onVinHintOff }}" style="position:absolute;right:11px;bottom:14px;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border:1px solid var(--line-strong);border-radius:99px;font-family:var(--font-sans);font-size:10px;font-weight:600;line-height:1;letter-spacing:0;color:var(--text-muted);cursor:help" style-hover="border-color:var(--ink-800);color:var(--text-strong)">?</span>
+          <sc-if value="{{ vinHint }}" hint-placeholder-val="{{ false }}">
+            <span style="position:absolute;right:0;top:calc(100% + 6px);z-index:5;width:max-content;max-width:280px;padding:8px 10px;border-radius:var(--radius-md);background:var(--ink-800);color:var(--text-inverse);font-family:var(--font-sans);font-size:var(--text-xs);font-weight:400;line-height:1.4;letter-spacing:0;box-shadow:var(--shadow-md)">17 символів, латиниця. VIN є у техпаспорті та під лобовим склом.</span>
+          </sc-if>
         </label>
 
         <button class="ds-btn ds-btn--md ds-btn--dark" style="flex:none" onClick="{{ onResolve }}">Знайти машину</button>
@@ -81,12 +86,36 @@
         </div>
 
         <sc-if value="{{ picking }}" hint-placeholder-val="{{ true }}">
-          <div style="padding:var(--space-5)" data-comment-anchor="e130003576-div">
+          <div ref="{{ holdRef }}" style="padding:var(--space-5)" data-comment-anchor="e130003576-div">
+            <div style="{{ holdStyle }}">
+            <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+              <div aria-busy="true" aria-label="Завантажуємо варіанти">
+                <sc-if value="{{ loadingSearch }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--space-4);margin-bottom:13px">
+                    <span style="flex:1 1 320px;max-width:480px;height:40px;border-radius:var(--radius-md);background:var(--surface-sunken);animation:drive-skel 1.2s ease-in-out infinite"></span>
+                    <span style="width:60px;height:12px;margin-bottom:12px;border-radius:99px;background:var(--surface-sunken);animation:drive-skel 1.2s ease-in-out infinite"></span>
+                  </div>
+                </sc-if>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))">
+                  <sc-for list="{{ skeletonRows }}" as="row" hint-placeholder-count="12">
+                    <div style="display:flex;align-items:center;min-height:44px;padding:11px 12px">
+                      <span style="{{ row.style }}"></span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
             <sc-if value="{{ hasSearch }}" hint-placeholder-val="{{ true }}">
               <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--space-4);margin-bottom:13px">
-                <label class="ds-field" style="flex:1 1 320px;max-width:480px">
-                  <input class="ds-input" placeholder="{{ stepPlaceholder }}" value="{{ query }}" onChange="{{ onQuery }}">
-                </label>
+                <div class="ds-field" style="position:relative;flex:1 1 320px;max-width:480px">
+                  <input class="ds-input" placeholder="{{ stepPlaceholder }}" value="{{ query }}" onChange="{{ onQuery }}" style="padding-right:40px">
+                  <sc-if value="{{ hasQuery }}" hint-placeholder-val="{{ false }}">
+                    <button type="button" onClick="{{ onClearQuery }}" aria-label="Очистити пошук" title="Очистити" style="position:absolute;top:50%;right:5px;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:30px;height:30px;border:0;border-radius:var(--radius-md);background:none;color:var(--text-muted);cursor:pointer;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);color:var(--text-strong)">
+                      <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="x" size="14" hint-size="14px,14px"></x-import>
+                    </button>
+                  </sc-if>
+                </div>
                 <p style="margin:0 0 10px;font-size:var(--text-xs);color:var(--text-muted)">{{ countLabel }}</p>
               </div>
             </sc-if>
@@ -110,7 +139,7 @@
             </sc-if>
 
             <sc-if value="{{ showOthersToggle }}" hint-placeholder-val="{{ false }}">
-              <div style="margin:0 -12px -11px">
+              <div style="{{ othersToggleWrap }}">
                 <button onClick="{{ onToggleOthers }}" style="display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:11px 12px;border:0;border-top:1px solid var(--line-subtle);background:none;font:inherit;font-size:var(--text-sm);font-weight:500;color:var(--text-action);cursor:pointer" style-hover="background:var(--surface-sunken)">{{ othersLabel }}<span style="{{ chevronStyle }}"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="16" hint-size="16px,16px"></x-import></span></button>
               </div>
             </sc-if>
@@ -147,6 +176,7 @@
                 <p style="margin:0;font-size:var(--text-sm);color:var(--text-body)">{{ emptyText }}</p>
               </div>
             </sc-if>
+            </div>
           </div>
         </sc-if>
 
@@ -211,10 +241,13 @@
         </div>
 
         <div style="display:grid;gap:var(--space-4);padding:var(--space-6)">
-          <label class="ds-field">
+          <label class="ds-field" style="position:relative">
             <span class="ds-field__label">VIN-код</span>
-            <input class="ds-input ds-input--mono" placeholder="WBAVB13506PT22180" maxlength="17" value="{{ reqVin }}" onChange="{{ onReqVin }}">
-            <span class="ds-field__hint">17 символів, латиниця. VIN є у техпаспорті та під лобовим склом.</span>
+            <input class="ds-input ds-input--mono" placeholder="WBAVB13506PT22180" value="{{ reqVin }}" onChange="{{ onReqVin }}" onFocus="{{ onReqVinCaret }}" onClick="{{ onReqVinCaret }}" style="padding-right:38px">
+            <span tabindex="0" role="button" aria-label="17 символів, латиниця. VIN є у техпаспорті та під лобовим склом." onMouseEnter="{{ onReqVinHintOn }}" onMouseLeave="{{ onReqVinHintOff }}" onFocus="{{ onReqVinHintOn }}" onBlur="{{ onReqVinHintOff }}" style="position:absolute;right:11px;bottom:14px;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border:1px solid var(--line-strong);border-radius:99px;font-family:var(--font-sans);font-size:10px;font-weight:600;line-height:1;letter-spacing:0;color:var(--text-muted);cursor:help" style-hover="border-color:var(--ink-800);color:var(--text-strong)">?</span>
+            <sc-if value="{{ reqVinHint }}" hint-placeholder-val="{{ false }}">
+              <span style="position:absolute;right:0;top:calc(100% + 6px);z-index:5;width:max-content;max-width:280px;padding:8px 10px;border-radius:var(--radius-md);background:var(--ink-800);color:var(--text-inverse);font-family:var(--font-sans);font-size:var(--text-xs);font-weight:400;line-height:1.4;letter-spacing:0;box-shadow:var(--shadow-md)">17 символів, латиниця. VIN є у техпаспорті та під лобовим склом.</span>
+            </sc-if>
           </label>
 
           <label class="ds-field">
@@ -247,7 +280,29 @@
 </div>
 
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1000},&quot;garageBlock&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Головна&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1000},&quot;garageBlock&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Головна&quot;},&quot;stepLatencyMs&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:650,&quot;min&quot;:0,&quot;max&quot;:2500,&quot;step&quot;:50,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Підбір за авто&quot;}}">
+/* Ширини смуг скелета — нерівні, щоб він читався як список назв, а не як таблиця. */
+const SKELETON_WIDTHS = [58, 72, 46, 64, 80, 52, 68, 44, 74, 60, 50, 66]
+
+/* Скелет повторює щойно виміряну картку: та сама сітка 150 px і стільки ж рядків
+ * по 44 px, за вирахуванням поля пошуку, якщо воно там було. */
+function skeletonCells(holdH, holdW, hadSearch) {
+  const cols = Math.max(1, Math.floor((holdW || 900) / 150))
+  const rows = Math.max(1, Math.min(14, Math.round(((holdH || 300) - (hadSearch ? 53 : 0)) / 44)))
+  const cells = []
+  for (let i = 0; i < Math.min(cols * rows, 60); i += 1) {
+    cells.push({
+      style: {
+        display: 'block', width: SKELETON_WIDTHS[i % SKELETON_WIDTHS.length] + '%', height: 12,
+        borderRadius: 99, background: 'var(--surface-sunken)',
+        animation: 'drive-skel 1.2s ease-in-out infinite',
+        animationDelay: (i % 6) * 90 + 'ms',
+      },
+    })
+  }
+  return cells
+}
+
 const MODELS = {
   'Acura': ['MDX', 'RDX', 'TLX', 'ZDX'],
   'Alfa Romeo': ['147', '156', '159', 'Giulia', 'Giulietta', 'Stelvio'],
@@ -362,7 +417,8 @@ function specsFor(mark, model, year, body) {
     volume: e.v + ' Л',
     power: e.p + ' к.с.',
     drive: e.drive,
-    period: String((i % 9) + 1).padStart(2, '0') + '.' + from + ' - тепер. час',
+    /* Дані мають лише роки, тож ніяких місяців: відкритий період — «з 2018», закритий — «2011–2018». */
+    period: 'з ' + from,
     fuel: e.fuel.indexOf('гібрид') > -1 ? 'Гібрид' : e.fuel,
   }))
 }
@@ -380,8 +436,14 @@ class Component extends DCLogic {
     query: '',
     filter: null,
     done: false,
+    loading: false,
+    holdH: 0,
+    holdW: 0,
+    holdSearch: false,
     showOthers: false,
     requestOpen: false,
+    vinHint: false,
+    reqVinHint: false,
     reqVin: '',
     reqList: '',
     reqPhoneDigits: '672148830',
@@ -391,17 +453,46 @@ class Component extends DCLogic {
     garage: [{ id: 1, name: 'Skoda Octavia A7 1.6 TDI', spec: 'Універсал · 2015 · 110 к.с. · дизель', vin: 'TMBJG7NE0F0123456' }],
   }
 
+  /* На слабкому інтернеті проста зміна кроку смикає сторінку двічі: спершу картка
+   * стискається (старих варіантів уже немає), потім росте (нові прийшли). Тому на час
+   * запиту тримаємо попередню висоту картки й показуємо скелет — висота змінюється
+   * один раз, коли варіанти вже на місці. */
+  commitStep = (patch) => {
+    /* Міряємо саму картку з padding — це та висота, яку бачить сторінка; внутрішні
+     * блоки виходять у padding відʼємними марджинами, тож їхня власна висота бреше.
+     * Фіксуємо жорстко (height + overflow), бо min-height не стримує скелет, вищий за
+     * попередній список. Ширину й наявність пошуку памʼятаємо, щоб скелет мав стільки
+     * ж рядків і колонок, скільки щойно було на екрані. */
+    const el = this.holdEl
+    const box = el ? el.getBoundingClientRect() : null
+    let holdH = 0
+    let holdW = 0
+    if (el && box) {
+      const cs = getComputedStyle(el)
+      holdH = Math.round(box.height - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom))
+      holdW = Math.round(box.width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight))
+    }
+    clearTimeout(this.stepTimer)
+    this.setState({ loading: true, holdH, holdW, holdSearch: this.state.step === 0 })
+    this.stepTimer = setTimeout(
+      () => this.setState((s) => Object.assign({ loading: false, holdH: 0 }, typeof patch === 'function' ? patch(s) : patch)),
+      Math.max(0, this.props.stepLatencyMs ?? 650),
+    )
+  }
+
+  componentWillUnmount() { clearTimeout(this.stepTimer) }
+
   pick = (levelIndex, value) => {
     const key = LEVELS[levelIndex].key
     const chosen = { ...this.state.chosen, [key]: value }
     if (levelIndex === 5) {
       const car = { id: Date.now(), name: value.name, spec: [chosen.body, chosen.year, value.power, value.volume].join(' · '), vin: '', active: true }
-      return this.setState((s) => ({ chosen, done: true, step: 6, query: '', filter: null, garage: [car, ...s.garage.map((c) => ({ ...c, active: false }))] }))
+      return this.commitStep((s) => ({ chosen, done: true, step: 6, query: '', filter: null, garage: [car, ...s.garage.map((c) => ({ ...c, active: false }))] }))
     }
-    this.setState({ chosen, step: levelIndex + 1, query: '', filter: null })
+    this.commitStep({ chosen, step: levelIndex + 1, query: '', filter: null })
   }
 
-  goTo = (index) => this.setState((s) => {
+  goTo = (index) => this.commitStep((s) => {
     const chosen = { ...s.chosen }
     LEVELS.forEach((lv, i) => { if (i >= index) chosen[lv.key] = null })
     return { chosen, step: index, done: false, query: '', filter: null }
@@ -412,7 +503,7 @@ class Component extends DCLogic {
   resolve = () => {
     const spec = {
       name: 'Volkswagen Passat B8 2.0 TDI', engine: 'Дизель DFGA', volume: '2.0 Л', power: '150 к.с.',
-      drive: 'Передній привід', period: '08.2017 - тепер. час', fuel: 'Дизель',
+      drive: 'Передній привід', period: 'з 2017', fuel: 'Дизель',
     }
     const chosen = { mark: 'Volkswagen', model: 'Passat', year: '2017', body: 'Універсал', engine: '2.0 Л · Дизель', spec }
     const car = { id: Date.now(), name: spec.name, spec: 'Універсал · 2017 · 150 к.с. · дизель', vin: this.state.vin || 'WVWZZZ3CZHE072814', active: true }
@@ -431,12 +522,30 @@ class Component extends DCLogic {
     requestAnimationFrame(() => { try { el.setSelectionRange(pos, pos) } catch (err) {} })
   }
 
-  formatPlate = (raw) => {
-    const clean = raw.toUpperCase().replace(/[^A-ZА-ЯІЇЄ0-9]/gi, '').slice(0, 8)
-    const a = clean.slice(0, 2)
-    const b = clean.slice(2, 6)
-    const c = clean.slice(6, 8)
-    return [a, b, c].filter(Boolean).join(' ')
+  /* Держномер і VIN живуть у стані як «чисті» символи; на екран іде маска з підкресленнями
+   * на незаповнені позиції — так само, як у полі телефону. Утиліти в дизайн-системі
+   * (DesignSystem_d7c4f4.Mask), тож усі поля сайту маскуються однаково. */
+  mask = () => (window.DesignSystem_d7c4f4 || {}).Mask || null
+
+  masked = (kind, chars) => {
+    const M = this.mask()
+    if (!M) return chars || ''
+    return kind === 'plate' ? M.maskPlate(chars || '') : M.maskVin(chars || '')
+  }
+
+  onMasked = (kind, key) => (e) => {
+    const M = this.mask()
+    const el = e.target
+    if (!M) return this.setState({ [key]: el.value.toUpperCase() })
+    const pick = kind === 'plate' ? M.plateChars : M.vinChars
+    const mask = kind === 'plate' ? M.maskPlate : M.maskVin
+    const chars = M.maskInput(el.value, this.state[key] || '', pick, mask)
+    this.setState({ [key]: chars }, () => M.caretToBlank(el, mask(chars)))
+  }
+
+  onMaskedCaret = (kind, key) => (e) => {
+    const M = this.mask()
+    if (M) M.caretToBlank(e.target, this.masked(kind, this.state[key]))
   }
 
   rawOptions() {
@@ -527,6 +636,7 @@ class Component extends DCLogic {
     const showPopularGroup = step === 0 && !q && !filter
     const others = showPopularGroup ? list.filter((m) => POPULAR.indexOf(m) === -1) : list
     const gridList = showPopularGroup && !this.state.showOthers ? [] : others
+    const loading = this.state.loading
 
     return {
       cartCount: 2,
@@ -535,7 +645,12 @@ class Component extends DCLogic {
       crumbs,
       picking: !done,
       done,
-      hasSearch: step === 0,
+      loading,
+      holdRef: (el) => { this.holdEl = el },
+      holdStyle: loading && this.state.holdH ? { boxSizing: 'border-box', height: this.state.holdH + 'px', overflow: 'hidden' } : null,
+      loadingSearch: loading && this.state.holdSearch,
+      skeletonRows: loading ? skeletonCells(this.state.holdH, this.state.holdW, this.state.holdSearch) : [],
+      hasSearch: !loading && step === 0,
       hideSearch: step !== 0,
       stepLabel: level.label,
       stepPlaceholder: level.placeholder,
@@ -543,35 +658,44 @@ class Component extends DCLogic {
       countLabel: list.length + ' ' + plural(list.length, level.unit),
       query,
       onQuery: (e) => this.setState({ query: e.target.value }),
+      hasQuery: query.length > 0,
+      onClearQuery: () => this.setState({ query: '' }),
       onAllFilters: () => this.setState({ filter: null, query: '' }),
-      hasFilters: filters.length > 0,
+      hasFilters: !loading && filters.length > 0,
       filterRowStyle: {
         display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6,
         margin: (step === 0 ? '0' : '-20px') + ' -20px 13px',
         padding: '9px 20px', borderBottom: '1px solid var(--line)', background: 'var(--surface-sunken)',
       },
       filters,
-      showPopularGroup,
+      showPopularGroup: showPopularGroup && !loading,
       popular: showPopularGroup
         ? POPULAR.filter((m) => MODELS[m])
             .slice()
             .sort((a, b) => scriptRank(a) - scriptRank(b) || a.localeCompare(b, 'uk'))
             .map((m) => ({ label: m, pick: () => this.pick(0, m) }))
         : [],
-      showOthersToggle: showPopularGroup,
+      showOthersToggle: showPopularGroup && !loading,
+      /* Згорнутий перемикач — останній рядок картки, тож він з’їдає нижній padding.
+       * Розгорнутий стоїть над списком марок і потребує звичайного проміжку. */
+      othersToggleWrap: { margin: this.state.showOthers ? '0 -12px 2px' : '0 -12px -11px' },
       othersLabel: this.state.showOthers ? 'Згорнути' : 'Інші марки (' + others.length + ')',
       chevronStyle: { display: 'inline-flex', transition: 'transform 120ms cubic-bezier(.2,.8,.3,1)', transform: this.state.showOthers ? 'rotate(180deg)' : 'none' },
       onToggleOthers: () => this.setState((s) => ({ showOthers: !s.showOthers })),
-      isGrid: !isSpec && gridList.length > 0,
+      isGrid: !loading && !isSpec && gridList.length > 0,
       gridStyle: {
         display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))',
         margin: (showPopularGroup ? '2px' : '-11px') + ' -12px -11px',
       },
       options: isSpec ? [] : gridList.map((o) => ({ label: o, pick: () => this.pick(step, o) })),
-      isSpec: isSpec && list.length > 0,
+      isSpec: !loading && isSpec && list.length > 0,
       specs: isSpec ? list.map((s) => ({ ...s, pick: () => this.pick(5, s) })) : [],
-      isEmpty: !done && list.length === 0,
-      emptyText: 'Нічого не знайшли за цим запитом. Перевірте написання або скиньте фільтр — ' + level.all.toLowerCase() + '.',
+      isEmpty: !loading && !done && list.length === 0,
+      /* Порожній результат буває з двох причин: набрано щось не те або звужено літерою.
+       * Текст називає саме ту причину, що діє. */
+      emptyText: filter
+        ? 'Нічого не знайшли: список обмежено літерою «' + filter + '». Приберіть її або перевірте написання.'
+        : 'Нічого не знайшли за цим запитом. Перевірте написання.',
       doneName: chosen.spec ? chosen.spec.name : [chosen.mark, chosen.model, chosen.body].filter(Boolean).join(' '),
       doneSpec: chosen.spec
         ? [chosen.body, chosen.year, chosen.spec.engine, chosen.spec.power, chosen.spec.drive].filter(Boolean).join(' · ')
@@ -581,8 +705,15 @@ class Component extends DCLogic {
       onOpenRequest: () => this.setState({ requestOpen: true, reqVin: this.state.vin }),
       onCloseRequest: () => this.setState({ requestOpen: false }),
       stop: (e) => e.stopPropagation(),
-      reqVin: this.state.reqVin,
-      onReqVin: (e) => this.setState({ reqVin: e.target.value.toUpperCase() }),
+      vinHint: this.state.vinHint,
+      onVinHintOn: () => this.setState({ vinHint: true }),
+      onVinHintOff: () => this.setState({ vinHint: false }),
+      reqVinHint: this.state.reqVinHint,
+      onReqVinHintOn: () => this.setState({ reqVinHint: true }),
+      onReqVinHintOff: () => this.setState({ reqVinHint: false }),
+      reqVin: this.masked('vin', this.state.reqVin),
+      onReqVin: this.onMasked('vin', 'reqVin'),
+      onReqVinCaret: this.onMaskedCaret('vin', 'reqVin'),
       reqList: this.state.reqList,
       onReqList: (e) => this.setState({ reqList: e.target.value }),
       reqPhone: this.formatPhone(this.state.reqPhoneDigits),
@@ -598,10 +729,12 @@ class Component extends DCLogic {
       reqFileLabel: this.state.reqFile || 'Файл не обрано',
       onPickFile: () => this.setState({ reqFile: 'список-запчастин.pdf · 240 КБ' }),
       onSubmitRequest: () => this.setState({ requestOpen: false }),
-      vin: this.state.vin,
-      onVin: (e) => this.setState({ vin: e.target.value.toUpperCase() }),
-      plate: this.state.plate,
-      onPlate: (e) => this.setState({ plate: this.formatPlate(e.target.value) }),
+      vin: this.masked('vin', this.state.vin),
+      onVin: this.onMasked('vin', 'vin'),
+      onVinCaret: this.onMaskedCaret('vin', 'vin'),
+      plate: this.masked('plate', this.state.plate),
+      onPlate: this.onMasked('plate', 'plate'),
+      onPlateCaret: this.onMaskedCaret('plate', 'plate'),
       onResolve: this.resolve,
       garageEmpty: this.state.garage.length === 0,
       garage: this.state.garage.map((c) => ({ ...c, remove: () => this.setState((s) => ({ garage: s.garage.filter((x) => x.id !== c.id) })) })),

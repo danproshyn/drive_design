@@ -187,7 +187,7 @@
             <span style="display:block;width:14px;height:10px;background:linear-gradient(#0057B7 50%, #FFD700 50%);border:1px solid rgba(255,255,255,.55);box-sizing:border-box"></span>
             <span style="font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.04em;color:#fff;line-height:1">UA</span>
           </div>
-          <input aria-label="Державний номер" placeholder="AA 0000 AA" maxlength="11" value="{{ plate }}" onChange="{{ onPlate }}" style="width:150px;border:0;outline:none;background:none;font-family:var(--font-mono);font-size:19px;font-weight:600;letter-spacing:.06em;color:var(--ink-800);text-align:center;text-transform:uppercase">
+          <input aria-label="Державний номер" placeholder="AA 0000 AA" value="{{ plate }}" onChange="{{ onPlate }}" onFocus="{{ onPlateCaret }}" onClick="{{ onPlateCaret }}" style="width:150px;border:0;outline:none;background:none;font-family:var(--font-mono);font-size:19px;font-weight:600;letter-spacing:.06em;color:var(--ink-800);text-align:center;text-transform:uppercase">
         </div>
       </div>
 
@@ -197,9 +197,13 @@
         <span style="width:1px;flex:1;background:var(--line)"></span>
       </div>
 
-      <label class="ds-field" style="flex:1 1 260px;min-width:220px">
+      <label class="ds-field" style="position:relative;flex:1 1 260px;min-width:220px">
         <span class="ds-field__label">VIN-код</span>
-        <input class="ds-input ds-input--mono" aria-label="VIN-код" placeholder="WVWZZZAUZHW123456" maxlength="17" value="{{ vin }}" onChange="{{ onVin }}">
+        <input class="ds-input ds-input--mono" aria-label="VIN-код" placeholder="WVWZZZAUZHW123456" value="{{ vin }}" onChange="{{ onVin }}" onFocus="{{ onVinCaret }}" onClick="{{ onVinCaret }}" style="padding-right:38px">
+        <span tabindex="0" role="button" aria-label="17 символів, латиниця. VIN є у техпаспорті та під лобовим склом." onMouseEnter="{{ onVinHintOn }}" onMouseLeave="{{ onVinHintOff }}" onFocus="{{ onVinHintOn }}" onBlur="{{ onVinHintOff }}" style="position:absolute;right:11px;bottom:14px;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border:1px solid var(--line-strong);border-radius:99px;font-family:var(--font-sans);font-size:10px;font-weight:600;line-height:1;letter-spacing:0;color:var(--text-muted);cursor:help" style-hover="border-color:var(--ink-800);color:var(--text-strong)">?</span>
+        <sc-if value="{{ vinHint }}" hint-placeholder-val="{{ false }}">
+          <span style="position:absolute;right:0;top:calc(100% + 6px);z-index:5;width:max-content;max-width:280px;padding:8px 10px;border-radius:var(--radius-md);background:var(--ink-800);color:var(--text-inverse);font-family:var(--font-sans);font-size:var(--text-xs);font-weight:400;line-height:1.4;letter-spacing:0;box-shadow:var(--shadow-md)">17 символів, латиниця. VIN є у техпаспорті та під лобовим склом.</span>
+        </sc-if>
       </label>
 
       <button class="ds-btn ds-btn--md ds-btn--dark" style="flex:none" onClick="{{ noop }}">Знайти машину</button>
@@ -664,6 +668,7 @@ class Component extends DCLogic {
     copied: null,
     plate: '',
     vin: 'WVWZZZAUZHW123456',
+    vinHint: false,
   }
 
   pick = (key, value) => () => this.setState({ [key]: value, treeOpen: false })
@@ -768,7 +773,7 @@ class Component extends DCLogic {
         spec: detail.spec,
         oem: detail.oem,
         hasOem,
-        absent: hasOem && marks === 'absent' && ABSENT.indexOf(detail.oem) !== -1,
+        absent: hasOem && marks !== 'none' && ABSENT.indexOf(detail.oem) !== -1,
         held: hasOem && marks === 'available' && ABSENT.indexOf(detail.oem) === -1,
         copyIcon: this.state.copied === detail.oem ? 'check' : 'copy',
         copyLabel: this.state.copied === detail.oem ? 'Скопійовано' : 'Скопіювати номер ' + detail.oem,
@@ -784,6 +789,29 @@ class Component extends DCLogic {
         pick: () => this.setState({ sel: detail.code }),
       })
     })
+  }
+
+  mask = () => (window.DesignSystem_d7c4f4 || {}).Mask || null
+
+  masked = (kind, chars) => {
+    const M = this.mask()
+    if (!M) return chars || ''
+    return kind === 'plate' ? M.maskPlate(chars || '') : M.maskVin(chars || '')
+  }
+
+  onMasked = (kind, key) => (event) => {
+    const M = this.mask()
+    const el = event.target
+    if (!M) return this.setState({ [key]: el.value.toUpperCase() })
+    const pick = kind === 'plate' ? M.plateChars : M.vinChars
+    const mask = kind === 'plate' ? M.maskPlate : M.maskVin
+    const chars = M.maskInput(el.value, this.state[key] || '', pick, mask)
+    this.setState({ [key]: chars }, () => M.caretToBlank(el, mask(chars)))
+  }
+
+  onMaskedCaret = (kind, key) => (event) => {
+    const M = this.mask()
+    if (M) M.caretToBlank(event.target, this.masked(kind, this.state[key]))
   }
 
   renderVals() {
@@ -884,10 +912,17 @@ class Component extends DCLogic {
       hasCar: isTree || isUnit,
       compactLookup: isEntry ? 'false' : 'true',
       carTitleSize: isUnit ? 'var(--text-xl)' : 'var(--display-xs)',
-      plate: s.plate,
-      vin: s.vin,
-      onPlate: (event) => this.setState({ plate: event.target.value.toUpperCase() }),
-      onVin: (event) => this.setState({ vin: event.target.value.toUpperCase() }),
+      /* Маски держномера й VIN — спільні утиліти дизайн-системи: у стані чисті символи,
+       * на екрані підкреслення на незаповнених позиціях. */
+      vinHint: s.vinHint,
+      onVinHintOn: () => this.setState({ vinHint: true }),
+      onVinHintOff: () => this.setState({ vinHint: false }),
+      plate: this.masked('plate', s.plate),
+      vin: this.masked('vin', s.vin),
+      onPlate: this.onMasked('plate', 'plate'),
+      onPlateCaret: this.onMaskedCaret('plate', 'plate'),
+      onVin: this.onMasked('vin', 'vin'),
+      onVinCaret: this.onMaskedCaret('vin', 'vin'),
       noop: () => {},
 
       infoOpen: this.props.vehicleInfoOpen ?? false,

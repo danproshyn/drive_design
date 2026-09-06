@@ -3449,11 +3449,27 @@ function SiteHeader({
     onNavigate(key);
   };
   const link = (key) => encodeURI(SHOP.pages[key] || '#');
+  /* Шапка не має однієї висоти: до ~1050 px навігація переходить у другий рядок, і те, що
+     стоїть над прокрученою сторінкою, виростає з 103 до ~151 px. Тому міряємо її живою й
+     публікуємо --header-total на :root — усі sticky-елементи сайту рахують відступ від неї. */
+  const headerRef = React.useRef(null);
+  React.useEffect(() => {
+    const el = headerRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return undefined;
+    const publish = () => {
+      document.documentElement.style.setProperty('--header-total', Math.round(el.getBoundingClientRect().height) + 'px');
+    };
+    publish();
+    const ro = new ResizeObserver(publish);
+    ro.observe(el);
+    window.addEventListener('resize', publish);
+    return () => { ro.disconnect(); window.removeEventListener('resize', publish); };
+  }, []);
   const nav = [
     { key: 'catalog', label: 'Каталог за авто' },
     { key: 'oem', label: 'Оригінальні каталоги' },
   ];
-  return h('header', { className: ['ds-header', className].filter(Boolean).join(' ') },
+  return h('header', { ref: headerRef, className: ['ds-header', className].filter(Boolean).join(' ') },
     h('div', { className: 'ds-utilitybar' },
       h('div', { className: 'ds-container ds-utilitybar__inner' },
         cashbackPercent
@@ -3496,6 +3512,77 @@ function SiteHeader({
           cartCount > 0 ? h('span', { className: 'ds-navlink__count' }, cartCount) : null))));
 }
 
+/* ═══ Маски держномера й VIN — 2026-09-07 ═══════════════════════════════════
+   Both fields now behave like the phone field: as soon as the user types, the
+   unfilled positions show as underscores, so the remaining length is visible,
+   and the caret always lands on the first blank. An untouched field stays on its
+   placeholder — the mask appears only after the first character.            */
+const PLATE_LEN = 8;
+const VIN_LEN = 17;
+
+function plateChars(raw) {
+  return String(raw || '').toUpperCase().replace(/[^A-ZА-ЯІЇЄҐ0-9]/g, '').slice(0, PLATE_LEN);
+}
+function maskPlate(chars) {
+  if (!chars) return '';
+  const d = (chars + '________').slice(0, PLATE_LEN);
+  return d.slice(0, 2) + ' ' + d.slice(2, 6) + ' ' + d.slice(6, 8);
+}
+function vinChars(raw) {
+  return String(raw || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, VIN_LEN);
+}
+function maskVin(chars) {
+  return chars ? chars + '_'.repeat(VIN_LEN - chars.length) : '';
+}
+/* Backspace on an underscore shortens the string without removing a real character —
+   detect that and drop the last typed one instead. */
+function maskInput(raw, prev, pick, mask) {
+  let chars = pick(raw);
+  if (raw.length < mask(prev).length && chars.length === prev.length) chars = chars.slice(0, -1);
+  return chars;
+}
+/* React коммітить значення після обробника й ставить каретку в кінець, тому повторюємо
+   установку по той бік рендеру — інакше каретка залишається за підкресленнями. */
+function caretToBlank(el, text) {
+  if (!el || typeof el.setSelectionRange !== 'function') return;
+  const i = text.indexOf('_');
+  const pos = i === -1 ? text.length : i;
+  const put = () => {
+    if (document.activeElement !== el) return;
+    try { el.setSelectionRange(pos, pos); } catch (err) { /* поле могло зникнути */ }
+  };
+  put();
+  requestAnimationFrame(() => { put(); requestAnimationFrame(put); });
+}
+const Mask = { PLATE_LEN, VIN_LEN, plateChars, maskPlate, vinChars, maskVin, maskInput, caretToBlank };
+
+function FieldHint({ text }) {
+  const [on, setOn] = React.useState(false);
+  return h('span', {
+    style: { position: 'relative', display: 'inline-flex' },
+    onMouseEnter: () => setOn(true), onMouseLeave: () => setOn(false),
+  },
+    h('span', {
+      tabIndex: 0, role: 'button', 'aria-label': text,
+      onFocus: () => setOn(true), onBlur: () => setOn(false),
+      style: {
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16,
+        border: '1px solid var(--line-strong)', borderRadius: 99,
+        fontSize: 10, fontWeight: 600, lineHeight: 1, letterSpacing: 0, fontFamily: 'var(--font-sans)',
+        color: on ? 'var(--text-strong)' : 'var(--text-muted)',
+        borderColor: on ? 'var(--ink-800)' : 'var(--line-strong)', cursor: 'help',
+      },
+    }, '?'),
+    on ? h('span', {
+      style: {
+        position: 'absolute', left: 0, bottom: 'calc(100% + 6px)', zIndex: 5, width: 'max-content', maxWidth: 280,
+        padding: '8px 10px', borderRadius: 'var(--radius-md)', background: 'var(--ink-800)',
+        color: 'var(--text-inverse)', fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xs)',
+        fontWeight: 400, lineHeight: 1.4, textTransform: 'none', letterSpacing: 0, boxShadow: 'var(--shadow-md)',
+      },
+    }, text) : null);
+}
+
 /**
  * «Запит на підбір запчастин» — the manual-lookup request. It lived only on the home page,
  * so the footer CTA on every other screen could only link back to it. Self-contained: it
@@ -3523,9 +3610,12 @@ function RequestModal({ open, onClose, vin = '' }) {
     const pos = i === -1 ? s.length : i;
     requestAnimationFrame(() => { try { el.setSelectionRange(pos, pos); } catch (e) { /* not a text input */ } });
   };
+  /* Підказка живе на «?» поряд із підписом і зʼявляється на hover або з клавіатури —
+     формат треба бачити до вводу, але постійний рядок під полем його тільки шумить. */
   const field = (label, control, hint) => h('label', { className: 'ds-field' },
-    h('span', { className: 'ds-field__label' }, label), control,
-    hint ? h('span', { className: 'ds-field__hint' }, hint) : null);
+    h('span', { className: 'ds-field__label', style: { position: 'relative', display: 'flex', alignItems: 'center', gap: 6 } },
+      label, hint ? h(FieldHint, { text: hint }) : null),
+    control);
 
   return h('div', {
     onClick: onClose,
@@ -3551,9 +3641,17 @@ function RequestModal({ open, onClose, vin = '' }) {
 
     h('div', { style: { display: 'grid', gap: 'var(--space-4)', padding: 'var(--space-6)' } },
       field('VIN-код', h('input', {
-        className: 'ds-input ds-input--mono', placeholder: 'WBAVB13506PT22180', maxLength: 17,
-        value: form.vin, onChange: (e) => set({ vin: e.target.value.toUpperCase() }),
-      }), '17 символів, латиниця. VIN є у техпаспорті та під лобовим склом.'),
+        className: 'ds-input ds-input--mono', placeholder: 'WBAVB13506PT22180',
+        value: maskVin(form.vin),
+        onChange: (e) => {
+          const el = e.target;
+          const chars = maskInput(el.value, form.vin, vinChars, maskVin);
+          set({ vin: chars });
+          caretToBlank(el, maskVin(chars));
+        },
+        onFocus: (e) => caretToBlank(e.target, maskVin(form.vin)),
+        onClick: (e) => caretToBlank(e.target, maskVin(form.vin)),
+      }), '17 символів, латиниця — у техпаспорті та під лобовим склом'),
       field('Що потрібно підібрати', h('textarea', {
         className: 'ds-input', rows: 4, value: form.list,
         placeholder: 'Наприклад: передні гальмівні колодки, фільтр салону, права опора двигуна',
@@ -3646,7 +3744,8 @@ function ShipDate({ date, relative, cutoff, className = '' }) {
     cutoff ? h('span', { className: 'ds-cutoff' }, 'при замовленні до ', cutoff) : null);
 }
 
-Object.assign(__ds_scope, { SiteHeader, SiteFooter, PhoneMenu, ShipDate, RequestModal });
+Object.assign(__ds_scope, { SiteHeader, SiteFooter, PhoneMenu, ShipDate, RequestModal, Mask });
+__ds_ns.Mask = Mask;
 __ds_ns.SiteHeader = SiteHeader;
 __ds_ns.ShipDate = ShipDate;
 __ds_ns.RequestModal = RequestModal;

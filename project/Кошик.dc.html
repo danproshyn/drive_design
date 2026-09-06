@@ -25,7 +25,7 @@
   [data-cart] { display: grid; gap: var(--space-6) var(--space-8); grid-template-columns: minmax(0, 1fr); align-items: start; }
   @media (min-width: 1120px) {
     [data-cart] { grid-template-columns: minmax(0, 1fr) 320px; }
-    [data-summary] { position: sticky; top: calc(var(--header-h) + var(--space-4)); }
+    [data-summary] { position: sticky; top: calc(var(--header-total) + var(--space-4)); }
   }
   /* Рядок: фото, ідентичність, лічильник, гроші. Вузько — лічильник переходить під назву. */
   [data-line] {
@@ -221,8 +221,7 @@
  * піднімається, некратне округлюється ВГОРУ, понад запас — обрізається до найбільшої кратної
  * величини (9 при min 4 і 10 в наявності дає 8, а не 10). Кожна зміна пояснюється.
  *
- * qty_available === null означає «стеля невідома й не нижча за 10» — серіалізатор ховає глибину
- * складу, тому «+» лишається активним і показуємо «більше 10 шт».
+ * Залишок завжди приходить точним числом і так само точно показується.
  */
 const LINES = [
   {
@@ -233,8 +232,7 @@ const LINES = [
     price: 284,
     qty: 2,
     minQty: 1,
-    /* Кількість прийшла обрізаною — справжньої стелі ми не знаємо. */
-    stock: null,
+    stock: 17,
     offersRest: 5,
     shipDate: '', shipRelative: 'today', shipCutoff: '21:00'
   },
@@ -361,7 +359,7 @@ class Component extends DCLogic {
         shipDate: line.shipDate,
         shipRelative: line.shipRelative,
         shipCutoff: line.shipCutoff || '',
-        stockLabel: line.stock === null ? 'більше 10 шт' : line.stock + ' шт',
+        stockLabel: line.stock + ' шт',
         minQtyHint: line.minQty > 1 ? 'від ' + line.minQty + ' шт' : '',
         draft: drafts[line.id] === undefined ? String(line.qty) : drafts[line.id],
         onDraft: this.onDraft(line),
