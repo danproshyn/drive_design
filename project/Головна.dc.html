@@ -19,15 +19,13 @@
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
-<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=3"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=8"></script>
 <style>
   @keyframes drive-skel { 0%, 100% { opacity: 1 } 50% { opacity: .45 } }
   [data-garage-grid] { grid-auto-rows: 1fr; }
   [data-garage-grid] > .sc-host-x, [data-garage-grid] > .sc-host-x > li { height: 100%; }
   @media (max-width: 639px) {
     [data-garage-grid] { grid-template-columns: minmax(0, 1fr) !important; }
-    .ds-garage { flex-wrap: wrap; }
-    .ds-garage > .ds-thumb { width: 88px !important; height: 60px !important; }
   }
 </style>
 </helmet>
@@ -109,10 +107,10 @@
             <sc-if value="{{ hasSearch }}" hint-placeholder-val="{{ true }}">
               <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--space-4);margin-bottom:13px">
                 <div class="ds-field" style="position:relative;flex:1 1 320px;max-width:480px">
-                  <input class="ds-input" placeholder="{{ stepPlaceholder }}" value="{{ query }}" onChange="{{ onQuery }}" style="padding-right:40px">
+                  <input class="ds-input ds-input--clearable" placeholder="{{ stepPlaceholder }}" value="{{ query }}" onChange="{{ onQuery }}">
                   <sc-if value="{{ hasQuery }}" hint-placeholder-val="{{ false }}">
-                    <button type="button" onClick="{{ onClearQuery }}" aria-label="Очистити пошук" title="Очистити" style="position:absolute;top:50%;right:5px;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:30px;height:30px;border:0;border-radius:var(--radius-md);background:none;color:var(--text-muted);cursor:pointer;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);color:var(--text-strong)">
-                      <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="x" size="14" hint-size="14px,14px"></x-import>
+                    <button type="button" class="ds-clear" onClick="{{ onClearQuery }}" aria-label="Очистити пошук" title="Очистити">
+                      <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="x" size="15" hint-size="15px,15px"></x-import>
                     </button>
                   </sc-if>
                 </div>
@@ -202,7 +200,7 @@
       <h2 class="ds-section-title">Мій гараж</h2>
       <ul data-garage-grid="" style="list-style:none;margin:0;padding:0;display:grid;gap:var(--space-3);grid-template-columns:repeat(2,minmax(0,1fr))">
         <sc-for list="{{ garage }}" as="car" hint-placeholder-count="2">
-          <x-import component-from-global-scope="DesignSystem_d7c4f4.GarageCard" name="{{ car.name }}" spec="{{ car.spec }}" vin="{{ car.vin }}" active="{{ car.active }}" oem-href="#" href="#" on-remove="{{ car.remove }}" style="width:100%" hint-size="100%,110px"></x-import>
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.GarageCard" name="{{ car.name }}" spec="{{ car.spec }}" vin="{{ car.vin }}" active="{{ car.active }}" oem-href="{{ car.oemHref }}" href="#" on-remove="{{ car.remove }}" style="width:100%" hint-size="100%,110px"></x-import>
         </sc-for>
       </ul>
       <sc-if value="{{ garageEmpty }}" hint-placeholder-val="{{ false }}">
@@ -450,7 +448,10 @@ class Component extends DCLogic {
     reqFile: null,
     vin: '',
     plate: '',
-    garage: [{ id: 1, name: 'Skoda Octavia A7 1.6 TDI', spec: 'Універсал · 2015 · 110 к.с. · дизель', vin: 'TMBJG7NE0F0123456' }],
+    garage: [
+      { id: 1, name: 'Audi RS6 Avant performance 4.0 TFSI', spec: 'Універсал · з 2023 · 630 к.с. · Бензин/електрика', vin: '', oemHref: '' },
+      { id: 2, name: 'Renault Duster 1.5 dCi', spec: 'Кросовер · з 2018 · 109 к.с. · Дизель', vin: 'VF1HJD40561234567', oemHref: '#' },
+    ],
   }
 
   /* На слабкому інтернеті проста зміна кроку смикає сторінку двічі: спершу картка
@@ -486,7 +487,7 @@ class Component extends DCLogic {
     const key = LEVELS[levelIndex].key
     const chosen = { ...this.state.chosen, [key]: value }
     if (levelIndex === 5) {
-      const car = { id: Date.now(), name: value.name, spec: [chosen.body, chosen.year, value.power, value.volume].join(' · '), vin: '', active: true }
+      const car = { id: Date.now(), name: value.name, spec: [chosen.body, chosen.year, value.power, value.volume].join(' · '), vin: '', oemHref: '', active: true }
       return this.commitStep((s) => ({ chosen, done: true, step: 6, query: '', filter: null, garage: [car, ...s.garage.map((c) => ({ ...c, active: false }))] }))
     }
     this.commitStep({ chosen, step: levelIndex + 1, query: '', filter: null })
@@ -506,7 +507,7 @@ class Component extends DCLogic {
       drive: 'Передній привід', period: 'з 2017', fuel: 'Дизель',
     }
     const chosen = { mark: 'Volkswagen', model: 'Passat', year: '2017', body: 'Універсал', engine: '2.0 Л · Дизель', spec }
-    const car = { id: Date.now(), name: spec.name, spec: 'Універсал · 2017 · 150 к.с. · дизель', vin: this.state.vin || 'WVWZZZ3CZHE072814', active: true }
+    const car = { id: Date.now(), name: spec.name, spec: 'Універсал · 2017 · 150 к.с. · дизель', vin: this.state.vin || 'WVWZZZ3CZHE072814', oemHref: '#', active: true }
     this.setState((s) => ({ chosen, done: true, step: 6, garage: [car, ...s.garage.map((c) => ({ ...c, active: false }))] }))
   }
 

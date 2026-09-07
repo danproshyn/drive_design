@@ -467,62 +467,30 @@ function GarageCard({
   onRemove,
   className = ''
 }) {
-  return /*#__PURE__*/React.createElement("li", {
+  const specs = String(spec || '').split('\u00b7').map(s => s.trim()).filter(Boolean);
+  const h = React.createElement;
+  return h("li", {
     className: ['ds-garage', active ? 'ds-garage--active' : '', className].filter(Boolean).join(' ')
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "ds-thumb",
-    style: {
-      width: 120,
-      height: 78
-    }
-  }, image ? /*#__PURE__*/React.createElement("img", {
-    src: image,
-    alt: name
-  }) : /*#__PURE__*/React.createElement(__ds_scope.Icon, {
-    name: "car-front",
-    size: 26,
-    strokeWidth: 1.3
-  })), /*#__PURE__*/React.createElement("div", {
-    style: {
-      minWidth: 0,
-      flex: 1
-    }
-  }, /*#__PURE__*/React.createElement("a", {
-    href: href,
-    style: {
-      display: 'block',
-      fontWeight: 600,
-      color: 'var(--text-strong)',
-      fontSize: 'var(--text-md)'
-    }
-  }, name), spec ? /*#__PURE__*/React.createElement("p", {
-    style: {
-      margin: '2px 0 0',
-      fontSize: 'var(--text-sm)',
-      color: 'var(--text-muted)'
-    }
-  }, spec) : null, vin ? /*#__PURE__*/React.createElement("p", {
-    className: "ds-article",
-    style: {
-      margin: '6px 0 0',
-      fontSize: 'var(--text-xs)',
-      color: 'var(--text-muted)'
-    }
-  }, "VIN ", vin) : null, oemHref ? /*#__PURE__*/React.createElement("p", {
-    style: {
-      margin: '8px 0 0'
-    }
-  }, /*#__PURE__*/React.createElement("a", {
-    href: oemHref,
-    style: {
-      fontSize: 'var(--text-sm)'
-    }
-  }, "\u041E\u0440\u0438\u0433\u0456\u043D\u0430\u043B\u044C\u043D\u0456 \u043A\u0430\u0442\u0430\u043B\u043E\u0433\u0438")) : null), /*#__PURE__*/React.createElement(__ds_scope.Button, {
-    variant: "ghost",
-    size: "sm",
-    icon: "x",
-    onClick: onRemove
-  }, "\u041F\u0440\u0438\u0431\u0440\u0430\u0442\u0438"));
+  }, h("div", { className: "ds-garage__cover" },
+    h("img", { src: image || "assets/vehicle-no-photo.png", alt: name }),
+    active ? h("p", { className: "t-eyebrow ds-garage__flag" }, "\u041e\u0431\u0440\u0430\u043d\u0430 \u043c\u0430\u0448\u0438\u043d\u0430") : null,
+    onRemove ? h("button", {
+      type: "button",
+      className: "ds-garage__x",
+      onClick: onRemove,
+      "aria-label": "\u041f\u0440\u0438\u0431\u0440\u0430\u0442\u0438 \u0437 \u0433\u0430\u0440\u0430\u0436\u0430",
+      title: "\u041f\u0440\u0438\u0431\u0440\u0430\u0442\u0438"
+    }, h(__ds_scope.Icon, { name: "trash-2", size: 17 })) : null
+  ), h("div", { className: "ds-garage__body" },
+    h("a", { href: href, className: "t-display-sm ds-garage__name" }, name),
+    specs.length ? h("div", { className: "ds-garage__specs" }, specs.map((s, i) => h("span", { key: i, className: "ds-garage__spec" }, s))) : null,
+    vin ? h("div", { className: "ds-garage__vin" },
+      h("div", { className: "ds-garage__vin-cell" },
+        h("span", { className: "t-eyebrow ds-garage__vin-label" }, "VIN"),
+        h("span", { className: "ds-article ds-garage__vin-value" }, vin))) : null,
+    h("div", { className: "ds-garage__actions" },
+      h(__ds_scope.Button, { as: "a", href: href, variant: "dark", size: "md", className: "ds-garage__go" }, "\u041a\u0430\u0442\u0430\u043b\u043e\u0433 \u0434\u043b\u044f \u0430\u0432\u0442\u043e"),
+      oemHref ? h(__ds_scope.Button, { as: "a", href: oemHref, variant: "secondary", size: "md", className: "ds-garage__oem" }, "\u041e\u0440\u0438\u0433\u0456\u043d\u0430\u043b\u044c\u043d\u0456 \u043a\u0430\u0442\u0430\u043b\u043e\u0433\u0438") : null)));
 }
 Object.assign(__ds_scope, { GarageCard });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/catalog/GarageCard.jsx", error: String((e && e.message) || e) }); }
@@ -1028,10 +996,14 @@ function SearchField({
   error,
   inputRef,
   onSubmit,
+  onClear,
   className = '',
   ...rest
 }) {
   const hero = variant === 'hero';
+  /* One cross for every text field on the site: ours, not the browser's — it appears the
+     moment there is something to clear, not only on focus, and it is 34/40 px of target. */
+  const clearable = onClear && String(rest.value == null ? '' : rest.value) !== '';
   return /*#__PURE__*/React.createElement("div", {
     className: ['ds-search', hero ? 'ds-search--hero' : '', className].filter(Boolean).join(' '),
     role: "search"
@@ -1048,7 +1020,16 @@ function SearchField({
     placeholder: placeholder,
     "aria-label": label,
     autoComplete: "off"
-  }, rest)), suggests), /*#__PURE__*/React.createElement(__ds_scope.Button, {
+  }, rest)), clearable ? /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "ds-clear",
+    "aria-label": "\u041E\u0447\u0438\u0441\u0442\u0438\u0442\u0438 \u043F\u043E\u0448\u0443\u043A",
+    title: "\u041E\u0447\u0438\u0441\u0442\u0438\u0442\u0438",
+    onClick: onClear
+  }, /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+    name: "x",
+    size: 15
+  })) : null, suggests), /*#__PURE__*/React.createElement(__ds_scope.Button, {
     variant: "dark",
     size: hero ? 'lg' : 'md',
     onClick: onSubmit
@@ -3397,6 +3378,12 @@ function HeaderSearch({ parts, onOpenPart, onSearch, initialValue = '' }) {
       maxLength: MAX_QUERY_LENGTH,
       error: tooShort ? 'Введіть щонайменше 3 символи' : undefined,
       onChange: (event) => { setValue(event.target.value); setTyping(true); setTooShort(false); },
+      onClear: () => {
+        setValue('');
+        setTyping(false);
+        setTooShort(false);
+        if (input.current) input.current.focus();
+      },
       onPaste: (event) => {
         const pasted = (event.clipboardData.getData('text') || '').slice(0, MAX_QUERY_LENGTH);
         if (pasted.trim() === '') return;

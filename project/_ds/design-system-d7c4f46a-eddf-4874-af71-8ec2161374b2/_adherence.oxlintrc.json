@@ -167,8 +167,8 @@
         "message": "<QuantityStepper> doesn't accept that prop. Declared props: value, min, max, step, onChange, label, className."
       },
       {
-        "selector": "JSXOpeningElement[name.name='SearchField'] > JSXAttribute > JSXIdentifier[name!=/^(?:variant|placeholder|label|submitLabel|suggests|error|className|key|ref|className|style|children)$/]",
-        "message": "<SearchField> doesn't accept that prop. Declared props: variant, placeholder, label, submitLabel, suggests, error, className."
+        "selector": "JSXOpeningElement[name.name='SearchField'] > JSXAttribute > JSXIdentifier[name!=/^(?:variant|placeholder|label|submitLabel|suggests|error|onClear|className|key|ref|className|style|children)$/]",
+        "message": "<SearchField> doesn't accept that prop. Declared props: variant, placeholder, label, submitLabel, suggests, error, onClear, className."
       },
       {
         "selector": "JSXOpeningElement[name.name='SearchField'] > JSXAttribute[name.name='variant'] > Literal[value!=/^(?:hero|compact)$/]",
