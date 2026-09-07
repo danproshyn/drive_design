@@ -177,21 +177,6 @@
             </div>
           </div>
         </sc-if>
-
-        <sc-if value="{{ done }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-5);padding:var(--space-5)">
-            <div style="flex:1 1 320px;min-width:260px">
-              <p class="t-eyebrow" style="margin:0 0 4px">Машину визначено</p>
-              <p style="margin:0;font-size:var(--text-xl);font-weight:600;color:var(--text-strong)">{{ doneName }}</p>
-              <p style="margin:4px 0 0;font-size:var(--text-sm);color:var(--text-muted)">{{ doneSpec }}</p>
-              <p style="margin:8px 0 0;font-size:var(--text-xs);color:var(--text-muted)">Машина вже в гаражі — окремо додавати не треба.</p>
-            </div>
-            <div style="display:flex;flex-wrap:wrap;gap:var(--space-3)">
-              <button class="ds-btn ds-btn--md ds-btn--dark">Каталог для цієї машини</button>
-              <button class="ds-btn ds-btn--md ds-btn--ghost" onClick="{{ onRestart }}">Обрати іншу машину</button>
-            </div>
-          </div>
-        </sc-if>
       </div>
     </section>
 
@@ -200,7 +185,7 @@
       <h2 class="ds-section-title">Мій гараж</h2>
       <ul data-garage-grid="" style="list-style:none;margin:0;padding:0;display:grid;gap:var(--space-3);grid-template-columns:repeat(2,minmax(0,1fr))">
         <sc-for list="{{ garage }}" as="car" hint-placeholder-count="2">
-          <x-import component-from-global-scope="DesignSystem_d7c4f4.GarageCard" name="{{ car.name }}" spec="{{ car.spec }}" vin="{{ car.vin }}" active="{{ car.active }}" oem-href="{{ car.oemHref }}" href="#" on-remove="{{ car.remove }}" style="width:100%" hint-size="100%,110px"></x-import>
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.GarageCard" name="{{ car.name }}" spec="{{ car.spec }}" vin="{{ car.vin }}" oem-href="{{ car.oemHref }}" href="#" on-remove="{{ car.remove }}" style="width:100%" hint-size="100%,110px"></x-import>
         </sc-for>
       </ul>
       <sc-if value="{{ garageEmpty }}" hint-placeholder-val="{{ false }}">
@@ -433,7 +418,6 @@ class Component extends DCLogic {
     step: 0,
     query: '',
     filter: null,
-    done: false,
     loading: false,
     holdH: 0,
     holdW: 0,
@@ -487,8 +471,7 @@ class Component extends DCLogic {
     const key = LEVELS[levelIndex].key
     const chosen = { ...this.state.chosen, [key]: value }
     if (levelIndex === 5) {
-      const car = { id: Date.now(), name: value.name, spec: [chosen.body, chosen.year, value.power, value.volume].join(' · '), vin: '', oemHref: '', active: true }
-      return this.commitStep((s) => ({ chosen, done: true, step: 6, query: '', filter: null, garage: [car, ...s.garage.map((c) => ({ ...c, active: false }))] }))
+      return this.goCatalog({ id: Date.now(), name: value.name, spec: [chosen.body, chosen.year, value.power, value.volume].join(' · '), vin: '', oemHref: '' })
     }
     this.commitStep({ chosen, step: levelIndex + 1, query: '', filter: null })
   }
@@ -496,10 +479,16 @@ class Component extends DCLogic {
   goTo = (index) => this.commitStep((s) => {
     const chosen = { ...s.chosen }
     LEVELS.forEach((lv, i) => { if (i >= index) chosen[lv.key] = null })
-    return { chosen, step: index, done: false, query: '', filter: null }
+    return { chosen, step: index, query: '', filter: null }
   })
 
-  restart = () => this.setState({ chosen: {}, step: 0, query: '', filter: null, done: false })
+  /* Модифікація — останній крок підбору. Далі застосунок одразу відкриває каталог
+   * для цієї машини, тож проміжного підтвердження між ними немає. Машина потрапляє
+   * в гараж сама, як і при відкритті каталогу з будь-якого іншого місця. */
+  goCatalog = (car) => {
+    this.setState((s) => ({ garage: [car, ...s.garage] }))
+    window.location.assign('Каталог за авто.dc.html')
+  }
 
   resolve = () => {
     const spec = {
@@ -507,8 +496,8 @@ class Component extends DCLogic {
       drive: 'Передній привід', period: 'з 2017', fuel: 'Дизель',
     }
     const chosen = { mark: 'Volkswagen', model: 'Passat', year: '2017', body: 'Універсал', engine: '2.0 Л · Дизель', spec }
-    const car = { id: Date.now(), name: spec.name, spec: 'Універсал · 2017 · 150 к.с. · дизель', vin: this.state.vin || 'WVWZZZ3CZHE072814', oemHref: '#', active: true }
-    this.setState((s) => ({ chosen, done: true, step: 6, garage: [car, ...s.garage.map((c) => ({ ...c, active: false }))] }))
+    this.setState({ chosen })
+    this.goCatalog({ id: Date.now(), name: spec.name, spec: 'Універсал · 2017 · 150 к.с. · дизель', vin: this.state.vin || 'WVWZZZ3CZHE072814', oemHref: '#' })
   }
 
   formatPhone = (digits) => {
@@ -597,11 +586,11 @@ class Component extends DCLogic {
   }
 
   renderVals() {
-    const { chosen, step, query, filter, done } = this.state
+    const { chosen, step, query, filter } = this.state
     const q = query.trim().toLowerCase()
     const level = LEVELS[Math.min(step, 5)]
     const isSpec = step === 5
-    const raw = done ? [] : this.rawOptions()
+    const raw = this.rawOptions()
 
     let list = raw
     if (q) list = list.filter((it) => (isSpec ? (it.name + ' ' + it.engine).toLowerCase() : String(it).toLowerCase()).indexOf(q) > -1)
@@ -609,8 +598,8 @@ class Component extends DCLogic {
 
     const crumbs = LEVELS.map((lv, i) => {
       const value = chosen[lv.key]
-      const isDone = Boolean(value) && (i < 5 || done)
-      const active = !done && step === i
+      const isDone = Boolean(value)
+      const active = step === i
       const label = value ? (i === 5 ? value.power : value) : lv.title
       const style = {
         minHeight: 34, padding: isDone ? '0 12px' : '0 4px', whiteSpace: 'nowrap',
@@ -644,8 +633,7 @@ class Component extends DCLogic {
       showArticleBlock: this.props.articleSearchBlock ?? true,
       showGarageBlock: this.props.garageBlock ?? true,
       crumbs,
-      picking: !done,
-      done,
+      picking: true,
       loading,
       holdRef: (el) => { this.holdEl = el },
       holdStyle: loading && this.state.holdH ? { boxSizing: 'border-box', height: this.state.holdH + 'px', overflow: 'hidden' } : null,
@@ -691,17 +679,12 @@ class Component extends DCLogic {
       options: isSpec ? [] : gridList.map((o) => ({ label: o, pick: () => this.pick(step, o) })),
       isSpec: !loading && isSpec && list.length > 0,
       specs: isSpec ? list.map((s) => ({ ...s, pick: () => this.pick(5, s) })) : [],
-      isEmpty: !loading && !done && list.length === 0,
+      isEmpty: !loading && list.length === 0,
       /* Порожній результат буває з двох причин: набрано щось не те або звужено літерою.
        * Текст називає саме ту причину, що діє. */
       emptyText: filter
         ? 'Нічого не знайшли: список обмежено літерою «' + filter + '». Приберіть її або перевірте написання.'
         : 'Нічого не знайшли за цим запитом. Перевірте написання.',
-      doneName: chosen.spec ? chosen.spec.name : [chosen.mark, chosen.model, chosen.body].filter(Boolean).join(' '),
-      doneSpec: chosen.spec
-        ? [chosen.body, chosen.year, chosen.spec.engine, chosen.spec.power, chosen.spec.drive].filter(Boolean).join(' · ')
-        : 'Універсал · 2017 · Дизель DFGA · Передній привід',
-      onRestart: this.restart,
       requestOpen: this.state.requestOpen,
       onOpenRequest: () => this.setState({ requestOpen: true, reqVin: this.state.vin }),
       onCloseRequest: () => this.setState({ requestOpen: false }),

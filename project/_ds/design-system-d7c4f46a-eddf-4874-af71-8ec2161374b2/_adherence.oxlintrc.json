@@ -99,8 +99,8 @@
         "message": "<FacetGroup> doesn't accept that prop. Declared props: title, moreCount, children, className."
       },
       {
-        "selector": "JSXOpeningElement[name.name='GarageCard'] > JSXAttribute > JSXIdentifier[name!=/^(?:image|name|spec|vin|oemHref|href|active|onRemove|className|key|ref|className|style|children)$/]",
-        "message": "<GarageCard> doesn't accept that prop. Declared props: image, name, spec, vin, oemHref, href, active, onRemove, className."
+        "selector": "JSXOpeningElement[name.name='GarageCard'] > JSXAttribute > JSXIdentifier[name!=/^(?:image|name|spec|vin|oemHref|href|onRemove|className|key|ref|className|style|children)$/]",
+        "message": "<GarageCard> doesn't accept that prop. Declared props: image, name, spec, vin, oemHref, href, onRemove, className."
       },
       {
         "selector": "JSXOpeningElement[name.name='Icon'] > JSXAttribute > JSXIdentifier[name!=/^(?:name|size|strokeWidth|label|className|style|key|ref|className|style|children)$/]",

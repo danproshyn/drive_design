@@ -25,10 +25,18 @@
   /* Дерево: розкривний блок над списком, від 900 px — колонка ліворуч */
   [data-layout] { grid-template-columns: minmax(0, 1fr); }
   [data-tree-panel][data-open="false"] { display: none; }
+  /* Порожній результат фільтрів — компактніший за типовий EmptyState. */
+  .ds-empty { padding-top: var(--space-6); padding-bottom: var(--space-6); }
+  .ds-empty__title { margin: 0; }
+  /* Нульова опція фасета: лишається на місці, але згасла і не клікається. */
+  .ds-check:has(input:disabled) { color: var(--text-faint); cursor: default; }
+  .ds-check:has(input:disabled) .ds-check__count { color: var(--text-faint); }
+  .ds-check input:disabled { cursor: default; }
   @media (min-width: 900px) {
     [data-layout] { grid-template-columns: 272px minmax(0, 1fr); }
     [data-tree-toggle] { display: none !important; }
     [data-tree-panel][data-open="false"] { display: block; }
+    [data-tree-panel] { margin-top: 0 !important; }
   }
 
   /* Фасети: шторка праворуч до 1120 px, далі — третя колонка */
@@ -152,7 +160,7 @@
           <img src="assets/vehicle-no-photo.png" alt="BMW 3 (E90) 320d">
         </div>
         <div style="min-width:0;flex:1 1 240px">
-          <a href="#" style="font-size:var(--text-md);font-weight:600;color:var(--text-strong);text-decoration:none">BMW 3 (E90) 320d</a>
+          <a href="#" style="font-size:var(--text-md);font-weight:600;color:var(--text-strong);text-decoration:none" style-hover="text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:2px">BMW 3 (E90) 320d</a>
           <p data-specs-inline style="margin:4px 0 0">
             <span>2004–2011</span>
             <span>2.0 d · 163 к.с.</span>
@@ -193,7 +201,12 @@
             <span class="ds-treefield__icon" data-treeicon>
               <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="search" size="16" hint-size="16px,16px"></x-import>
             </span>
-            <input class="ds-input" data-treesearch type="search" aria-label="Пошук у категоріях" placeholder="Шукати категорію" value="{{ treeQuery }}" onChange="{{ onTreeQuery }}">
+            <input class="ds-input" data-treesearch type="search" aria-label="Пошук у категоріях" placeholder="Шукати запчастину" value="{{ treeQuery }}" onChange="{{ onTreeQuery }}">
+            <sc-if value="{{ treeHasQuery }}" hint-placeholder-val="{{ false }}">
+              <button type="button" class="ds-treefield__clear" aria-label="Очистити" onClick="{{ onTreeClear }}">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="x" size="15" hint-size="15px,15px"></x-import>
+              </button>
+            </sc-if>
           </div>
         </div>
 
@@ -201,7 +214,7 @@
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:var(--space-4)">
             <sc-for list="{{ treeNodes }}" as="group" hint-placeholder-count="5">
               <section style="padding:var(--space-4);border:1px solid var(--line);border-radius:var(--radius-lg)">
-                <p style="display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3);margin:0 0 var(--space-2);font-family:var(--font-display);text-transform:uppercase;font-size:var(--text-md);letter-spacing:.01em;color:var(--text-strong)">
+                <p style="display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3);margin:0 0 var(--space-2);padding:0 var(--space-2);font-family:var(--font-display);text-transform:uppercase;font-size:var(--text-md);letter-spacing:.01em;color:var(--text-strong)">
                   {{ group.name }}
                   <span class="ds-tree__count">{{ group.count }}</span>
                 </p>
@@ -255,7 +268,12 @@
               <span class="ds-treefield__icon" data-treeicon>
                 <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="search" size="16" hint-size="16px,16px"></x-import>
               </span>
-              <input class="ds-input" data-treesearch type="search" aria-label="Пошук у категоріях" placeholder="Шукати категорію" value="{{ treeQuery }}" onChange="{{ onTreeQuery }}">
+              <input class="ds-input" data-treesearch type="search" aria-label="Пошук у категоріях" placeholder="Шукати запчастину" value="{{ treeQuery }}" onChange="{{ onTreeQuery }}">
+              <sc-if value="{{ treeHasQuery }}" hint-placeholder-val="{{ false }}">
+              <button type="button" class="ds-treefield__clear" aria-label="Очистити" onClick="{{ onTreeClear }}">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="x" size="15" hint-size="15px,15px"></x-import>
+              </button>
+            </sc-if>
             </div>
 
             <sc-if value="{{ treeHasNodes }}" hint-placeholder-val="{{ true }}">
@@ -314,12 +332,8 @@
             </div>
           </sc-if>
 
-          <sc-if value="{{ isEmptyNode }}" hint-placeholder-val="{{ false }}">
-            <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="package-search" title="У цій категорії немає деталей для цієї машини" hint-size="100%,180px">Оберіть інший вузол — або попросіть менеджера підібрати деталь вручну.</x-import>
-          </sc-if>
-
           <sc-if value="{{ noRows }}" hint-placeholder-val="{{ false }}">
-            <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="filter" title="Під ці фільтри нічого не підходить" action="{{ clearAction }}" hint-size="100%,200px">Зніміть частину умов — і список повернеться.</x-import>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="filter" title="Під вибрані фільтри деталей немає" action="{{ clearAction }}" hint-size="100%,200px">Зніміть частину умов і список повернеться.</x-import>
           </sc-if>
 
         </div>
@@ -330,7 +344,7 @@
               <div style="display:flex;align-items:center;gap:var(--space-3)">
                 <p class="t-eyebrow" style="margin:0">Фільтри</p>
                 <sc-if value="{{ hasFilters }}" hint-placeholder-val="{{ false }}">
-                  <button onClick="{{ clearFilters }}" style="border:0;background:none;padding:0;font:inherit;font-size:var(--text-xs);color:var(--text-muted);text-decoration:underline;text-underline-offset:2px;cursor:pointer" style-hover="color:var(--text-strong)">Очистити</button>
+                  <button onClick="{{ clearFilters }}" style="margin-left:auto;border:0;background:none;padding:0;font:inherit;font-size:var(--text-xs);color:var(--text-muted);text-decoration:underline;text-underline-offset:2px;cursor:pointer" style-hover="color:var(--text-strong)">Скинути</button>
                 </sc-if>
                 <span data-sheet-close style="margin-left:auto" onClick="{{ toggleFacets }}">
                   <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="x" label="Закрити фільтри" size="md" tone="plain" hint-size="44px,44px"></x-import>
@@ -338,11 +352,14 @@
               </div>
 
               <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Тип" hint-size="100%,90px">
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Оригінал" count="{{ countOem }}" checked="{{ oemOnly }}" onChange="{{ toggleOemOnly }}" hint-size="100%,28px"></x-import>
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Аналог" count="{{ countAnalog }}" checked="{{ analogOnly }}" onChange="{{ toggleAnalogOnly }}" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Оригінал" count="{{ countOem }}" checked="{{ oemOnly }}" disabled="{{ oemDead }}" onChange="{{ toggleOemOnly }}" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Аналог" count="{{ countAnalog }}" checked="{{ analogOnly }}" disabled="{{ analogDead }}" onChange="{{ toggleAnalogOnly }}" hint-size="100%,28px"></x-import>
+                <sc-if value="{{ allTypesDead }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:var(--space-2) 0 0;font-size:var(--text-sm);color:var(--text-muted)">Нічого не підходить під інші умови</p>
+                </sc-if>
               </x-import>
 
-              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Бренд" more-count="{{ brandMoreCount }}" hint-size="100%,200px">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Бренд" hint-size="100%,200px">
                 <div style="position:relative;margin-bottom:var(--space-2)">
                   <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);display:inline-flex;color:var(--text-faint);pointer-events:none">
                     <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="search" size="15" hint-size="15px,15px"></x-import>
@@ -350,10 +367,16 @@
                   <input type="search" placeholder="Пошук бренду" aria-label="Пошук бренду" value="{{ brandQuery }}" onChange="{{ onBrandQuery }}" style="width:100%;box-sizing:border-box;height:36px;padding:0 10px 0 30px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:var(--text-sm);color:var(--text-strong)">
                 </div>
                 <sc-for list="{{ brandFacets }}" as="b" hint-placeholder-count="5">
-                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="{{ b.name }}" count="{{ b.count }}" checked="{{ b.checked }}" onChange="{{ b.toggle }}" hint-size="100%,28px"></x-import>
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="{{ b.name }}" count="{{ b.count }}" checked="{{ b.checked }}" disabled="{{ b.dead }}" onChange="{{ b.toggle }}" hint-size="100%,28px"></x-import>
                 </sc-for>
                 <sc-if value="{{ noBrandMatch }}" hint-placeholder-val="{{ false }}">
                   <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Такого бренду тут немає</p>
+                </sc-if>
+                <sc-if value="{{ allBrandsDead }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:var(--space-2) 0 0;font-size:var(--text-sm);color:var(--text-muted)">Нічого не підходить під інші умови</p>
+                </sc-if>
+                <sc-if value="{{ brandMoreVisible }}" hint-placeholder-val="{{ true }}">
+                  <button type="button" onClick="{{ toggleBrandsExpanded }}" style="align-self:flex-start;margin-top:var(--space-2);min-height:32px;border:0;background:none;padding:0;font:inherit;font-size:var(--text-sm);color:var(--text-muted);text-decoration:underline;text-underline-offset:2px;cursor:pointer" style-hover="color:var(--text-strong)">{{ brandMoreLabel }}</button>
                 </sc-if>
               </x-import>
 
@@ -380,16 +403,19 @@
 
               <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Відправка" hint-size="100%,140px">
                 <x-import component-from-global-scope="DesignSystem_d7c4f4.Radio" name="ship-catalog" label="Будь-коли" checked="{{ shipAny }}" onChange="{{ setShipAny }}" hint-size="100%,28px"></x-import>
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.Radio" name="ship-catalog" label="Сьогодні" count="{{ countShipToday }}" checked="{{ shipToday }}" onChange="{{ setShipToday }}" hint-size="100%,28px"></x-import>
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.Radio" name="ship-catalog" label="Завтра" count="{{ countShipTomorrow }}" checked="{{ shipTomorrow }}" onChange="{{ setShipTomorrow }}" hint-size="100%,28px"></x-import>
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.Radio" name="ship-catalog" label="До 3 днів" count="{{ countShipWeek }}" checked="{{ shipWeek }}" onChange="{{ setShipWeek }}" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Radio" name="ship-catalog" label="Сьогодні" count="{{ countShipToday }}" checked="{{ shipToday }}" disabled="{{ shipTodayDead }}" onChange="{{ setShipToday }}" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Radio" name="ship-catalog" label="Завтра" count="{{ countShipTomorrow }}" checked="{{ shipTomorrow }}" disabled="{{ shipTomorrowDead }}" onChange="{{ setShipTomorrow }}" hint-size="100%,28px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Radio" name="ship-catalog" label="До 3 днів" count="{{ countShipWeek }}" checked="{{ shipWeek }}" disabled="{{ shipWeekDead }}" onChange="{{ setShipWeek }}" hint-size="100%,28px"></x-import>
               </x-import>
 
               <sc-for list="{{ attrFacets }}" as="attr" hint-placeholder-count="2">
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="{{ attr.title }}" more-count="{{ attr.moreCount }}" hint-size="100%,140px">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="{{ attr.title }}" hint-size="100%,140px">
                   <sc-for list="{{ attr.values }}" as="v" hint-placeholder-count="3">
-                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="{{ v.label }}" count="{{ v.count }}" checked="{{ v.checked }}" onChange="{{ v.toggle }}" hint-size="100%,28px"></x-import>
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="{{ v.label }}" count="{{ v.count }}" checked="{{ v.checked }}" disabled="{{ v.dead }}" onChange="{{ v.toggle }}" hint-size="100%,28px"></x-import>
                   </sc-for>
+                  <sc-if value="{{ attr.allDead }}" hint-placeholder-val="{{ false }}">
+                    <p style="margin:var(--space-2) 0 0;font-size:var(--text-sm);color:var(--text-muted)">Нічого не підходить під інші умови</p>
+                  </sc-if>
                 </x-import>
               </sc-for>
 
@@ -612,6 +638,14 @@ function partsPlural(n) {
   return 'деталей'
 }
 
+function valuesPlural(n) {
+  const ten = n % 10
+  const hundred = n % 100
+  if (ten === 1 && hundred !== 11) return 'значення'
+  if (ten >= 2 && ten <= 4 && (hundred < 12 || hundred > 14)) return 'значення'
+  return 'значень'
+}
+
 function positionsPlural(n) {
   const ten = n % 10
   const hundred = n % 100
@@ -668,6 +702,7 @@ class Component extends DCLogic {
     brands: [],
     isOem: null,
     brandQuery: '',
+    brandsExpanded: false,
     /* draft* — положення повзунків, price* — застосований діапазон */
     draftMin: null,
     draftMax: null,
@@ -714,7 +749,10 @@ class Component extends DCLogic {
     const showConsumables = this.props.showConsumables ?? true
     const isVehicle = view === 'vehicle'
     const isNode = !isVehicle
-    const base = view === 'empty' ? [] : PARTS
+    /* «empty» демонструє єдиний реальний випадок нуля: фільтри звузили список до нічого.
+       Порожніх категорій у дереві не буває — їх відкидає підбір за авто. */
+    const base = PARTS
+    const forceNoRows = view === 'empty'
 
     const filters = {
       brands: s.brands, isOem: s.isOem, attrs: s.attrs,
@@ -746,34 +784,40 @@ class Component extends DCLogic {
        фасет, який неможливо розширити, — не фасет. */
     const countWith = (patch, predicate) => apply(base, { ...filters, ...patch }).filter(predicate).length
 
+    const nShipToday = countWith({ shipMax: null }, (p) => p.qty > 0 && p.day === 0)
+    const nShipTomorrow = countWith({ shipMax: null }, (p) => p.qty > 0 && p.day <= 1)
+    const nShipWeek = countWith({ shipMax: null }, (p) => p.qty > 0 && p.day <= 3)
+    const countOem = countWith({ isOem: null }, (p) => p.oem)
+    const countAnalog = countWith({ isOem: null }, (p) => !p.oem)
+
     const brandQuery = s.brandQuery.trim().toLowerCase()
     const allBrands = [...new Set(base.map((p) => p.brand))].filter((name) => name.toLowerCase().includes(brandQuery))
+    /* Нульові опції не зникають — вони гаснуть і лишаються на місці, інакше список
+       стрибає під курсором. Вибрану опцію не гасимо ніколи: її мають чим зняти. */
     const brandFacets = allBrands
-      .map((name) => ({
-        name,
-        count: countWith({ brands: [] }, (p) => p.brand === name),
-        checked: s.brands.includes(name),
-        toggle: this.toggleBrand(name)
-      }))
-      .filter((facet) => facet.count > 0 || facet.checked)
-      .sort((a, b) => b.count - a.count)
+      .map((name) => {
+        const count = countWith({ brands: [] }, (p) => p.brand === name)
+        const checked = s.brands.includes(name)
+        return { name, count, checked, dead: count === 0 && !checked, toggle: this.toggleBrand(name) }
+      })
+      .sort((a, b) => Number(a.dead) - Number(b.dead) || b.count - a.count)
+    const brandLive = brandFacets.filter((f) => !f.dead).length
 
     const attrFacets = ATTRS.map((attr) => {
       const values = [...new Set(base.map((p) => (p.attrs || {})[attr.id]).filter((v) => v !== undefined))].sort(
         (a, b) => Number(a) - Number(b)
       )
+      const drawn = values.map((value) => {
+        const token = attr.id + ':' + value
+        const count = countWith({ attrs: s.attrs.filter((t) => !t.startsWith(attr.id + ':')) }, (p) => String((p.attrs || {})[attr.id]) === value)
+        const checked = s.attrs.includes(token)
+        return { label: value, count, checked, dead: count === 0 && !checked, toggle: this.toggleAttr(token) }
+      })
+      const live = drawn.filter((v) => !v.dead).length
       return {
         title: attr.title,
-        moreCount: Math.max(attr.total - values.length, 0),
-        values: values.map((value) => {
-          const token = attr.id + ':' + value
-          return {
-            label: value,
-            count: countWith({ attrs: s.attrs.filter((t) => !t.startsWith(attr.id + ':')) }, (p) => String((p.attrs || {})[attr.id]) === value),
-            checked: s.attrs.includes(token),
-            toggle: this.toggleAttr(token)
-          }
-        })
+        values: drawn,
+        allDead: drawn.length > 0 && live === 0
       }
     })
 
@@ -814,6 +858,8 @@ class Component extends DCLogic {
 
       treeQuery: s.treeQuery,
       onTreeQuery: (e) => this.setState({ treeQuery: e.target.value }),
+      treeHasQuery: s.treeQuery.length > 0,
+      onTreeClear: () => this.setState({ treeQuery: '' }),
       treeSearching,
       treeNodes,
       treeHasNodes: treeNodes.length > 0,
@@ -832,9 +878,8 @@ class Component extends DCLogic {
 
       hasParts: base.length > 0,
       rows: ordered.map(draw),
-      hasRows: ordered.length > 0,
-      noRows: base.length > 0 && ordered.length === 0,
-      isEmptyNode: base.length === 0,
+      hasRows: ordered.length > 0 && !forceNoRows,
+      noRows: forceNoRows || ordered.length === 0,
       countLabel: ordered.length + ' ' + partsPlural(ordered.length),
 
       sortOpen: s.sortOpen === true,
@@ -868,11 +913,18 @@ class Component extends DCLogic {
 
       brandQuery: s.brandQuery,
       onBrandQuery: (e) => this.setState({ brandQuery: e.target.value }),
-      brandFacets: brandFacets.slice(0, 6),
-      brandMoreCount: Math.max(brandFacets.length - 6, 0),
+      brandFacets: s.brandsExpanded ? brandFacets : brandFacets.slice(0, 6),
+      /* «Ще N значень» — справжнє розкриття списку, а не підпис. */
+      brandMoreVisible: brandLive > 0 && brandFacets.length > 6,
+      brandMoreLabel: s.brandsExpanded ? 'Згорнути' : 'Ще ' + (brandFacets.length - 6) + ' ' + valuesPlural(brandFacets.length - 6),
+      toggleBrandsExpanded: () => this.setState((prev) => ({ brandsExpanded: !prev.brandsExpanded })),
       noBrandMatch: brandFacets.length === 0,
-      countOem: countWith({ isOem: null }, (p) => p.oem),
-      countAnalog: countWith({ isOem: null }, (p) => !p.oem),
+      allBrandsDead: brandFacets.length > 0 && brandLive === 0,
+      countOem: countOem,
+      countAnalog: countAnalog,
+      oemDead: countOem === 0 && s.isOem !== true,
+      analogDead: countAnalog === 0 && s.isOem !== false,
+      allTypesDead: countOem === 0 && countAnalog === 0 && s.isOem === null,
       oemOnly: s.isOem === true,
       analogOnly: s.isOem === false,
       toggleOemOnly: this.toggleOem(true),
@@ -897,9 +949,12 @@ class Component extends DCLogic {
       setShipToday: this.setShip(0),
       setShipTomorrow: this.setShip(1),
       setShipWeek: this.setShip(3),
-      countShipToday: countWith({ shipMax: null }, (p) => p.qty > 0 && p.day === 0),
-      countShipTomorrow: countWith({ shipMax: null }, (p) => p.qty > 0 && p.day <= 1),
-      countShipWeek: countWith({ shipMax: null }, (p) => p.qty > 0 && p.day <= 3),
+      countShipToday: nShipToday,
+      countShipTomorrow: nShipTomorrow,
+      countShipWeek: nShipWeek,
+      shipTodayDead: nShipToday === 0 && s.shipMax !== 0,
+      shipTomorrowDead: nShipTomorrow === 0 && s.shipMax !== 1,
+      shipWeekDead: nShipWeek === 0 && s.shipMax !== 3,
 
       clearAction: React.createElement(
         window.DesignSystem_d7c4f4.Button,

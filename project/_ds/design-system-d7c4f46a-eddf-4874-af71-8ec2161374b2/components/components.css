@@ -45,7 +45,7 @@
   background: none; padding: 0; min-height: 0; color: var(--text-action);
   font-weight: var(--weight-medium);
 }
-.ds-btn--link:hover:not(:disabled) { color: var(--text-action-hover); text-decoration: underline; text-underline-offset: 2px; }
+.ds-btn--link:hover:not(:disabled) { color: var(--text-action-hover); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
 .ds-btn--link:active { transform: none; }
 
 .ds-spin { animation: ds-spin 0.8s linear infinite; }
@@ -373,7 +373,7 @@ input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appe
 .ds-row:last-child { border-bottom: 0; }
 .ds-row:hover { background: var(--surface-sunken); box-shadow: var(--keyline-red); }
 .ds-row__title { display: block; font-size: var(--text-md); font-weight: var(--weight-semibold); color: var(--text-strong); text-decoration: none; }
-.ds-row__title:hover { color: var(--text-strong); text-decoration: underline; text-underline-offset: 2px; }
+.ds-row__title:hover { color: var(--text-strong); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
 .ds-row__meta { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-xs); color: var(--text-muted); }
 
 .ds-offer {
@@ -408,7 +408,6 @@ input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appe
   transition: var(--transition-colors);
 }
 .ds-garage:hover { border-color: var(--ink-300); }
-.ds-garage--active { border-color: var(--ink-800); }
 
 .ds-garage__cover {
   position: relative; height: 128px; display: grid; grid-template-rows: minmax(0, 1fr);
@@ -417,13 +416,12 @@ input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appe
   color: var(--text-faint);
 }
 .ds-garage__cover img { width: 100%; height: 100%; min-height: 0; object-fit: contain; }
-.ds-garage__flag {
-  position: absolute; top: 0; left: 0; margin: 0; padding: 4px 10px;
-  font-size: 10px; background: var(--ink-800); color: var(--text-inverse);
-}
 .ds-garage__body { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: var(--space-4); }
 .ds-garage__name { display: block; font-size: 17px; line-height: 1.15; color: var(--text-strong); }
-.ds-garage__name:hover { color: var(--text-strong); text-decoration: none; }
+/* The name is one link among several inside the card («Перейти», «Оригінальні
+   каталоги», «Прибрати»), so it underlines on hover like any other link — that
+   is what says which target you are on. Colour stays ink: red means buy. */
+.ds-garage__name:hover { color: var(--text-strong); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
 .ds-garage__specs { display: flex; flex-wrap: wrap; gap: 6px; }
 .ds-garage__spec {
   display: inline-flex; align-items: center; height: 26px; padding: 0 10px;
@@ -511,10 +509,16 @@ input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appe
 .ds-tab[aria-selected='true']::after, .ds-tab[data-active='true']::after { background: var(--red-500); }
 .ds-tab__count { font-family: var(--font-sans); font-size: var(--text-xs); color: var(--text-faint); letter-spacing: 0; }
 
+/* Підкреслення на hover — для текстових посилань, що стоять поруч з іншими
+   цілями (футер, крихти, назва в картці). Не підкреслюємо, коли клікабельна
+   вся поверхня (кнопка, чіп, ряд дерева, таб, картка) — там hover належить
+   контейнеру: підложка + червоний keyline або індикатор.
+   Товщина всюди 1.5px, offset 2px. */
+
 /* ═══ Breadcrumbs ═════════════════════════════════════════════════════════ */
 .ds-crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: var(--text-xs); color: var(--text-muted); }
 .ds-crumbs a { color: var(--text-muted); text-decoration: none; }
-.ds-crumbs a:hover { color: var(--text-strong); text-decoration: underline; text-underline-offset: 2px; }
+.ds-crumbs a:hover { color: var(--text-strong); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
 .ds-crumbs__sep { color: var(--ink-300); }
 
 /* ═══ Pager ═══════════════════════════════════════════════════════════════ */
@@ -524,7 +528,7 @@ input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appe
 /* ═══ Header / footer ═════════════════════════════════════════════════════ */
 .ds-utilitybar { background: var(--ink-800); color: var(--text-inverse-muted); font-size: var(--text-2xs); }
 .ds-utilitybar a { color: var(--text-inverse-muted); text-decoration: none; }
-.ds-utilitybar a:hover { color: var(--white); text-decoration: none; }
+.ds-utilitybar a:hover { color: var(--white); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
 .ds-header { position: sticky; top: 0; z-index: var(--z-header); background: var(--surface); border-bottom: 1px solid var(--line); }
 .ds-header__nav { display: flex; align-items: center; gap: var(--space-5); }
 .ds-navlink {
@@ -539,7 +543,7 @@ input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appe
 .ds-navlink[data-active='true'] { color: var(--text-strong); font-weight: var(--weight-semibold); }
 .ds-footer { margin-top: var(--space-20); background: var(--ink-800); color: var(--text-inverse-muted); font-size: var(--text-sm); }
 .ds-footer a { color: var(--text-inverse-muted); text-decoration: none; }
-.ds-footer a:hover { color: var(--white); text-decoration: underline; text-underline-offset: 2px; }
+.ds-footer a:hover { color: var(--white); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
 .ds-footer__title { font-family: var(--font-display); text-transform: uppercase; letter-spacing: var(--tracking-eyebrow); font-size: var(--text-2xs); color: var(--white); margin-bottom: var(--space-3); }
 
 /* ═══ Cashback banner (the only promo surface on the site) ════════════════ */
@@ -718,6 +722,17 @@ input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appe
 .ds-treefield__icon { display: inline-flex; flex: none; color: var(--text-faint); pointer-events: none; }
 .ds-treefield input { flex: 1; min-width: 0; height: 100%; padding: 0; border: 0 !important; background: none; font: inherit; font-size: var(--text-sm); color: var(--text-strong); }
 .ds-treefield input:focus, .ds-treefield input:focus-visible { outline: none !important; box-shadow: none !important; }
+/* The native search cross is suppressed globally, so the field carries its own. It sits in
+   the flex row rather than absolutely, and disappears when the field is empty. */
+.ds-treefield__clear {
+  flex: none; display: flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; margin-right: calc(var(--space-3) * -1); padding: 0;
+  /* Same hover fill as .ds-clear: a rounded square inside a transparent border, not a circle. */
+  border: 5px solid transparent; background: none; background-clip: padding-box;
+  border-radius: var(--radius-lg);
+  color: var(--text-muted); cursor: pointer; transition: var(--transition-colors);
+}
+.ds-treefield__clear:hover { color: var(--text-strong); background-color: var(--surface-sunken); }
 
 /* ═══ Price range (two thumbs on one track) ═══════════════════════════════ */
 .ds-range { position: relative; height: 24px; }

@@ -463,17 +463,15 @@ function GarageCard({
   vin,
   oemHref,
   href = '#',
-  active = false,
   onRemove,
   className = ''
 }) {
   const specs = String(spec || '').split('\u00b7').map(s => s.trim()).filter(Boolean);
   const h = React.createElement;
   return h("li", {
-    className: ['ds-garage', active ? 'ds-garage--active' : '', className].filter(Boolean).join(' ')
+    className: ['ds-garage', className].filter(Boolean).join(' ')
   }, h("div", { className: "ds-garage__cover" },
     h("img", { src: image || "assets/vehicle-no-photo.png", alt: name }),
-    active ? h("p", { className: "t-eyebrow ds-garage__flag" }, "\u041e\u0431\u0440\u0430\u043d\u0430 \u043c\u0430\u0448\u0438\u043d\u0430") : null,
     onRemove ? h("button", {
       type: "button",
       className: "ds-garage__x",
