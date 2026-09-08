@@ -138,7 +138,7 @@
             </sc-if>
           </div>
 
-            <ul class="ds-offers" data-offers>
+            <ul class="ds-offers" data-offers data-staff="{{ staffAttr }}">
               <sc-for list="{{ offers }}" as="offer" hint-placeholder-count="3">
                 <li class="ds-offerline" data-offer data-pinned="{{ offer.pinnedAttr }}" data-primary="{{ offer.primaryAttr }}">
                   <div data-cell="ship" style="min-width:0;display:grid;gap:1px">
@@ -172,7 +172,7 @@
                   </div>
 
                   <div data-cell="btn">
-                    <x-import component-from-global-scope="DesignSystem_d7c4f4.AddToCartButton" onAdd="{{ addToCart }}" hint-size="auto,34px"></x-import>
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.AddToCartButton" onAdd="{{ addToCart }}" icon-only="{{ staffCart }}" hint-size="auto,34px"></x-import>
                   </div>
                 </li>
               </sc-for>
@@ -703,6 +703,8 @@ class Component extends DCLogic {
       mainSize: 380,
       zoomSize: 560,
       thumbSize: 64,
+      staffAttr: staffView ? 'true' : 'false',
+      staffCart: staffView,
       recentThumbSize: 168,
       lastKnownPrice: 462,
       photos: Array.from({ length: PHOTO_COUNT }, (unused, index) => ({

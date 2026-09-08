@@ -66,6 +66,11 @@
 .ds-iconbtn--bordered:hover:not(:disabled) { border-color: var(--ink-300); }
 .ds-iconbtn--inverse { color: var(--text-inverse-muted); }
 .ds-iconbtn--inverse:hover:not(:disabled) { background: rgb(255 255 255 / 0.1); color: var(--text-inverse); }
+/* Червона заливка — та сама, що в primary Button: для кнопки «в кошик»
+   без підпису (вигляд продавця). Червоне означає купівлю — тому тільки тут. */
+.ds-iconbtn--primary { border-color: var(--action); background: var(--action); color: var(--action-fg); }
+.ds-iconbtn--primary:hover:not(:disabled) { border-color: var(--action-hover); background: var(--action-hover); color: var(--action-fg); }
+.ds-iconbtn--primary:active:not(:disabled) { border-color: var(--action-active); background: var(--action-active); transform: translateY(1px); }
 
 /* ═══ Badge ═══════════════════════════════════════════════════════════════ */
 .ds-badge {
@@ -524,6 +529,41 @@ input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appe
 /* ═══ Pager ═══════════════════════════════════════════════════════════════ */
 .ds-pager { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding-top: var(--space-5); border-top: 1px solid var(--line-subtle); }
 .ds-pager__state { font-size: var(--text-sm); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+/* Номери сторінок. Активна сторінка — чорна: червоне на сайті означає «купити»,
+   тому активний стан тут такий самий, як в активного чипа фільтра. */
+.ds-pager__pages { display: flex; align-items: center; gap: var(--space-1); }
+.ds-pager__page,
+.ds-pager__step {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1);
+  min-width: 44px; height: 40px; padding-inline: var(--space-3);
+  border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface);
+  color: var(--text-strong); text-decoration: none; cursor: pointer;
+  font-family: var(--font-display); font-size: var(--text-md); letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+  transition: var(--transition-colors);
+}
+.ds-pager__page:hover,
+.ds-pager__step:hover { background: var(--surface-sunken); border-color: var(--ink-800); color: var(--text-strong); text-decoration: none; }
+.ds-pager__page[data-current='true'] { background: var(--ink-800); border-color: var(--ink-800); color: var(--text-inverse); pointer-events: none; }
+.ds-pager__step[aria-disabled='true'] { color: var(--text-faint); border-color: var(--line-subtle); pointer-events: none; }
+.ds-pager__gap { min-width: 20px; text-align: center; color: var(--text-faint); }
+/* «Показати ще»: поділка = одне натискання. Коли позицій мало, поділки читаються
+   точніше за відсоткову смугу — три з семи видно без чисел. */
+.ds-pager__more-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-4) var(--space-5); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface-sunken); }
+.ds-pager__segs { display: flex; flex-wrap: wrap; gap: 4px; }
+.ds-pager__seg { flex: 1 1 12px; width: auto; min-width: 8px; max-width: 34px; height: 4px; border-radius: 2px; background: var(--line); transition: background var(--dur) var(--ease-out); }
+.ds-pager__seg[data-filled='true'] { background: var(--ink-800); }
+.ds-pager__more { min-height: 44px; padding: 0 var(--space-6); border: 1px solid var(--ink-800); border-radius: var(--radius-lg); background: var(--surface); cursor: pointer; font-family: var(--font-display); font-size: var(--text-md); letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-strong); white-space: nowrap; transition: var(--transition-colors); }
+.ds-pager__more:hover { background: var(--ink-800); color: var(--text-inverse); }
+.ds-pager__end { margin: 0; font-size: var(--text-sm); color: var(--text-muted); }
+@media (max-width: 639px) {
+  /* На телефоні номери — другий рядок під «Назад/Далі», щоб кроки лишались 44 px. */
+  .ds-pager__pages { flex-wrap: wrap; justify-content: center; width: 100%; }
+  .ds-pager__step { flex: 1 1 40%; }
+  /* На телефоні кнопка на всю ширину — правило §4 «повна ширина, не менша кнопка». */
+  .ds-pager__more-bar { flex-direction: column; align-items: stretch; }
+  .ds-pager__more { width: 100%; }
+}
 
 /* ═══ Header / footer ═════════════════════════════════════════════════════ */
 .ds-utilitybar { background: var(--ink-800); color: var(--text-inverse-muted); font-size: var(--text-2xs); }
@@ -563,7 +603,9 @@ input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appe
   font-size: var(--display-sm); font-weight: 600; letter-spacing: var(--tracking-display);
   color: var(--text-strong);
 }
-.ds-section-title__count { font-family: var(--font-sans); font-size: var(--text-sm); font-weight: var(--weight-regular); color: var(--text-muted); letter-spacing: 0; }
+/* Лічильник — вторинна підпис-дата, а не частина заголовка: sans, у нижньому
+   регістрі. text-transform скидаємо явно, бо він успадковується від .ds-section-title. */
+.ds-section-title__count { font-family: var(--font-sans); font-size: var(--text-sm); font-weight: var(--weight-regular); color: var(--text-muted); letter-spacing: 0; text-transform: none; }
 
 /* ═══ Page shell ══════════════════════════════════════════════════════════ */
 /* Every storefront screen is this: header, one container-width main, footer. The paddings
@@ -624,7 +666,9 @@ input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appe
   border-left: 3px solid var(--red-500); background: rgb(255 255 255 / 0.06);
   color: var(--white); font-size: var(--text-sm); font-weight: var(--weight-semibold); line-height: 1.35;
 }
-.ds-footer__cta:hover { background: rgb(255 255 255 / 0.14); color: var(--white); text-decoration: none; }
+/* Уся плашка клікабельна, тому текст усередині не підкреслюємо на hover.
+   Селектор має бути не слабший за `.ds-footer a:hover`. */
+.ds-footer a.ds-footer__cta:hover { background: rgb(255 255 255 / 0.14); color: var(--white); text-decoration: none; }
 /* Адреса — посилання на карту, тому підкреслення стоїть завжди, а не лише на hover.
    Селектор має бути не слабший за `.ds-footer a`, інакше те скидає підкреслення. */
 .ds-footer a.ds-footer__map {
@@ -692,6 +736,10 @@ input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appe
 }
 /* Кнопка стоїть трохи далі від ціни, ніж решта колонок одна від одної. */
 .ds-offerline > [data-cell='btn'] { margin-left: 4px; }
+/* У вигляді продавця під онлайн-ціною стоїть другий рядок — офлайн і закупівельна.
+   Місце для нього дає кнопка: у цьому режимі вона без підпису, лише значок.
+   Решта колонок лишається такою самою, як і в клієнтському вигляді. */
+.ds-offers[data-staff='true'] { grid-template-columns: 186px 68px minmax(120px, 1fr) 148px 82px; }
 .ds-offerline:hover { background: var(--surface-sunken); }
 /* Рекомендований набір: сервер закріплює кілька пропозицій нагорі списку. Усі вони стоять
    на притопленому тлі; чорну кілю має тільки найкраща — перша. Пропозиції, які користувач

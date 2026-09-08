@@ -223,6 +223,7 @@ function AddToCartButton({
   onAdd,
   size = 'sm',
   note,
+  iconOnly = false,
   className = ''
 }) {
   const [added, setAdded] = React.useState(false);
@@ -231,6 +232,24 @@ function AddToCartButton({
     const answer = typeof onAdd === 'function' ? onAdd() : true;
     if (answer !== false) setAdded(true);
   };
+  /* Вигляд продавця: підпис зникає, значок лишається. Продавець знає цю кнопку,
+   * а рядок пропозиції в цьому режимі несе три ціни й назву складу — ширина потрібна їм.
+   * Підпис не втрачається: він стає aria-label і title (§5 «значок без підпису»). */
+  if (iconOnly) {
+    return React.createElement('div', {
+      className: ['ds-addcart', className].filter(Boolean).join(' ')
+    },
+      React.createElement(__ds_scope.IconButton, {
+        icon: added ? 'check' : 'shopping-cart',
+        label: added ? 'Перейти в кошик' : label,
+        size: 'md', tone: 'primary',
+        onClick: press,
+        className: added ? 'ds-addcart__btn--done' : '',
+        'aria-live': 'polite'
+      }),
+      added && note ? React.createElement('p', { className: 'ds-addcart__note', role: 'alert' },
+        React.createElement(__ds_scope.Icon, { name: 'info', size: 13 }), note) : null);
+  }
   return React.createElement('div', {
     className: ['ds-addcart', className].filter(Boolean).join(' ')
   },
@@ -535,7 +554,8 @@ function OfferRow({
       marginLeft: 'auto'
     }
   }, /*#__PURE__*/React.createElement(__ds_scope.AddToCartButton, {
-    onAdd: onAdd
+    onAdd: onAdd,
+    iconOnly: staff
   })), staff ? /*#__PURE__*/React.createElement("div", {
     className: "ds-offer__staff"
   }, /*#__PURE__*/React.createElement(__ds_scope.Badge, {

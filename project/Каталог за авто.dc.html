@@ -325,10 +325,33 @@
             <div style="display:grid;gap:var(--space-5)">
               <ul class="ds-rows" data-list="parts" style="list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
                 <sc-for list="{{ rows }}" as="row" hint-placeholder-count="6">
+                  <sc-if value="{{ row.startsOutOfStock }}" hint-placeholder-val="{{ false }}">
+                    <li style="display:flex;flex-wrap:wrap;align-items:baseline;gap:2px var(--space-3);padding:var(--space-3) var(--space-4);border-top:1px solid var(--line);background:var(--surface-sunken)">
+                      <span class="t-eyebrow" style="margin:0">Немає в наявності</span>
+                      <span style="font-size:var(--text-sm);color:var(--text-muted)">{{ outLabel }} — остання відома ціна</span>
+                    </li>
+                  </sc-if>
                   <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" oem="{{ row.oem }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" ship-date="{{ row.shipDate }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogsCount }}" faster-offers="{{ row.fasterOffers }}" faster-date="{{ row.fasterDate }}" faster-price="{{ row.fasterPrice }}" on-buy="{{ row.onBuy }}" min-qty="{{ row.minQty }}" href="#" hint-size="100%,150px"></x-import>
                 </sc-for>
               </ul>
-              <x-import component-from-global-scope="DesignSystem_d7c4f4.Pager" page="1" pages="2" hint-size="100%,60px"></x-import>
+              <sc-if value="{{ pagerMore }}" hint-placeholder-val="{{ true }}">
+                <div class="ds-pager__more-bar">
+                  <div style="display:grid;gap:var(--space-2);min-width:200px">
+                    <p class="ds-pager__state" style="margin:0" aria-live="polite">{{ shownLabel }}</p>
+                    <div class="ds-pager__segs" aria-hidden="true">
+                      <sc-for list="{{ segments }}" as="seg" hint-placeholder-count="3">
+                        <span class="ds-pager__seg" data-filled="{{ seg.filled }}"></span>
+                      </sc-for>
+                    </div>
+                  </div>
+                  <sc-if value="{{ hasMore }}" hint-placeholder-val="{{ true }}">
+                    <button class="ds-pager__more" onClick="{{ showMore }}">{{ moreLabel }}</button>
+                  </sc-if>
+                  <sc-if value="{{ allShown }}" hint-placeholder-val="{{ false }}">
+                    <p class="ds-pager__end">Це весь список у цій категорії.</p>
+                  </sc-if>
+                </div>
+              </sc-if>
             </div>
           </sc-if>
 
@@ -351,11 +374,17 @@
                 </span>
               </div>
 
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Наявність" hint-size="100%,60px">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Тільки в наявності" count="{{ countInStock }}" checked="{{ inStockOnly }}" disabled="{{ inStockDead }}" onChange="{{ toggleInStockOnly }}" hint-size="100%,28px"></x-import>
+              </x-import>
+
               <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Тип" hint-size="100%,90px">
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Оригінал" count="{{ countOem }}" checked="{{ oemOnly }}" disabled="{{ oemDead }}" onChange="{{ toggleOemOnly }}" hint-size="100%,28px"></x-import>
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Аналог" count="{{ countAnalog }}" checked="{{ analogOnly }}" disabled="{{ analogDead }}" onChange="{{ toggleAnalogOnly }}" hint-size="100%,28px"></x-import>
+                <sc-if value="{{ typeOptionsVisible }}" hint-placeholder-val="{{ true }}">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Оригінал" count="{{ countOem }}" checked="{{ oemOnly }}" disabled="{{ oemDead }}" onChange="{{ toggleOemOnly }}" hint-size="100%,28px"></x-import>
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Аналог" count="{{ countAnalog }}" checked="{{ analogOnly }}" disabled="{{ analogDead }}" onChange="{{ toggleAnalogOnly }}" hint-size="100%,28px"></x-import>
+                </sc-if>
                 <sc-if value="{{ allTypesDead }}" hint-placeholder-val="{{ false }}">
-                  <p style="margin:var(--space-2) 0 0;font-size:var(--text-sm);color:var(--text-muted)">Нічого не підходить під інші умови</p>
+                  <p style="display:flex;gap:var(--space-2);margin:0;border-left:2px solid var(--line);padding-left:var(--space-3);min-height:28px;align-items:center;font-size:var(--text-sm);color:var(--text-muted)">Немає варіантів під поточні фільтри</p>
                 </sc-if>
               </x-import>
 
@@ -373,7 +402,7 @@
                   <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Такого бренду тут немає</p>
                 </sc-if>
                 <sc-if value="{{ allBrandsDead }}" hint-placeholder-val="{{ false }}">
-                  <p style="margin:var(--space-2) 0 0;font-size:var(--text-sm);color:var(--text-muted)">Нічого не підходить під інші умови</p>
+                  <p style="display:flex;gap:var(--space-2);margin:0;border-left:2px solid var(--line);padding-left:var(--space-3);min-height:28px;align-items:center;font-size:var(--text-sm);color:var(--text-muted)">Немає варіантів під поточні фільтри</p>
                 </sc-if>
                 <sc-if value="{{ brandMoreVisible }}" hint-placeholder-val="{{ true }}">
                   <button type="button" onClick="{{ toggleBrandsExpanded }}" style="align-self:flex-start;margin-top:var(--space-2);min-height:32px;border:0;background:none;padding:0;font:inherit;font-size:var(--text-sm);color:var(--text-muted);text-decoration:underline;text-underline-offset:2px;cursor:pointer" style-hover="color:var(--text-strong)">{{ brandMoreLabel }}</button>
@@ -414,7 +443,7 @@
                     <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="{{ v.label }}" count="{{ v.count }}" checked="{{ v.checked }}" disabled="{{ v.dead }}" onChange="{{ v.toggle }}" hint-size="100%,28px"></x-import>
                   </sc-for>
                   <sc-if value="{{ attr.allDead }}" hint-placeholder-val="{{ false }}">
-                    <p style="margin:var(--space-2) 0 0;font-size:var(--text-sm);color:var(--text-muted)">Нічого не підходить під інші умови</p>
+                    <p style="display:flex;gap:var(--space-2);margin:0;border-left:2px solid var(--line);padding-left:var(--space-3);min-height:28px;align-items:center;font-size:var(--text-sm);color:var(--text-muted)">Немає варіантів під поточні фільтри</p>
                   </sc-if>
                 </x-import>
               </sc-for>
@@ -630,6 +659,10 @@ const OTHER_CARS = [{ name: 'Skoda Octavia II 1.9 TDI' }, { name: 'Renault Duste
 const UNCATEGORISED = 12
 const CONSUMABLES_TOTAL = 1676
 
+/* Порція списку деталей. Рядок високий, тому крок невеликий — інакше «порція»
+   не читається як одна порція. */
+const PER_PAGE = 6
+
 function partsPlural(n) {
   const ten = n % 10
   const hundred = n % 100
@@ -673,6 +706,7 @@ function attrsOk(part, tokens) {
 function apply(list, f) {
   return list.filter(
     (p) =>
+      (f.inStockOnly !== true || p.qty > 0) &&
       (f.brands.length === 0 || f.brands.includes(p.brand)) &&
       (f.isOem === null || p.oem === f.isOem) &&
       (f.priceMin === null || p.price >= f.priceMin) &&
@@ -710,6 +744,7 @@ class Component extends DCLogic {
     priceMax: null,
     /* Максимальна кількість днів до відправки; null — без обмеження */
     shipMax: null,
+    inStockOnly: false,
     attrs: [],
     treeQuery: '',
     treeOpen: false,
@@ -734,13 +769,24 @@ class Component extends DCLogic {
 
   setShip = (value) => () => this.setState({ shipMax: value })
 
+  toggleInStockOnly = () => this.setState((s) => ({ inStockOnly: !s.inStockOnly }))
+
   clear = () =>
     this.setState({
-      brands: [], isOem: null, attrs: [], brandQuery: '', shipMax: null,
+      brands: [], isOem: null, attrs: [], brandQuery: '', shipMax: null, inStockOnly: false,
       draftMin: null, draftMax: null, priceMin: null, priceMax: null
     })
 
   add = () => this.setState((s) => ({ cart: s.cart + 1 }))
+
+  /* Скільки рядків уже віддано. Поза state: список має домальовуватись, а не
+     перезбиратись, і додавання в кошик не повинно на це впливати. */
+  shown = PER_PAGE
+
+  showMore = () => {
+    this.shown += PER_PAGE
+    this.forceUpdate()
+  }
 
   renderVals() {
     const s = this.state
@@ -756,14 +802,22 @@ class Component extends DCLogic {
 
     const filters = {
       brands: s.brands, isOem: s.isOem, attrs: s.attrs,
-      priceMin: s.priceMin, priceMax: s.priceMax, shipMax: s.shipMax
+      priceMin: s.priceMin, priceMax: s.priceMax, shipMax: s.shipMax,
+      inStockOnly: s.inStockOnly
     }
     const kept = apply(base, filters)
 
-    const ordered = [...kept]
-    if (s.sort === 'price_asc') ordered.sort((a, b) => a.price - b.price)
-    if (s.sort === 'price_desc') ordered.sort((a, b) => b.price - a.price)
-    if (s.sort === 'ship_date') ordered.sort((a, b) => shipRank(a) - shipRank(b) || a.price - b.price)
+    /* Сортування діє всередині наявності, а не поверх неї: позиція, яку не можна
+       купити, ніколи не стоїть першою в «спочатку дешевші». Відправка під замовлення
+       з відомою датою — це наявність, тому в нижній ярус ідуть лише позиції без
+       пропозиції взагалі. */
+    const compare =
+      s.sort === 'price_asc' ? (a, b) => a.price - b.price
+      : s.sort === 'price_desc' ? (a, b) => b.price - a.price
+      : s.sort === 'ship_date' ? (a, b) => shipRank(a) - shipRank(b) || a.price - b.price
+      : () => 0
+    const tier = (p) => (p.qty > 0 ? 0 : 1)
+    const ordered = [...kept].sort((a, b) => tier(a) - tier(b) || compare(a, b))
 
     const draw = (part) => ({
       ...part,
@@ -784,6 +838,7 @@ class Component extends DCLogic {
        фасет, який неможливо розширити, — не фасет. */
     const countWith = (patch, predicate) => apply(base, { ...filters, ...patch }).filter(predicate).length
 
+    const nInStock = countWith({ inStockOnly: false }, (p) => p.qty > 0)
     const nShipToday = countWith({ shipMax: null }, (p) => p.qty > 0 && p.day === 0)
     const nShipTomorrow = countWith({ shipMax: null }, (p) => p.qty > 0 && p.day <= 1)
     const nShipWeek = countWith({ shipMax: null }, (p) => p.qty > 0 && p.day <= 3)
@@ -816,7 +871,9 @@ class Component extends DCLogic {
       const live = drawn.filter((v) => !v.dead).length
       return {
         title: attr.title,
-        values: drawn,
+        /* Мертву групу не показуємо рядками: три згаслі числа плюс підпис — це шум.
+           Лишається заголовок і один рядок пояснення. */
+        values: live === 0 ? [] : drawn,
         allDead: drawn.length > 0 && live === 0
       }
     })
@@ -833,7 +890,24 @@ class Component extends DCLogic {
     const treeSearching = treeQuery.length >= 2
     const treeNodes = treeSearching ? induced(TREE, treeQuery) : TREE
     const filterCount =
-      s.brands.length + (s.isOem === null ? 0 : 1) + (s.priceMin === null ? 0 : 1) + (s.shipMax === null ? 0 : 1) + s.attrs.length
+      s.brands.length + (s.isOem === null ? 0 : 1) + (s.priceMin === null ? 0 : 1) + (s.shipMax === null ? 0 : 1) +
+      (s.inStockOnly ? 1 : 0) + s.attrs.length
+
+    /* Порція списку. Будь-яка зміна умов повертає до першої: «показано 12 з 15»
+       після зміни фільтра описувало б уже інший список. */
+    const sig = JSON.stringify([s.sort, s.brands, s.isOem, s.attrs, s.priceMin, s.priceMax, s.shipMax, s.inStockOnly, view])
+    if (this.sig !== sig) {
+      this.sig = sig
+      this.shown = PER_PAGE
+    }
+    const total = ordered.length
+    const shownRows = Math.min(this.shown, total)
+    const nOut = ordered.filter((p) => p.qty === 0).length
+    const firstOutIndex = ordered.findIndex((p) => p.qty === 0)
+    const portions = Math.ceil(total / PER_PAGE)
+    const segCount = Math.min(portions, 10)
+    const segDone =
+      portions <= 10 ? Math.ceil(shownRows / PER_PAGE) : Math.round((shownRows / total) * segCount)
 
     return {
       cartCount: s.cart,
@@ -877,8 +951,22 @@ class Component extends DCLogic {
       consumables: CONSUMABLES.map(draw),
 
       hasParts: base.length > 0,
-      rows: ordered.map(draw),
+      /* Ярус без наявності починається з розділювача — інакше зміна ціни посеред
+         списку читається як помилка сортування. */
+      rows: ordered.slice(0, shownRows).map((part, i) => ({
+        ...draw(part),
+        startsOutOfStock: part.qty === 0 && i === firstOutIndex
+      })),
+      outLabel: nOut + ' ' + positionsPlural(nOut),
       hasRows: ordered.length > 0 && !forceNoRows,
+
+      pagerMore: total > PER_PAGE && !forceNoRows,
+      shownLabel: 'Показано ' + shownRows + ' з ' + total + ' ' + positionsPlural(total),
+      segments: Array.from({ length: segCount }, (_, i) => ({ filled: i < segDone ? 'true' : 'false' })),
+      hasMore: shownRows < total,
+      moreLabel: 'Показати ще ' + Math.min(PER_PAGE, total - shownRows),
+      allShown: shownRows >= total,
+      showMore: this.showMore,
       noRows: forceNoRows || ordered.length === 0,
       countLabel: ordered.length + ' ' + partsPlural(ordered.length),
 
@@ -913,7 +1001,8 @@ class Component extends DCLogic {
 
       brandQuery: s.brandQuery,
       onBrandQuery: (e) => this.setState({ brandQuery: e.target.value }),
-      brandFacets: s.brandsExpanded ? brandFacets : brandFacets.slice(0, 6),
+      brandFacets: brandLive === 0 ? [] : (s.brandsExpanded ? brandFacets : brandFacets.slice(0, 6)),
+      typeOptionsVisible: !(countOem === 0 && countAnalog === 0 && s.isOem === null),
       /* «Ще N значень» — справжнє розкриття списку, а не підпис. */
       brandMoreVisible: brandLive > 0 && brandFacets.length > 6,
       brandMoreLabel: s.brandsExpanded ? 'Згорнути' : 'Ще ' + (brandFacets.length - 6) + ' ' + valuesPlural(brandFacets.length - 6),
@@ -949,6 +1038,10 @@ class Component extends DCLogic {
       setShipToday: this.setShip(0),
       setShipTomorrow: this.setShip(1),
       setShipWeek: this.setShip(3),
+      inStockOnly: s.inStockOnly,
+      toggleInStockOnly: this.toggleInStockOnly,
+      countInStock: nInStock,
+      inStockDead: nInStock === 0 && !s.inStockOnly,
       countShipToday: nShipToday,
       countShipTomorrow: nShipTomorrow,
       countShipWeek: nShipWeek,
