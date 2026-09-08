@@ -33,7 +33,7 @@
   <main class="ds-container ds-main" style="justify-items:center">
     <div style="width:100%;max-width:430px">
 
-      <h1 class="t-display-md" style="margin:0">Вхід у кабінет</h1>
+      <h1 class="t-display-md" style="margin:0">{{ pageTitle }}</h1>
 
       <sc-if value="{{ signOutFailed }}" hint-placeholder-val="{{ false }}">
         <p class="ds-notice ds-notice--warning" style="margin:var(--space-5) 0 0" role="alert">Не вдалося завершити сесію. Закрийте браузер, щоб вийти напевно.</p>
@@ -44,10 +44,9 @@
           <p class="t-eyebrow" style="margin:0 0 8px">Код у SMS</p>
           <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Введіть номер телефону — надішлемо код у SMS.</p>
 
-          <label class="ds-field" style="display:block;margin-top:var(--space-5)">
-            <span class="ds-field__label">Телефон</span>
-            <input class="ds-input ds-input--mono" inputMode="tel" autoComplete="tel" value="{{ phone }}" onChange="{{ onPhone }}" onFocus="{{ onPhoneCaret }}" onClick="{{ onPhoneCaret }}">
-          </label>
+          <div style="margin-top:var(--space-5)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.PhoneField" label="Телефон" digits="{{ phoneDigits }}" on-digits="{{ onPhoneDigits }}" input-ref="{{ phoneRef }}" hint-size="100%,70px"></x-import>
+          </div>
 
           <button class="ds-btn ds-btn--md ds-btn--dark ds-btn--block" style="margin-top:var(--space-4)" disabled="{{ sendDisabled }}" onClick="{{ onSend }}">{{ sendLabel }}</button>
 
@@ -59,13 +58,22 @@
 
       <sc-if value="{{ stepCode }}" hint-placeholder-val="{{ false }}">
         <section style="margin-top:var(--space-6)">
-          <p style="margin:0;font-size:var(--text-sm);color:var(--text-body)">Код надіслано на <span class="t-mono" style="font-weight:600;color:var(--text-strong)">{{ sentPhone }}</span></p>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-3);padding:10px 10px 10px var(--space-4);border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface-sunken)">
+            <span style="display:flex;flex-direction:column;gap:2px;min-width:0">
+              <span class="t-eyebrow" style="color:var(--text-muted)">Код надіслано на</span>
+              <span class="t-mono" style="font-size:var(--text-md);font-weight:600;color:var(--text-strong)">{{ sentPhone }}</span>
+            </span>
+            <button class="ds-btn ds-btn--sm ds-btn--ghost" style="min-height:44px;background:var(--white);border:1px solid var(--line)" onClick="{{ onChangeNumber }}">Змінити</button>
+          </div>
 
           <sc-if value="{{ codeLive }}" hint-placeholder-val="{{ true }}">
             <div style="margin-top:var(--space-5)">
               <label class="ds-field" style="display:block">
                 <span class="ds-field__label">Код</span>
-                <input class="{{ codeInputClass }}" inputMode="numeric" autoComplete="one-time-code" maxlength="6" placeholder="––––––" value="{{ code }}" onChange="{{ onCode }}" style="font-size:22px;letter-spacing:.32em;font-weight:600">
+                <span style="position:relative;display:block">
+                  <input class="{{ codeInputClass }}" inputMode="numeric" autoComplete="one-time-code" maxlength="6" value="{{ code }}" onChange="{{ onCode }}" style="font-size:22px;letter-spacing:normal;font-weight:600;position:relative;background:transparent">
+                  <span aria-hidden="true" style="position:absolute;inset:0;display:flex;align-items:center;padding:0 var(--space-4);font-family:var(--font-mono);font-size:22px;letter-spacing:normal;font-weight:600;color:var(--text-faint);pointer-events:none;white-space:pre"><span style="visibility:hidden">{{ codeTyped }}</span>{{ codeRest }}</span>
+                </span>
                 <sc-if value="{{ codeError }}" hint-placeholder-val="{{ false }}">
                   <span class="ds-field__error">{{ codeError }}</span>
                 </sc-if>
@@ -82,21 +90,23 @@
             <p class="ds-notice ds-notice--danger" style="margin:var(--space-5) 0 0" role="alert">{{ spentText }}</p>
           </sc-if>
 
-          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-5);margin-top:var(--space-5)">
-            <button class="ds-btn ds-btn--link" style="font-size:var(--text-sm)" disabled="{{ resendDisabled }}" onClick="{{ onSend }}">Надіслати ще раз</button>
-            <button class="ds-btn ds-btn--link" style="font-size:var(--text-sm);color:var(--text-muted)" onClick="{{ onChangeNumber }}">Змінити номер</button>
+          <div style="margin-top:var(--space-5)">
+            <sc-if value="{{ resendDisabled }}" hint-placeholder-val="{{ false }}">
+              <span style="display:inline-flex;align-items:center;min-height:44px;font-size:var(--text-sm);color:var(--text-muted)">{{ resendLabel }}</span>
+            </sc-if>
+            <sc-if value="{{ resendReady }}" hint-placeholder-val="{{ true }}">
+              <button class="ds-btn ds-btn--link" style="font-size:var(--text-sm)" onClick="{{ onSend }}">Надіслати ще раз</button>
+            </sc-if>
           </div>
-
-          <sc-if value="{{ waiting }}" hint-placeholder-val="{{ false }}">
-            <p class="t-caption" style="margin:8px 0 0">{{ waitLabel }}</p>
-          </sc-if>
         </section>
       </sc-if>
 
       <sc-if value="{{ stepDone }}" hint-placeholder-val="{{ false }}">
-        <section style="margin-top:var(--space-6);padding:var(--space-5) var(--space-6);border:1px solid var(--line);border-left:3px solid var(--ink-800);border-radius:var(--radius-lg);background:var(--surface-sunken)">
-          <p style="margin:0;font-size:var(--text-md);font-weight:600;color:var(--text-strong)">Ви увійшли в кабінет</p>
-          <p style="margin:6px 0 0;font-size:var(--text-sm);color:var(--text-muted)">Номер <span class="t-mono">{{ sentPhone }}</span> підтверджено.</p>
+        <section style="margin-top:var(--space-6)">
+          <div style="display:flex;flex-direction:column;gap:4px;padding:var(--space-4) var(--space-5);border:1px solid var(--line);border-left:3px solid var(--ink-800);border-radius:var(--radius-md);background:var(--surface-sunken)">
+            <span class="t-eyebrow" style="color:var(--text-muted)">{{ doneLabel }}</span>
+            <span class="t-mono" style="font-size:var(--text-md);font-weight:600;color:var(--text-strong);word-break:break-all">{{ doneValue }}</span>
+          </div>
           <div style="display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-5)">
             <a class="ds-btn ds-btn--md ds-btn--dark" href="#">Мій кабінет</a>
             <a class="ds-btn ds-btn--md ds-btn--ghost" href="Головна.dc.html">На головну</a>
@@ -127,10 +137,15 @@
           <button class="ds-btn ds-btn--md ds-btn--secondary ds-btn--block" style="margin-top:var(--space-4)" disabled="{{ pwDisabled }}" onClick="{{ onPasswordLogin }}">Увійти з паролем</button>
 
           <sc-if value="{{ pwFailed }}" hint-placeholder-val="{{ false }}">
-            <p class="ds-notice ds-notice--danger" style="margin:var(--space-4) 0 0" role="alert">Пошта або пароль не підходять. Якщо пароль ви не задавали — увійдіть за кодом.</p>
+            <div class="ds-notice ds-notice--danger" style="margin:var(--space-4) 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px" role="alert">
+              <span>Пошта або пароль не підходять.</span>
+              <button class="ds-btn ds-btn--link" style="font-size:var(--text-sm)" onClick="{{ onUseCode }}">Увійти за кодом</button>
+            </div>
           </sc-if>
 
-          <p style="margin:var(--space-4) 0 0;font-size:var(--text-sm);color:var(--text-muted)">Забули пароль? Увійдіть кодом на телефон вище, а потім задайте новий пароль у кабінеті, у розділі «Профіль».</p>
+          <sc-if value="{{ pwHint }}" hint-placeholder-val="{{ true }}">
+            <p style="margin:var(--space-4) 0 0;font-size:var(--text-sm);color:var(--text-muted)">Забули пароль? Увійдіть кодом на телефон вище, а потім задайте новий пароль у кабінеті, у розділі «Профіль».</p>
+          </sc-if>
         </section>
       </sc-if>
 
@@ -141,7 +156,7 @@
 </div>
 
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1000},&quot;passwordPanel&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Вхід&quot;},&quot;demoError&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Немає&quot;,&quot;options&quot;:[&quot;Немає&quot;,&quot;Код невірний&quot;,&quot;Спроби вичерпано&quot;,&quot;Сесію не завершено&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Вхід&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1000},&quot;passwordPanel&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Вхід&quot;},&quot;demoError&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Немає&quot;,&quot;options&quot;:[&quot;Немає&quot;,&quot;Код невірний&quot;,&quot;Спроби вичерпано&quot;,&quot;Сесію не завершено&quot;,&quot;Пароль не підходить&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Вхід&quot;}}">
 const RESEND_SECONDS = 60
 
 let tickTimer = null
@@ -161,7 +176,10 @@ class Component extends DCLogic {
     email: '',
     password: '',
     pwFailed: false,
+    method: 'code',
   }
+
+  phoneRef = React.createRef()
 
   componentDidMount() {
     // The countdown is an affordance only — the server decides. One tick for the whole screen.
@@ -232,8 +250,21 @@ class Component extends DCLogic {
       stepPhone: s.step === 'phone',
       stepCode: s.step === 'code',
       stepDone: s.step === 'done',
+      pageTitle: s.step === 'done' ? 'Ви увійшли' : 'Вхід у кабінет',
+      doneLabel: s.method === 'password' ? 'Пошта' : 'Номер',
+      doneValue: s.method === 'password' ? s.email : this.formatPhone(s.sentDigits),
 
+      phoneDigits: s.phoneDigits,
+      onPhoneDigits: (d) => this.setState({ phoneDigits: d }),
       phone: this.formatPhone(s.phoneDigits),
+      phoneChars: this.formatPhone(s.phoneDigits).split('').map((ch, i) => ({
+        ch,
+        style: ch === '_'
+          ? 'font-weight:700;color:var(--ink-300)'
+          : (/\d/.test(ch) && i > 5
+            ? 'font-weight:600;color:var(--text-strong)'
+            : 'font-weight:700;color:var(--text-muted)'),
+      })),
       sentPhone: this.formatPhone(s.sentDigits),
       onPhone: (e) => {
         const prev = s.phoneDigits
@@ -252,6 +283,8 @@ class Component extends DCLogic {
       waiting: s.wait > 0,
       waitLabel: 'Надіслати ще раз можна через ' + s.wait + ' с',
       resendDisabled: s.sending || s.wait > 0,
+      resendReady: !(s.sending || s.wait > 0),
+      resendLabel: s.sending ? 'Надсилаємо…' : (s.wait > 0 ? 'Надіслати ще раз через ' + s.wait + ' с' : 'Надіслати ще раз'),
 
       code: s.code,
       onCode: (e) => this.setState({ code: e.target.value.replace(/\D/g, '').slice(0, 6), codeError: null }),
@@ -264,6 +297,8 @@ class Component extends DCLogic {
       verifyDisabled: s.verifying || s.code.length < 6,
       verifyLabel: s.verifying ? 'Входимо…' : 'Увійти',
       onVerify: this.verify,
+      codeTyped: s.code,
+      codeRest: '_'.repeat(Math.max(0, 6 - s.code.length)),
       onChangeNumber: () => this.setState({ step: 'phone', code: '', codeError: null, codeSpent: false, attempts: 0, wait: 0 }),
 
       showPassword: (this.props.passwordPanel ?? true) && s.step !== 'done',
@@ -273,7 +308,19 @@ class Component extends DCLogic {
       onPassword: (e) => this.setState({ password: e.target.value, pwFailed: false }),
       pwDisabled: s.email.trim().length === 0 || s.password.length === 0,
       pwFailed: s.pwFailed,
-      onPasswordLogin: () => this.setState({ pwFailed: true }),
+      pwHint: !s.pwFailed,
+      phoneRef: this.phoneRef,
+      onPasswordLogin: () => {
+        if (this.props.demoError === 'Пароль не підходить') this.setState({ pwFailed: true })
+        else this.setState({ step: 'done', method: 'password', pwFailed: false })
+      },
+      onUseCode: () => {
+        this.setState({ step: 'phone', pwFailed: false })
+        setTimeout(() => {
+          const el = this.phoneRef.current
+          if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length) }
+        }, 0)
+      },
     }
   }
 }

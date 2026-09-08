@@ -28,7 +28,7 @@
   /* 3 px паддингу — щоб рамка вибраної мініатюри не обрізалася скролом стрічки. */
   [data-strip] { display: flex; gap: var(--space-2); margin: 0; padding: 3px; list-style: none; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: thin; }
   [data-strip] > * { scroll-snap-align: start; }
-  [data-carousel] { display: flex; gap: var(--space-3); margin: 0; padding: 0 1px 4px; list-style: none; overflow-x: auto; scroll-behavior: smooth; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+  [data-carousel] { display: flex; gap: var(--space-3); margin: 0; padding: 0 1px 4px; list-style: none; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: thin; }
   [data-carousel] > li { flex: 0 0 clamp(168px, 16vw, 196px); scroll-snap-align: start; }
   [data-oe-grid] { display: grid; gap: var(--space-1) var(--space-4); grid-template-columns: minmax(0, 1fr); }
   @media (min-width: 640px) { [data-oe-grid] { grid-template-columns: 12rem minmax(0, 1fr); } }
@@ -144,7 +144,7 @@
                   <div data-cell="ship" style="min-width:0;display:grid;gap:1px">
                     <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="{{ offer.shipDate }}" relative="{{ offer.shipRelative }}" cutoff="{{ offer.shipCutoff }}" hint-size="auto,34px"></x-import>
                     <sc-if value="{{ offer.warehouse }}" hint-placeholder-val="{{ false }}">
-                      <span style="font-size:var(--text-2xs);color:var(--amber-600)">{{ offer.warehouse }}</span>
+                      <span style="font-size:var(--text-sm);color:var(--amber-600)">{{ offer.warehouse }}</span>
                     </sc-if>
                   </div>
 
@@ -167,7 +167,11 @@
                   <div data-cell="price" style="display:grid;justify-items:end;gap:1px">
                     <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ offer.price }}" size="md" hint-size="auto,24px"></x-import>
                     <sc-if value="{{ offer.sellerPrice }}" hint-placeholder-val="{{ false }}">
-                      <span style="font-size:var(--text-sm);font-weight:600;color:var(--amber-600)">{{ offer.sellerPrice }}</span>
+                      <span title="Офлайн-ціна · закупівельна" style="display:flex;align-items:baseline;gap:5px;white-space:nowrap;font-size:var(--text-sm);font-weight:600;font-variant-numeric:tabular-nums">
+                        <span style="color:var(--amber-600)">{{ offer.sellerPrice }}</span>
+                        <span style="color:var(--text-faint);font-weight:400">/</span>
+                        <span style="color:var(--text-muted)">{{ offer.purchasePrice }}</span>
+                      </span>
                     </sc-if>
                   </div>
 
@@ -262,7 +266,7 @@
                                 <ul style="list-style:none;margin:0 0 var(--space-2);padding:0">
                                   <sc-for list="{{ type.vehicles }}" as="vehicle" hint-placeholder-count="2">
                                     <li>
-                                      <a href="#" target="_blank" rel="noopener" style="display:grid;grid-template-columns:minmax(175px,2fr) 76px 72px minmax(0,1fr);align-items:baseline;gap:2px var(--space-3);min-height:34px;padding:5px var(--space-4) 5px var(--space-16);color:var(--text-body);text-decoration:none;box-shadow:inset 3px 0 0 transparent;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);box-shadow:var(--keyline-red);color:var(--text-strong);text-decoration:none">
+                                      <a href="#" target="_blank" rel="noopener" style="display:grid;grid-template-columns:minmax(0,1fr) 172px 72px 100px;align-items:baseline;gap:2px var(--space-3);min-height:34px;padding:5px var(--space-4) 5px var(--space-16);color:var(--text-body);text-decoration:none;box-shadow:inset 3px 0 0 transparent;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);box-shadow:var(--keyline-red);color:var(--text-strong);text-decoration:none">
                                         <span style="font-size:var(--text-sm);font-weight:500;color:var(--text-strong)">{{ vehicle.engine }}</span>
                                         <span style="font-size:var(--text-xs);color:var(--text-muted)">{{ vehicle.fuel }}</span>
                                         <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-mono);color:var(--text-muted);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right">{{ vehicle.power }}</span>
@@ -290,16 +294,15 @@
       <section style="display:grid;gap:var(--space-3)" data-comment-anchor="0f86e632f5-section">
         <div style="display:flex;align-items:center;gap:var(--space-2)">
           <h2 class="ds-section-title" style="margin:0;font-size:var(--display-xs)">Останні переглянуті</h2>
-          <span style="margin-left:auto;display:flex;gap:var(--space-1)">
-            <span onClick="{{ scrollRecentBack }}">
-              <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="chevron-left" label="Прокрутити назад" size="sm" tone="plain" hint-size="34px,34px"></x-import>
-            </span>
-            <span onClick="{{ scrollRecentForward }}">
-              <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="chevron-right" label="Прокрутити далі" size="sm" tone="plain" hint-size="34px,34px"></x-import>
-            </span>
-          </span>
         </div>
-        <ul data-carousel ref="{{ recentStrip }}">
+        <div style="position:relative;min-width:0">
+          <span onClick="{{ scrollRecentBack }}" style="position:absolute;top:50%;left:-6px;z-index:2;transform:translateY(-50%);display:flex;border-radius:var(--radius-md);background:var(--surface);box-shadow:var(--shadow-sm)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="chevron-left" label="Прокрутити назад" size="md" disabled="{{ recentAtStart }}" hint-size="44px,44px"></x-import>
+          </span>
+          <span onClick="{{ scrollRecentForward }}" style="position:absolute;top:50%;right:-6px;z-index:2;transform:translateY(-50%);display:flex;border-radius:var(--radius-md);background:var(--surface);box-shadow:var(--shadow-sm)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="chevron-right" label="Прокрутити далі" size="md" disabled="{{ recentAtEnd }}" hint-size="44px,44px"></x-import>
+          </span>
+          <ul data-carousel ref="{{ recentStrip }}" onScroll="{{ onRecentScroll }}">
           <sc-for list="{{ recent }}" as="item" hint-placeholder-count="6">
             <li>
               <a href="#" style="display:grid;gap:var(--space-2);height:100%;box-sizing:border-box;padding:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-lg);text-decoration:none;color:inherit;background:var(--surface);transition:var(--transition-colors)" style-hover="border-color:var(--ink-300);background:var(--surface-sunken)">
@@ -317,7 +320,8 @@
               </a>
             </li>
           </sc-for>
-        </ul>
+          </ul>
+        </div>
       </section>
     </sc-if>
 
@@ -384,7 +388,12 @@ const OFFERS = [
   { key: 'o6', price: 568, qty: 1, day: 9, date: '10 вер, чт' }
 ]
 
-const WAREHOUSES = ['Запоріжжя · власний склад', 'Київ · ELIT', 'Одеса · Автологістика', 'Львів · Інтеркарс']
+/* Рядок складу переписаний під читання: спершу те, що персонал упізнає — код постачальника
+ * і склад, після тире логістика — строк доставки, час відсічення в будні та (в дужках) у суботу. */
+const WAREHOUSES = ['ЕЛ ЦЕНТР — 1д, до 17:00 (17:00)', 'АЛ ОДЕСА — 2д, до 10:00 (18:00)', 'ВЛ ЗАПОРІЖЖЯ — 0д, до 14:00 (12:00)', 'ІК ЛЬВІВ — 3д, до 09:00 (16:00)']
+
+/* Той самий формат, що й у PriceTag, — щоб службові ціни мали розділювач тисяч. */
+const UAH = new Intl.NumberFormat('uk-UA')
 
 const SPECS = [
   { name: 'Кількість ребер', value: '6' },
@@ -512,7 +521,12 @@ const RECENT = [
     name: 'Ремень поликліновий Tucson (09-)/IX35/Sportage (G6BA-G) (6PK2000) (25212-37182) Bando'
   },
   { brand: 'BOSCH', article: '0 986 452 041', name: 'Фільтр масляний', price: 284 },
-  { brand: 'FEBI BILSTEIN', article: '34781', name: 'Натягувач ременя допоміжних агрегатів', price: 1620 }
+  { brand: 'FEBI BILSTEIN', article: '34781', name: 'Натягувач ременя допоміжних агрегатів', price: 1620 },
+  { brand: 'NGK', article: 'BKR6EIX-11', name: 'Свічка запалювання іридієва', price: 348 },
+  { brand: 'HENGST', article: 'E1010L', name: 'Фільтр повітряний', price: 412 },
+  { brand: 'LEMFÖRDER', article: '30619 01', name: 'Стійка стабілізатора передня', price: 604 },
+  { brand: 'VALEO', article: '575056', name: 'Помпа водяна з термостатом', price: 2380 },
+  { brand: 'DENSO', article: 'DCP41010', name: 'Компресор кондиціонера', price: 8740 }
 ]
 
 const OFFER_SORTS = [
@@ -533,7 +547,9 @@ class Component extends DCLogic {
     openMarks: [],
     openModels: [],
     copied: null,
-    cart: 2
+    cart: 2,
+    recentAtStart: true,
+    recentAtEnd: false
   }
 
   thumbStrip = React.createRef()
@@ -558,10 +574,52 @@ class Component extends DCLogic {
     if (ref.current) ref.current.scrollBy({ left: amount, behavior: 'smooth' })
   }
 
+  /* Крок каруселі — рівно одна картка: цільову позицію рахуємо з ширини картки,
+     інакше scroll-snap доводить плавний скрол до наступної точки прив'язки. */
+  scrollCards = (ref, direction) => () => {
+    const el = ref.current
+    if (!el) return
+    const first = el.children[0]
+    const step = first ? first.getBoundingClientRect().width + 16 : 200
+    const max = el.scrollWidth - el.clientWidth
+    const index = Math.round(el.scrollLeft / step) + direction
+    el.scrollTo({ left: Math.max(0, Math.min(max, index * step)), behavior: 'smooth' })
+  }
+
+  onRecentScroll = (event) => {
+    const el = event.currentTarget
+    const atStart = el.scrollLeft <= 2
+    const atEnd = el.scrollLeft >= el.scrollWidth - el.clientWidth - 2
+    if (atStart !== this.state.recentAtStart || atEnd !== this.state.recentAtEnd) {
+      this.setState({ recentAtStart: atStart, recentAtEnd: atEnd })
+    }
+  }
+
   toggleList = (field, key) => () =>
     this.setState((s) => ({
       [field]: s[field].includes(key) ? s[field].filter((item) => item !== key) : [...s[field], key]
     }))
+
+  /* Вибір фото стрілками в лайтбоксі змінює й смужку мініатюр під головним фото —
+     тому підтягуємо її так, щоб вибрана мініатюра завжди була в межах видимого. */
+  revealThumb = () => {
+    const strip = this.thumbStrip.current
+    if (!strip) return
+    const item = strip.children[this.state.photo]
+    if (!item) return
+    const left = item.getBoundingClientRect().left - strip.getBoundingClientRect().left + strip.scrollLeft
+    const pad = 8
+    const min = left + item.offsetWidth - strip.clientWidth + pad
+    if (strip.scrollLeft > left - pad) strip.scrollTo({ left: Math.max(0, left - pad), behavior: 'smooth' })
+    else if (strip.scrollLeft < min) strip.scrollTo({ left: min, behavior: 'smooth' })
+  }
+
+  componentDidUpdate() {
+    if (this.shownPhoto !== this.state.photo) {
+      this.shownPhoto = this.state.photo
+      this.revealThumb()
+    }
+  }
 
   componentWillUnmount() {
     clearTimeout(this.copyTimer)
@@ -607,8 +665,11 @@ class Component extends DCLogic {
       /* Закріплений (рекомендований) набір — ті пропозиції, які сервер показує відразу. */
       pinnedAttr: offer.visible === true ? 'true' : 'false',
       primaryAttr: offer.primary === true ? 'true' : 'false',
-      warehouse: staffView ? WAREHOUSES[index % WAREHOUSES.length] + (offer.cutoff ? ' · до ' + offer.cutoff : '') : '',
-      sellerPrice: staffView ? Math.round(offer.price * 0.74) + ' ₴' : ''
+      warehouse: staffView ? WAREHOUSES[index % WAREHOUSES.length] : '',
+      /* Три ціни, але два рядки: чорна онлайн-ціна зверху, під нею одним рядком
+       * бурштинова офлайн і сіра закупівельна — символ гривні лишаємо один. */
+      sellerPrice: staffView ? UAH.format(Math.round(offer.price * 0.74)) : '',
+      purchasePrice: staffView ? UAH.format(Math.round(offer.price * 0.61)) + ' ₴' : ''
     }))
 
     /* §3.11: рівень із рівно одним значенням відкривається сам — не «перший із кількох». */
@@ -796,8 +857,11 @@ class Component extends DCLogic {
       showRecent: this.props.showRecent ?? true,
       recent: RECENT,
       recentStrip: this.recentStrip,
-      scrollRecentBack: this.scrollBy(this.recentStrip, -420),
-      scrollRecentForward: this.scrollBy(this.recentStrip, 420)
+      scrollRecentBack: this.scrollCards(this.recentStrip, -1),
+      scrollRecentForward: this.scrollCards(this.recentStrip, 1),
+      onRecentScroll: this.onRecentScroll,
+      recentAtStart: this.state.recentAtStart,
+      recentAtEnd: this.state.recentAtEnd
     }
   }
 }

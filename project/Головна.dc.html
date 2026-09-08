@@ -247,10 +247,7 @@
             <span class="ds-field__hint">Необовʼязково. Фото та PDF — до 5 файлів по 10 МБ</span>
           </div>
 
-          <label class="ds-field">
-            <span class="ds-field__label">Телефон</span>
-            <input class="ds-input ds-input--mono" inputMode="tel" value="{{ reqPhone }}" onChange="{{ onReqPhone }}" onFocus="{{ onPhoneCaret }}" onClick="{{ onPhoneCaret }}">
-          </label>
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.PhoneField" label="Телефон" digits="{{ reqDigits }}" on-digits="{{ onReqDigits }}" hint-size="100%,70px"></x-import>
         </div>
 
         <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:var(--space-3);padding:var(--space-5) var(--space-6);border-top:1px solid var(--line);background:var(--surface-sunken)">
@@ -700,6 +697,8 @@ class Component extends DCLogic {
       onReqVinCaret: this.onMaskedCaret('vin', 'reqVin'),
       reqList: this.state.reqList,
       onReqList: (e) => this.setState({ reqList: e.target.value }),
+      reqDigits: this.state.reqPhoneDigits,
+      onReqDigits: (d) => this.setState({ reqPhoneDigits: d }),
       reqPhone: this.formatPhone(this.state.reqPhoneDigits),
       onReqPhone: (e) => {
         const prev = this.state.reqPhoneDigits

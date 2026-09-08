@@ -3759,3 +3759,94 @@ __ds_ns.SHOP = SHOP;
 })(); } catch (e) { __ds_ns.__errors.push({ path: "standardisation-patch", error: String((e && e.message) || e) }); }
 
 })();
+
+
+(function () {
+/* ═══ Поле телефону — 2026-09-08 ═════════════════════════════════════════════
+   The login screen and the «Запит на підбір» form each hand-rolled the same
+   masked phone input. It lives here now, so every future phone field (profile,
+   checkout, panel) inherits one behaviour and one type treatment:
+     · mask is always visible: +38 (0__) ___-__-__
+     · template parts (+38, brackets, dashes) bold in --text-muted,
+       unfilled slots bold in --ink-300, entered digits 600 in --text-strong
+     · caret always lands on the first blank; backspace deletes a real digit
+   Fold into the master design system as components/forms/PhoneField.jsx.     */
+const ns = window.DesignSystem_d7c4f4;
+const BaseMask = ns.Mask;
+const caretToBlank = BaseMask.caretToBlank;
+const PHONE_LEN = 9;
+
+function phoneDigits(raw) {
+  return String(raw || '').replace(/\D/g, '').replace(/^380?/, '').slice(0, PHONE_LEN);
+}
+
+function maskPhone(digits) {
+  const d = (String(digits || '') + '_________').slice(0, PHONE_LEN);
+  return '+38 (0' + d.slice(0, 2) + ') ' + d.slice(2, 5) + '-' + d.slice(5, 7) + '-' + d.slice(7, 9);
+}
+
+function phoneInput(raw, prev) {
+  let digits = phoneDigits(raw);
+  if (raw.length < maskPhone(prev).length && digits.length === prev.length) digits = digits.slice(0, -1);
+  return digits;
+}
+
+/* The three roles of a character in the mask. Index > 5 is past the '+38 (0'
+   prefix, so a digit there is one the customer typed. */
+function phoneCharStyle(ch, i) {
+  if (ch === '_') return { fontWeight: 700, color: 'var(--ink-300)' };
+  if (/\d/.test(ch) && i > 5) return { fontWeight: 600, color: 'var(--text-strong)' };
+  return { fontWeight: 700, color: 'var(--text-muted)' };
+}
+
+ns.Mask = Object.assign({}, BaseMask, { PHONE_LEN, phoneDigits, maskPhone, phoneInput, phoneCharStyle });
+
+function PhoneField({
+  label = 'Телефон',
+  digits = '',
+  onDigits,
+  inputRef,
+  hint,
+  id,
+  style,
+}) {
+  const H = React.createElement;
+  const masked = maskPhone(digits);
+  const put = (el) => caretToBlank(el, masked);
+  const face = {
+    fontFamily: 'var(--font-mono)',
+    fontSize: 'var(--text-md)',
+    letterSpacing: 'var(--tracking-mono)',
+    fontVariantLigatures: 'none',
+  };
+  return H('label', { className: 'ds-field', htmlFor: id, style: Object.assign({ display: 'block' }, style) },
+    label ? H('span', { className: 'ds-field__label' }, label) : null,
+    H('span', { style: { position: 'relative', display: 'block' } },
+      H('input', Object.assign({
+        id,
+        className: 'ds-input ds-input--mono',
+        inputMode: 'tel',
+        autoComplete: 'tel',
+        ref: inputRef,
+        value: masked,
+        onChange: (e) => {
+          const el = e.target;
+          const next = phoneInput(el.value, digits);
+          if (onDigits) onDigits(next);
+          caretToBlank(el, maskPhone(next));
+        },
+        onFocus: (e) => put(e.target),
+        onClick: (e) => put(e.target),
+      }, { style: Object.assign({}, face, { color: 'transparent', caretColor: 'var(--text-strong)', background: 'transparent' }) })),
+      H('span', {
+        'aria-hidden': 'true',
+        style: Object.assign({
+          position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
+          padding: '0 var(--space-3)', pointerEvents: 'none', whiteSpace: 'pre',
+        }, face),
+      }, masked.split('').map((ch, i) => H('span', { key: i, style: phoneCharStyle(ch, i) }, ch)))),
+    hint ? H('p', { style: { margin: '6px 0 0', fontSize: 'var(--text-xs)', color: 'var(--text-muted)' } }, hint) : null);
+}
+
+ns.PhoneField = PhoneField;
+}());

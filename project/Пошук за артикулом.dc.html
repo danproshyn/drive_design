@@ -106,7 +106,7 @@
 
     <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
       <div style="display:grid;gap:var(--space-4)">
-        <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="package-search" title="{{ emptyTitle }}" hint-size="100%,180px">Перевірте артикул — можливо, у ньому помилка або цієї деталі немає в каталозі.</x-import>
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="package-search" title="{{ emptyTitle }}" hint-size="100%,180px">Перевірте артикул — можливо, у ньому помилка або цієї деталі та її аналогів немає в каталозі.</x-import>
 
         <section style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-5);padding:var(--space-5) var(--space-6);border:1px solid var(--line);border-left:3px solid var(--red-500);border-radius:var(--radius-lg);background:var(--surface-sunken)">
           <div style="flex:1 1 420px;min-width:280px">
@@ -204,7 +204,7 @@
                             <div data-cell="ship" style="min-width:0;display:grid;gap:1px">
                               <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="{{ offer.shipDate }}" relative="{{ offer.shipRelative }}" cutoff="{{ offer.shipCutoff }}" hint-size="auto,34px"></x-import>
                               <sc-if value="{{ offer.warehouse }}" hint-placeholder-val="{{ false }}">
-                                <span style="font-size:var(--text-2xs);color:var(--amber-600)">{{ offer.warehouse }}</span>
+                                <span style="font-size:var(--text-sm);color:var(--amber-600)">{{ offer.warehouse }}</span>
                               </sc-if>
                             </div>
 
@@ -243,7 +243,15 @@
                       </div>
 
                       <sc-if value="{{ row.noOffers }}" hint-placeholder-val="{{ false }}">
-                        <p class="ds-stock ds-stock--out" style="margin:0;padding-inline:var(--space-3)">Немає в наявності</p>
+                        <div style="display:grid;gap:2px;padding-inline:var(--space-3)">
+                          <p class="ds-stock ds-stock--out" style="margin:0;font-size:var(--text-base);font-weight:600">Немає в наявності</p>
+                          <sc-if value="{{ row.lastKnownPrice }}" hint-placeholder-val="{{ false }}">
+                            <p style="display:flex;align-items:baseline;gap:var(--space-2);margin:0;font-size:var(--text-sm);color:var(--text-muted)">
+                              Остання відома ціна
+                              <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ row.lastKnownPrice }}" size="sm" stale="{{ true }}" hint-size="auto,20px"></x-import>
+                            </p>
+                          </sc-if>
+                        </div>
                       </sc-if>
                       <sc-if value="{{ row.hasRest }}" hint-placeholder-val="{{ false }}">
                         <div style="padding-inline:var(--space-3)">
@@ -410,13 +418,13 @@ const EXACT = [
   {
     id: 'bosch', brand: 'BOSCH', article: '1 987 946 573', name: 'Комплект ГРМ з водяним насосом', isOem: true, kind: null, inStock: true,
     offers: [
-      { key: 'b1', price: 11240, qty: 10, qtyCapped: true, day: 0, cutoff: '21:00' },
-      { key: 'b2', price: 11890, qty: 4, day: 0 },
-      { key: 'b3', price: 12460, qty: 10, qtyCapped: true, day: 1 },
-      { key: 'b4', price: 11720, qty: 2, day: 3, date: '4 вер, пт' },
-      { key: 'b5', price: 16900, qty: 6, day: 3, date: '4 вер, пт' },
-      { key: 'b6', price: 17480, qty: 1, day: 5, date: '8 вер, вт' },
-      { key: 'b7', price: 18250, qty: 12, qtyCapped: true, day: 5, date: '8 вер, вт' }
+      { key: 'b1', price: 17240, qty: 10, qtyCapped: true, day: 0, cutoff: '21:00' },
+      { key: 'b2', price: 16900, qty: 4, day: 0 },
+      { key: 'b3', price: 18460, qty: 10, qtyCapped: true, day: 1 },
+      { key: 'b4', price: 17720, qty: 2, day: 3, date: '4 вер, пт' },
+      { key: 'b5', price: 18900, qty: 6, day: 3, date: '4 вер, пт' },
+      { key: 'b6', price: 19480, qty: 1, day: 5, date: '8 вер, вт' },
+      { key: 'b7', price: 20250, qty: 12, qtyCapped: true, day: 5, date: '8 вер, вт' }
     ]
   },
   {
@@ -463,6 +471,8 @@ const ANALOG = [
   },
   {
     id: 'contitech', brand: 'CONTITECH', article: 'CT1028WP2', name: 'Комплект ГРМ з водяним насосом', isOem: false, kind: 'cross', inStock: false,
+    /* Ціни немає, бо немає пропозицій; остання відома — довідково, як і на картці деталі. */
+    lastKnown: 8760,
     offers: []
   },
   {
@@ -481,9 +491,9 @@ const ANALOG = [
 
 const KIND_LABEL = { cross: 'Аналог (кроси)', oe: 'Аналог (OE номер)' }
 
-/* Назви складів приходять з прайсу постачальника в його ж форматі: строк, час відправлення,
- * (час відсічення), код постачальника та склад. Персонал читає їх саме так. */
-const WAREHOUSES = ['1д 17:00 (17:00) ЕЛ (ЦЕНТР)', '2д 10:00 (18:00) АЛ (ОДЕСА)', '0д 14:00 (12:00) ВЛ (ЗАПОРІЖЖЯ)', '3д 09:00 (16:00) ІК (ЛЬВІВ)']
+/* Рядок складу переписаний під читання: спершу те, що персонал упізнає — код постачальника
+ * і склад, після тире логістика — строк доставки, час відсічення в будні та (в дужках) у суботу. */
+const WAREHOUSES = ['ЕЛ ЦЕНТР — 1д, до 17:00 (17:00)', 'АЛ ОДЕСА — 2д, до 10:00 (18:00)', 'ВЛ ЗАПОРІЖЖЯ — 0д, до 14:00 (12:00)', 'ІК ЛЬВІВ — 3д, до 09:00 (16:00)']
 
 function plural(n) {
   const ten = n % 10
@@ -691,6 +701,7 @@ class Component extends DCLogic {
         kindLabel: KIND_LABEL[row.kind],
         outOfStock: row.inStock === false,
         noOffers: all.length === 0,
+        lastKnownPrice: all.length === 0 ? row.lastKnown ?? 0 : 0,
         hasRest: restCount > 0,
         restLabel: 'ще ' + restCount + ' ' + offersPlural(restCount) + ' від ' + UAH.format(restFrom) + ' ₴',
         expand: this.expand(row.id),
