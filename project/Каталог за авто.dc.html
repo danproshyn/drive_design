@@ -19,8 +19,15 @@
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
-<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=3"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=10"></script>
+<script src="cart-store.js?v=2"></script>
 <style>
+  /* У списку деталей лічильник має ті самі розміри, що й у кошику (134×44):
+     під ним стоїть «Більше на складах», і воно має вміщатися в один рядок. */
+  .ds-row .ds-addcart .ds-qty { width: 134px; height: 44px; }
+  .ds-row .ds-addcart .ds-qty button { width: 40px; }
+  .ds-row .ds-addcart .ds-qty input { font-size: var(--text-md); }
+  .ds-row .ds-addcart__more { width: 134px; white-space: nowrap; }
 
   /* Дерево: розкривний блок над списком, від 900 px — колонка ліворуч */
   [data-layout] { grid-template-columns: minmax(0, 1fr); }
@@ -246,9 +253,8 @@
           <sc-if value="{{ consumablesOpen }}" hint-placeholder-val="{{ false }}">
             <ul class="ds-rows" data-list="parts" style="list-style:none;margin:var(--space-3) 0 0;padding:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
               <sc-for list="{{ consumables }}" as="row" hint-placeholder-count="3">
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" oem="{{ row.oem }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" ship-date="{{ row.shipDate }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogsCount }}" faster-offers="{{ row.fasterOffers }}" faster-date="{{ row.fasterDate }}" faster-price="{{ row.fasterPrice }}" on-buy="{{ row.onBuy }}" min-qty="{{ row.minQty }}" href="#" hint-size="100%,150px"></x-import>
-              </sc-for>
-            </ul>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" oem="{{ row.oem }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" ship-date="{{ row.shipDate }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogsCount }}" faster-offers="{{ row.fasterOffers }}" faster-date="{{ row.fasterDate }}" faster-price="{{ row.fasterPrice }}" min-qty="{{ row.minQty }}" line-id="{{ row.lineId }}" max-qty="{{ row.maxQty }}" offers-href="{{ offersHref }}" href="#" hint-size="100%,150px"></x-import>
+              </sc-for>            </ul>
           </sc-if>
         </section>
       </sc-if>
@@ -331,7 +337,7 @@
                       <span style="font-size:var(--text-sm);color:var(--text-muted)">{{ outLabel }} — остання відома ціна</span>
                     </li>
                   </sc-if>
-                  <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" oem="{{ row.oem }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" ship-date="{{ row.shipDate }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogsCount }}" faster-offers="{{ row.fasterOffers }}" faster-date="{{ row.fasterDate }}" faster-price="{{ row.fasterPrice }}" on-buy="{{ row.onBuy }}" min-qty="{{ row.minQty }}" href="#" hint-size="100%,150px"></x-import>
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" oem="{{ row.oem }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" ship-date="{{ row.shipDate }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogsCount }}" faster-offers="{{ row.fasterOffers }}" faster-date="{{ row.fasterDate }}" faster-price="{{ row.fasterPrice }}" min-qty="{{ row.minQty }}" line-id="{{ row.lineId }}" max-qty="{{ row.maxQty }}" offers-href="{{ offersHref }}" href="#" hint-size="100%,150px"></x-import>
                 </sc-for>
               </ul>
               <sc-if value="{{ pagerMore }}" hint-placeholder-val="{{ true }}">
@@ -381,7 +387,7 @@
               <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Тип" hint-size="100%,90px">
                 <sc-if value="{{ typeOptionsVisible }}" hint-placeholder-val="{{ true }}">
                   <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Оригінал" count="{{ countOem }}" checked="{{ oemOnly }}" disabled="{{ oemDead }}" onChange="{{ toggleOemOnly }}" hint-size="100%,28px"></x-import>
-                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Аналог" count="{{ countAnalog }}" checked="{{ analogOnly }}" disabled="{{ analogDead }}" onChange="{{ toggleAnalogOnly }}" hint-size="100%,28px"></x-import>
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Замінник" count="{{ countAnalog }}" checked="{{ analogOnly }}" disabled="{{ analogDead }}" onChange="{{ toggleAnalogOnly }}" hint-size="100%,28px"></x-import>
                 </sc-if>
                 <sc-if value="{{ allTypesDead }}" hint-placeholder-val="{{ false }}">
                   <p style="display:flex;gap:var(--space-2);margin:0;border-left:2px solid var(--line);padding-left:var(--space-3);min-height:28px;align-items:center;font-size:var(--text-sm);color:var(--text-muted)">Немає варіантів під поточні фільтри</p>
@@ -473,7 +479,7 @@
 </div>
 
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1180},&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;vehicle&quot;,&quot;category&quot;,&quot;empty&quot;],&quot;default&quot;:&quot;category&quot;,&quot;tsType&quot;:&quot;'vehicle' | 'category' | 'empty'&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;otherCarsInGarage&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;showFacets&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;showConsumables&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1180},&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;vehicle&quot;,&quot;category&quot;,&quot;empty&quot;],&quot;default&quot;:&quot;category&quot;,&quot;tsType&quot;:&quot;'vehicle' | 'category' | 'empty'&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;otherCarsInGarage&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;showFacets&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;showConsumables&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;staffView&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;}}">
 /*
  * Каталог за авто. Другий дизайн списку (PartCard): одна деталь — одна найкраща ціна,
  * без кількості, кожне вторинне посилання веде в картку деталі, а не розкриває щось на місці.
@@ -750,7 +756,8 @@ class Component extends DCLogic {
     treeOpen: false,
     facetsOpen: false,
     consumablesOpen: false,
-    cart: 2
+    cart: 2,
+    cartUnits: 0
   }
 
   setSort = (sort) => () => this.setState({ sort })
@@ -777,7 +784,20 @@ class Component extends DCLogic {
       draftMin: null, draftMax: null, priceMin: null, priceMax: null
     })
 
-  add = () => this.setState((s) => ({ cart: s.cart + 1 }))
+  /* Лічильник у шапці читає той самий кошик, що й кнопки в рядках. */
+  componentDidMount() { this.bindCart() }
+
+  bindCart = () => {
+    if (!window.DriveCart) { this.cartRetry = setTimeout(this.bindCart, 60); return }
+    const sync = () => this.setState({ cartUnits: window.DriveCart.units() })
+    this.unsubCart = window.DriveCart.subscribe(sync)
+    sync()
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.cartRetry)
+    if (this.unsubCart) this.unsubCart()
+  }
 
   /* Скільки рядків уже віддано. Поза state: список має домальовуватись, а не
      перезбиратись, і додавання в кошик не повинно на це впливати. */
@@ -793,6 +813,8 @@ class Component extends DCLogic {
     const view = this.props.state ?? 'category'
     const showFacets = this.props.showFacets ?? true
     const showConsumables = this.props.showConsumables ?? true
+    /* Вигляд продавця: у списку деталей замість «В кошик» — перехід до всіх пропозицій. */
+    const offersHref = this.props.staffView === true ? 'Картка деталі.dc.html' : ''
     const isVehicle = view === 'vehicle'
     const isNode = !isVehicle
     /* «empty» демонструє єдиний реальний випадок нуля: фільтри звузили список до нічого.
@@ -831,7 +853,9 @@ class Component extends DCLogic {
       fasterOffers: !!part.faster,
       fasterDate: part.faster ? part.faster.date : '',
       fasterPrice: part.faster ? part.faster.price : null,
-      onBuy: this.add
+      /* Рядок кошика й стеля за залишком — ті самі, що в картці деталі й пошуку. */
+      lineId: part.brand + ' ' + part.article,
+      maxQty: part.qty
     })
 
     /* Кожен лічильник — це список з усіма іншими фільтрами, але без цього:
@@ -910,7 +934,8 @@ class Component extends DCLogic {
       portions <= 10 ? Math.ceil(shownRows / PER_PAGE) : Math.round((shownRows / total) * segCount)
 
     return {
-      cartCount: s.cart,
+      cartCount: s.cart + (window.DriveCart ? window.DriveCart.units() : s.cartUnits),
+      offersHref,
       isVehicle,
       isNode,
       crumbs: isVehicle

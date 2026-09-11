@@ -19,7 +19,8 @@
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
-<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=3"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=10"></script>
+<script src="cart-store.js?v=2"></script>
 <style>
   /* Картка: галерея фіксованої ширини, ідентичність і пропозиції — решта */
   [data-part] { display: grid; gap: var(--space-6) var(--space-8); align-items: start; grid-template-columns: minmax(0, 1fr); }
@@ -103,11 +104,7 @@
 
         <sc-if value="{{ outOfStock }}" hint-placeholder-val="{{ false }}">
           <div style="padding:var(--space-4);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)">
-            <p style="margin:0;font-weight:500;color:var(--stock-out)">Немає в наявності</p>
-            <p style="display:flex;align-items:baseline;gap:var(--space-2);margin:var(--space-2) 0 0;font-size:var(--text-sm);color:var(--text-muted)">
-              Остання відома ціна
-              <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ lastKnownPrice }}" size="sm" stale="{{ true }}" hint-size="auto,20px"></x-import>
-            </p>
+            <dc-import name="Немає-в-наявності" last-known-price="{{ lastKnownPrice }}" hint-size="100%,48px"></dc-import>
           </div>
         </sc-if>
 
@@ -176,7 +173,7 @@
                   </div>
 
                   <div data-cell="btn">
-                    <x-import component-from-global-scope="DesignSystem_d7c4f4.AddToCartButton" onAdd="{{ addToCart }}" icon-only="{{ staffCart }}" hint-size="auto,34px"></x-import>
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.AddToCartButton" onAdd="{{ addToCart }}" line-id="{{ offer.lineId }}" min-qty="{{ offer.minQty }}" max-qty="{{ offer.maxQty }}" more-href="" icon-only="{{ staffCart }}" hint-size="auto,34px"></x-import>
                   </div>
                 </li>
               </sc-for>
@@ -548,6 +545,7 @@ class Component extends DCLogic {
     openModels: [],
     copied: null,
     cart: 2,
+    cartUnits: 0,
     recentAtStart: true,
     recentAtEnd: false
   }
@@ -614,6 +612,17 @@ class Component extends DCLogic {
     else if (strip.scrollLeft < min) strip.scrollTo({ left: min, behavior: 'smooth' })
   }
 
+  /* Лічильник у шапці читає той самий кошик, що й кнопки в пропозиціях. */
+  componentDidMount() { this.bindCart() }
+
+  bindCart = () => {
+    if (!window.DriveCart) { this.cartRetry = setTimeout(this.bindCart, 60); return }
+    /* cartUnits — лише привід перерахувати рендер; число читаємо зі сховища на місці. */
+    const sync = () => this.setState({ cartUnits: window.DriveCart.units() })
+    this.unsubCart = window.DriveCart.subscribe(sync)
+    sync()
+  }
+
   componentDidUpdate() {
     if (this.shownPhoto !== this.state.photo) {
       this.shownPhoto = this.state.photo
@@ -623,6 +632,8 @@ class Component extends DCLogic {
 
   componentWillUnmount() {
     clearTimeout(this.copyTimer)
+    clearTimeout(this.cartRetry)
+    if (this.unsubCart) this.unsubCart()
   }
 
   renderVals() {
@@ -660,6 +671,11 @@ class Component extends DCLogic {
       qtyLabel: offer.qty + ' шт',
       /* Мінімальна партія — та сама пілюля, що в кошику й у пошуку за артикулом. */
       minQtyLabel: offer.minQty > 1 ? 'від ' + offer.minQty + ' шт' : '',
+      /* Рядок кошика — артикул плюс пропозиція: стан кнопки переживає перехід між сторінками. */
+      lineId: 'BANDO 6PK2000:' + offer.key,
+      minQty: offer.minQty || 1,
+      /* Більше, ніж є на складі, додати не можна. */
+      maxQty: offer.qty,
       bestPrice: offer.key === bestPriceKey,
       bestDate: offer.key === bestDateKey,
       /* Закріплений (рекомендований) набір — ті пропозиції, які сервер показує відразу. */
@@ -750,7 +766,7 @@ class Component extends DCLogic {
     )
 
     return {
-      cartCount: cart,
+      cartCount: cart + (window.DriveCart ? window.DriveCart.units() : this.state.cartUnits),
       crumbs: [
         { label: 'Головна', href: '#' },
         { label: 'HYUNDAI IX35 2.0 CRDi', href: '#' },
@@ -822,7 +838,7 @@ class Component extends DCLogic {
       hasRest: restCount > 0,
       restLabel: 'Показати решту (' + restCount + ')',
       showRest: () => this.setState({ expanded: true }),
-      addToCart: () => this.setState((s) => ({ cart: s.cart + 1 })),
+
 
       tabs: [
         { key: 'analogs', label: 'Аналоги', count: 12 },

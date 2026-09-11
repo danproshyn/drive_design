@@ -224,30 +224,81 @@ function AddToCartButton({
   size = 'sm',
   note,
   iconOnly = false,
+  lineId = '',
+  minQty = 1,
+  maxQty = 0,
+  moreHref = 'Картка деталі.dc.html',
   className = ''
 }) {
+  /* Рядок кошика памʼятається у сховищі (window.DriveCart), а не в натисканні:
+   * повернувшись на сторінку, покупець бачить лічильник із тим, що вже замовив.
+   * Без сховища або без lineId кнопка поводиться як раніше. */
+  const store = typeof window !== 'undefined' ? window.DriveCart : null;
+  const tracked = !!(lineId && store);
   const [added, setAdded] = React.useState(false);
+  const [qty, setQty] = React.useState(tracked ? store.qty(lineId) : 0);
+  const [justAdded, setJustAdded] = React.useState(false);
+  const timer = React.useRef(null);
+  React.useEffect(() => {
+    if (!tracked) return undefined;
+    const sync = () => setQty(window.DriveCart.qty(lineId));
+    sync();
+    return window.DriveCart.subscribe(sync);
+  }, [tracked, lineId]);
+  React.useEffect(() => () => clearTimeout(timer.current), []);
+  const batch = Math.max(1, Number(minQty) || 1);
+  const ceiling = Number(maxQty) > 0 ? Number(maxQty) : undefined;
   const press = () => {
+    if (tracked) {
+      if (qty > 0) { window.location.href = cartHref; return; }
+      const answer = typeof onAdd === 'function' ? onAdd() : true;
+      if (answer === false) return;
+      window.DriveCart.set(lineId, ceiling ? Math.min(batch, ceiling) : batch);
+      setJustAdded(true);
+      clearTimeout(timer.current);
+      timer.current = setTimeout(() => setJustAdded(false), 1200);
+      return;
+    }
     if (added) { window.location.href = cartHref; return; }
     const answer = typeof onAdd === 'function' ? onAdd() : true;
     if (answer !== false) setAdded(true);
   };
-  /* Вигляд продавця: підпис зникає, значок лишається. Продавець знає цю кнопку,
-   * а рядок пропозиції в цьому режимі несе три ціни й назву складу — ширина потрібна їм.
-   * Підпис не втрачається: він стає aria-label і title (§5 «значок без підпису»). */
+  const done = tracked ? qty > 0 : added;
+  /* Продавцеві лічильник не потрібен — кількість він править у своєму кошику;
+   * зелений значок лишається як ознака, що рядок уже там. */
+  if (tracked && qty > 0 && !justAdded && !iconOnly) {
+    return React.createElement('div', {
+      className: ['ds-addcart', className].filter(Boolean).join(' ')
+    },
+      React.createElement(__ds_scope.QuantityStepper, {
+        value: qty, min: 0, max: ceiling, step: batch,
+        label: 'Кількість у кошику',
+        onChange: (next) => {
+          const capped = ceiling ? Math.min(next, ceiling) : next;
+          window.DriveCart.set(lineId, capped > 0 ? capped : 0);
+        }
+      }),
+      /* Уперлися в залишок — те саме посилання, що й у кошику: решта є на інших складах.
+         Кратність рахуємо теж: при «від 4 шт» і залишку 6 наступний крок уже не влізе. */
+      ceiling && qty + batch > ceiling && moreHref
+        ? React.createElement('a', { className: 'ds-addcart__more', href: moreHref },
+            React.createElement(__ds_scope.Icon, { name: 'arrow-up-right', size: 13 }),
+            React.createElement('span', null, 'Більше на складах'))
+        : null);
+  }
   if (iconOnly) {
     return React.createElement('div', {
       className: ['ds-addcart', className].filter(Boolean).join(' ')
     },
       React.createElement(__ds_scope.IconButton, {
-        icon: added ? 'check' : 'shopping-cart',
-        label: added ? 'Перейти в кошик' : label,
+        icon: done ? 'check' : 'shopping-cart',
+        label: done ? 'Перейти в кошик' : label,
         size: 'md', tone: 'primary',
         onClick: press,
-        className: added ? 'ds-addcart__btn--done' : '',
+        className: done ? 'ds-addcart__btn--done' : '',
         'aria-live': 'polite'
       }),
-      added && note ? React.createElement('p', { className: 'ds-addcart__note', role: 'alert' },
+      done && note ? React.createElement('p', { className: 'ds-addcart__note', role: 'alert' },
         React.createElement(__ds_scope.Icon, { name: 'info', size: 13 }), note) : null);
   }
   return React.createElement('div', {
@@ -255,13 +306,13 @@ function AddToCartButton({
   },
     React.createElement(__ds_scope.Button, {
       variant: 'primary', size: size,
-      icon: added ? 'check' : 'shopping-cart',
+      icon: done ? 'check' : 'shopping-cart',
       onClick: press,
-      className: added ? 'ds-addcart__btn--done' : '',
-      title: added ? 'Перейти в кошик' : undefined,
+      className: done ? 'ds-addcart__btn--done' : '',
+      title: done ? 'Перейти в кошик' : undefined,
       'aria-live': 'polite'
-    }, added ? 'Додано' : label),
-    added && note ? React.createElement('p', { className: 'ds-addcart__note', role: 'alert' },
+    }, done ? 'Додано' : label),
+    done && note ? React.createElement('p', { className: 'ds-addcart__note', role: 'alert' },
       React.createElement(__ds_scope.Icon, { name: 'info', size: 13 }), note) : null);
 }
 Object.assign(__ds_scope, { AddToCartButton });
@@ -695,6 +746,10 @@ function PartCard({
   analogsCount = 0,
   minQty = 1,
   onBuy,
+  lineId = '',
+  maxQty = 0,
+  offersHref = '',
+  children,
   className = ''
 }) {
   return /*#__PURE__*/React.createElement("li", {
@@ -778,9 +833,19 @@ function PartCard({
     value: price,
     size: "md",
     stale: !inStock
-  }), inStock ? /*#__PURE__*/React.createElement(__ds_scope.AddToCartButton, {
-    onAdd: onBuy
-  }) : /*#__PURE__*/React.createElement("span", {
+  }), inStock ? (children || (offersHref ? /*#__PURE__*/React.createElement(__ds_scope.Button, {
+    /* Вигляд продавця: з каталогу він йде не в кошик, а до всіх пропозицій деталі. */
+    variant: 'secondary',
+    size: 'sm',
+    as: 'a',
+    href: offersHref,
+    icon: 'list'
+  }, 'Пропозиції') : /*#__PURE__*/React.createElement(__ds_scope.AddToCartButton, {
+    onAdd: onBuy,
+    lineId: lineId,
+    minQty: minQty,
+    maxQty: maxQty
+  }))) : /*#__PURE__*/React.createElement("span", {
     className: "ds-stock ds-stock--out"
   }, "\u041D\u0435\u043C\u0430\u0454 \u0432 \u043D\u0430\u044F\u0432\u043D\u043E\u0441\u0442\u0456"), inStock && minQty > 1 ? /*#__PURE__*/React.createElement("span", {
     className: "ds-minqty"
@@ -3222,7 +3287,7 @@ function OperatorGlyph({ name, size = 13 }) {
 }
 
 const SHOP = {
-  address: 'м. Запоріжжя, вул. Гуляйпільська 15',
+  address: 'м. Запоріжжя, вул. Гуляйпільська, 15',
   mapHref: 'https://drive.zp.ua/go/map',
   email: 'magazine_drive@ukr.net',
   hours: [['пн–пт', '09:00–16:00'], ['сб', '09:00–14:00'], ['нд', 'вихідний']],
@@ -3762,6 +3827,7 @@ __ds_ns.SHOP = SHOP;
 
 
 (function () {
+try {
 /* ═══ Поле телефону — 2026-09-08 ═════════════════════════════════════════════
    The login screen and the «Запит на підбір» form each hand-rolled the same
    masked phone input. It lives here now, so every future phone field (profile,
@@ -3772,8 +3838,13 @@ __ds_ns.SHOP = SHOP;
      · caret always lands on the first blank; backspace deletes a real digit
    Fold into the master design system as components/forms/PhoneField.jsx.     */
 const ns = window.DesignSystem_d7c4f4;
-const BaseMask = ns.Mask;
-const caretToBlank = BaseMask.caretToBlank;
+/* Ранній прохід бандла (ще без React) не встигає опублікувати Mask — беремо його
+   захищено й читаємо caretToBlank ліниво, інакше виняток тут обриває решту файлу. */
+const BaseMask = (ns && ns.Mask) || {};
+const caretToBlank = (el, text) => {
+  const fn = ns && ns.Mask && ns.Mask.caretToBlank;
+  if (typeof fn === 'function') fn(el, text);
+};
 const PHONE_LEN = 9;
 
 function phoneDigits(raw) {
@@ -3849,4 +3920,8 @@ function PhoneField({
 }
 
 ns.PhoneField = PhoneField;
+} catch (e) {
+  const bag = window.DesignSystem_d7c4f4;
+  if (bag && bag.__errors) bag.__errors.push({ path: 'phone-field-patch', error: String((e && e.message) || e) });
+}
 }());
