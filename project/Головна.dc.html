@@ -24,6 +24,11 @@
   @keyframes drive-skel { 0%, 100% { opacity: 1 } 50% { opacity: .45 } }
   [data-garage-grid] { grid-auto-rows: 1fr; }
   [data-garage-grid] > .sc-host-x, [data-garage-grid] > .sc-host-x > li { height: 100%; }
+  /* Spare height in the card falls between the spec pills and the VIN strip,
+     so VINs line up along the bottom of a row whatever the name length. */
+  [data-garage-grid] .ds-garage__vin { margin-top: auto; }
+  [data-garage-grid] .ds-garage__actions { margin-top: 0; }
+  [data-garage-grid] .ds-garage__body:not(:has(.ds-garage__vin)) .ds-garage__actions { margin-top: auto; }
   @media (max-width: 639px) {
     [data-garage-grid] { grid-template-columns: minmax(0, 1fr) !important; }
   }
@@ -68,6 +73,51 @@
 
         <button class="ds-btn ds-btn--md ds-btn--dark" style="flex:none" onClick="{{ onResolve }}">Знайти машину</button>
       </div>
+
+      <sc-if value="{{ resolved }}" hint-placeholder-val="{{ false }}">
+        <div style="border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);overflow:hidden">
+          <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--space-4);padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--line)">
+            <div style="flex:1 1 320px;min-width:240px">
+              <p class="t-eyebrow" style="margin:0 0 6px">Розпізнано</p>
+              <p style="margin:0;font-family:var(--font-display);font-size:22px;line-height:1.05;letter-spacing:.01em;text-transform:uppercase;color:var(--text-strong)">{{ resolvedName }}</p>
+              <div style="margin-top:10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px" data-comment-anchor="6ed34cec8d-p">
+                <span style="display:inline-flex;flex-direction:column;justify-content:center;padding:5px 10px;border:1px solid var(--line-subtle);border-radius:var(--radius-sm);background:var(--surface-sunken)" data-comment-anchor="f6f83b9c8e-span">
+                  <span style="font-size:11px;line-height:1.2;color:var(--text-muted)">VIN</span>
+                  <span style="font-family:var(--font-mono);font-size:var(--text-sm);line-height:1.3;letter-spacing:.04em;color:var(--text-strong)">{{ resolvedCode }}</span>
+                </span>
+                <sc-for list="{{ resolvedSpecs }}" as="spec" hint-placeholder-count="2">
+                  <span style="display:inline-flex;align-items:center;height:26px;padding:0 10px;border:1px solid var(--line);border-radius:var(--radius-full);background:var(--surface);font-size:var(--text-xs);color:var(--text-muted)">{{ spec.label }}</span>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding:var(--space-4) var(--space-5) 0">
+            <h3 style="margin:0;font-family:var(--font-display);font-size:var(--text-lg);line-height:1.05;letter-spacing:.01em;text-transform:uppercase;color:var(--text-strong)">Оберіть двигун</h3>
+            <p style="margin:6px 0 0;font-size:var(--text-sm);color:var(--text-muted);max-width:62ch" data-comment-anchor="4dde99af34-p">{{ resolvedHint }}</p>
+          </div>
+
+          <div style="margin-top:var(--space-4);overflow-x:auto;overflow-y:hidden">
+            <table style="width:100%;min-width:720px;border-collapse:collapse;font-size:var(--text-sm)">
+              <tbody>
+                <sc-for list="{{ candidates }}" as="c" hint-placeholder-count="3">
+                  <tr onClick="{{ c.pick }}" style="cursor:pointer;border-top:1px solid var(--line-subtle)" style-hover="background:var(--surface-sunken)">
+                    <td style="padding:13px 16px 13px 17px;border-left:3px solid transparent;color:var(--text-strong);font-weight:500;white-space:nowrap">{{ c.name }}</td>
+
+                    <td style="padding:13px 16px;color:var(--text-body);white-space:nowrap">{{ c.engine }}</td>
+                    <td style="padding:13px 16px;color:var(--text-body);white-space:nowrap;font-variant-numeric:tabular-nums">{{ c.volume }}</td>
+                    <td style="padding:13px 16px;color:var(--text-body);white-space:nowrap;font-variant-numeric:tabular-nums">{{ c.power }}</td>
+                    <td style="padding:13px 16px;color:var(--text-body)">{{ c.drive }}</td>
+                    <td style="padding:13px 20px 13px 16px;color:var(--text-muted);white-space:nowrap;font-variant-numeric:tabular-nums">{{ c.period }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+
+          <p style="margin:0;padding:12px var(--space-5);border-top:1px solid var(--line);font-size:var(--text-sm);color:var(--text-muted)">Немає вашої модифікації — оберіть її вручну нижче.</p>
+        </div>
+      </sc-if>
 
       <div style="display:flex;align-items:center;gap:var(--space-5);margin-block:var(--space-3)">
         <span style="height:1px;flex:1;background:var(--line)"></span>
@@ -429,9 +479,12 @@ class Component extends DCLogic {
     reqFile: null,
     vin: '',
     plate: '',
+    resolved: null,
     garage: [
       { id: 1, name: 'Audi RS6 Avant performance 4.0 TFSI', spec: 'Універсал · з 2023 · 630 к.с. · Бензин/електрика', vin: '', oemHref: '' },
       { id: 2, name: 'Renault Duster 1.5 dCi', spec: 'Кросовер · з 2018 · 109 к.с. · Дизель', vin: 'VF1HJD40561234567', oemHref: '#' },
+      { id: 3, name: 'Subaru Outback (BT) 2.5 AWD (BT9KL, BT9LL, BT11A, BT12A, BT13A, BT14A, BT15A)', spec: 'Універсал · з 2019 · 169 к.с. · Бензин', vin: 'JF1BT9KL5L1234567', oemHref: '#' },
+      { id: 4, name: 'Skoda Octavia III 1.6 TDI', spec: 'Ліфтбек · 2015 · 110 к.с. · Дизель', vin: 'TMBJJ7NE0F0123456', oemHref: '#' },
     ],
   }
 
@@ -487,14 +540,43 @@ class Component extends DCLogic {
     window.location.assign('Каталог за авто.dc.html')
   }
 
+  /* VIN закріплює марку, модель, кузов і рік, але часто не двигун — тому відповіддю
+   * сервера є список типів, і між ними обирає людина. Ніякого авто-переходу тут немає:
+   * гілка, що пропускає список з одного рядка, — та сама, що взяла б перший із пʼяти. */
   resolve = () => {
-    const spec = {
-      name: 'Volkswagen Passat B8 2.0 TDI', engine: 'Дизель DFGA', volume: '2.0 Л', power: '150 к.с.',
-      drive: 'Передній привід', period: 'з 2017', fuel: 'Дизель',
-    }
-    const chosen = { mark: 'Volkswagen', model: 'Passat', year: '2017', body: 'Універсал', engine: '2.0 Л · Дизель', spec }
-    this.setState({ chosen })
-    this.goCatalog({ id: Date.now(), name: spec.name, spec: 'Універсал · 2017 · 150 к.с. · дизель', vin: this.state.vin || 'WVWZZZ3CZHE072814', oemHref: '#' })
+    const plate = this.state.plate || ''
+    const vin = this.state.vin || 'WBAVB13506PT22180'
+    this.setState({
+      resolved: {
+        name: 'BMW 3 (E90)',
+        fixed: 'Седан · 2005–2011',
+        /* За держномером сервер повертає ту саму машину разом із її VIN, тож тут
+         * завжди VIN: це той номер, який людина потім порівнює символ за символом. */
+        source: plate ? 'plate' : 'vin',
+        code: this.masked('vin', vin),
+        vin: vin,
+        candidates: [
+          { id: 'e90-143', name: 'BMW 3 (E90) Седан 2.0 318 i', engine: 'Бензин', volume: '2.0 Л', power: '143 к.с.', period: '2007–2011', fuel: 'Бензин', drive: 'Задній привід' },
+          { id: 'e90-150', name: 'BMW 3 (E90) Седан 2.0 320 i', engine: 'Бензин', volume: '2.0 Л', power: '150 к.с.', period: '2005–2007', fuel: 'Бензин', drive: 'Задній привід' },
+          { id: 'e90-170', name: 'BMW 3 (E90) Седан 2.0 320 i', engine: 'Бензин', volume: '2.0 Л', power: '170 к.с.', period: '2007–2011', fuel: 'Бензин', drive: 'Задній привід' },
+        ],
+      },
+    })
+  }
+
+  clearResolved = () => this.setState({ resolved: null })
+
+  pickCandidate = (candidate) => {
+    const r = this.state.resolved
+    if (!r) return
+    const power = candidate.power
+    this.goCatalog({
+      id: Date.now(),
+      name: candidate.name,
+      spec: [r.fixed.split(' · ')[0], candidate.period, power, candidate.fuel].join(' · '),
+      vin: r.vin,
+      oemHref: '#',
+    })
   }
 
   formatPhone = (digits) => {
@@ -719,6 +801,17 @@ class Component extends DCLogic {
       onPlate: this.onMasked('plate', 'plate'),
       onPlateCaret: this.onMaskedCaret('plate', 'plate'),
       onResolve: this.resolve,
+      resolved: !!this.state.resolved,
+      resolvedName: this.state.resolved ? this.state.resolved.name : '',
+      resolvedFixed: this.state.resolved ? this.state.resolved.fixed : '',
+      resolvedCode: this.state.resolved ? this.state.resolved.code : '',
+      resolvedSpecs: (this.state.resolved ? this.state.resolved.fixed.split(' · ') : []).map((label, i) => ({ id: i, label })),
+      /* Дві різні ситуації: кількох кандидатів людину просять обрати, одного — перевірити. */
+      resolvedHint: !this.state.resolved ? '' : this.state.resolved.candidates.length > 1
+        ? 'VIN визначив марку, модель, кузов і рік, але не двигун. Оберіть модифікацію — від неї залежить перелік деталей.'
+        : 'Ми впізнали цю машину. Перевірте й переходьте до деталей.',
+      candidates: (this.state.resolved ? this.state.resolved.candidates : []).map((c) => ({ ...c, pick: () => this.pickCandidate(c) })),
+      onClearResolved: this.clearResolved,
       garageEmpty: this.state.garage.length === 0,
       garage: this.state.garage.map((c) => ({ ...c, remove: () => this.setState((s) => ({ garage: s.garage.filter((x) => x.id !== c.id) })) })),
     }

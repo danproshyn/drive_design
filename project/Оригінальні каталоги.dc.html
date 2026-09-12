@@ -85,18 +85,23 @@
   [data-toggle]:hover { color: var(--text-strong); }
   [data-toggle] svg { transition: transform var(--dur-fast) var(--ease-out); }
   [data-toggle][aria-expanded="true"] svg { transform: rotate(90deg); }
-  [data-count] { flex: none; padding-right: 10px; font-size: var(--text-2xs); font-variant-numeric: tabular-nums; color: var(--text-faint); }
+  [data-count] { flex: none; padding-left: 10px; padding-right: 10px; font-size: var(--text-2xs); font-variant-numeric: tabular-nums; color: var(--text-faint); }
   [data-subtree] { list-style: none; margin: 0; padding: var(--space-1) 0 var(--space-2); }
 
   /* Кабани вузлів у «Каталозі виробника» — знімок і назва, і більше нічого */
   [data-units] { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); grid-template-columns: repeat(2, minmax(0, 1fr)); }
   @media (min-width: 640px) { [data-units] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  /* Рядки задані явно: знімок — auto (тримає 4/3 однаково в усіх кабанах), назва — 1fr.
+     Без цього вільна висота рядка сітки розходилася б по обох треках, і в кабана з
+     коротшою назвою знімок ставав вищим, ніж у сусіда з двома рядками. */
   [data-unitcard] {
-    display: grid; gap: 0; height: 100%; border: 1px solid var(--line); border-radius: var(--radius-lg);
+    display: grid; grid-template-rows: auto auto; align-content: start; gap: 0; height: 100%; border: 1px solid var(--line); border-radius: var(--radius-lg);
     overflow: hidden; text-decoration: none; transition: var(--transition-colors);
   }
   [data-unitcard]:hover { background: var(--surface-sunken); border-color: var(--ink-300); text-decoration: none; }
-  [data-unitcard] span { padding: 10px 12px; font-size: var(--text-xs); font-weight: 500; color: var(--text-strong); }
+  /* Назва обтягує текст: один рядок — один рядок висоти, без запасу під другий. */
+  [data-unitcard] span { display: block; padding: 6px 10px 8px; font-size: var(--text-sm); font-weight: 500; line-height: var(--leading-snug); color: var(--text-strong); }
+  [data-unitcard] span[data-ph] { display: grid; }
 
   /* Заглушка зображення: постачальникове фото/схема, яких у макеті немає */
   [data-ph] { display: grid; place-items: center; gap: 6px; background: var(--surface-sunken); border-bottom: 1px solid var(--line-subtle); color: var(--ink-300); aspect-ratio: 4 / 3; }
@@ -120,6 +125,19 @@
   [data-dtable] tr[data-row]:hover td:first-child { box-shadow: inset 3px 0 0 var(--red-500); }
   [data-dtable] tr[data-row][data-sel="true"] { background: var(--surface-sunken); }
   [data-dtable] tr[data-row][data-sel="true"] td:first-child { box-shadow: inset 3px 0 0 var(--ink-800); }
+  /* Значок примітки — сам не несе кольору, лишається сірим до наведення */
+  [data-notebtn] {
+    display: inline-grid; place-items: center; width: 20px; height: 20px; vertical-align: -3px;
+    margin-left: 2px; padding: 0; border: 0; border-radius: 4px; background: none;
+    color: var(--text-faint); cursor: help; transition: var(--transition-colors);
+  }
+  [data-notebtn]:hover, [data-notebtn]:focus-visible { color: var(--ink-800); background: var(--surface-sunken); }
+  [data-notetip] {
+    position: fixed; z-index: 60; transform: translateX(-50%); width: max-content; max-width: min(300px, calc(100vw - 16px));
+    padding: 8px 10px; border-radius: var(--radius-md); background: var(--ink-800); color: var(--white);
+    font-size: var(--text-xs); line-height: var(--leading-normal); overflow-wrap: anywhere; pointer-events: none;
+    box-shadow: var(--shadow-md);
+  }
   [data-posbtn] { border: 0; background: none; padding: 0; font: inherit; font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-muted); cursor: pointer; }
   [data-posbtn]:hover { color: var(--text-strong); }
   [data-oem] { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 500; letter-spacing: var(--tracking-mono); text-decoration: none; }
@@ -129,6 +147,9 @@
   /* Схема вузла: рамка з прямокутниками позицій, масштаб і перетягування */
   [data-diagram] {
     position: relative; overflow: hidden; aspect-ratio: 4 / 3;
+    /* На низьких екранах (ноутбуки 13″, планшети) схема не має бути вищою за вікно:
+       пропорція 4/3 поступається межі по висоті, тож схема видна цілком без прокрутки. */
+    max-height: calc(100svh - 260px); min-height: 300px;
     border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface-sunken);
     touch-action: none;
   }
@@ -178,7 +199,12 @@
   [data-info] summary { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 var(--space-4); font-size: var(--text-sm); font-weight: 600; color: var(--text-strong); cursor: pointer; list-style: none; }
   [data-info] summary::-webkit-details-marker { display: none; }
   [data-info][open] summary { border-bottom: 1px solid var(--line-subtle); }
-  [data-info] dl { margin: 0; padding: var(--space-4); display: grid; gap: var(--space-3) var(--space-5); grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  [data-info] summary svg { transition: transform var(--dur) var(--ease-out); }
+  [data-info][open] summary svg { transform: rotate(180deg); }
+  [data-info] dl { margin: 0; padding: var(--space-4); display: grid; gap: var(--space-3) var(--space-5); grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 640px) { [data-info] dl { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 900px) { [data-info] dl { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
   [data-info] dt { margin: 0 0 2px; font-size: var(--text-3xs); font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); }
   [data-info] dd { margin: 0; font-size: var(--text-sm); color: var(--text-strong); }
   [data-info] dd[data-mono="true"] { font-family: var(--font-mono); letter-spacing: var(--tracking-mono); }
@@ -202,6 +228,8 @@
     color: var(--ink-800); border: 1px solid var(--line-strong); border-radius: 3px; padding: 2px 7px; white-space: nowrap;
   }
   [data-histvin] { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: var(--tracking-mono); color: var(--text-muted); white-space: nowrap; }
+  /* Держномер і VIN виділяються й копіюються — їх переносять у інші сервіси, а не лише клікають */
+  [data-plate], [data-histvin] { user-select: text; -webkit-user-select: text; cursor: text; }
   [data-histcar] { flex: 1 1 180px; min-width: 0; font-size: var(--text-sm); font-weight: 600; color: var(--text-strong); }
   [data-histcar][data-unknown="true"] { font-weight: 400; color: var(--stock-out); }
   /* Примітка й дата — теж свої колонки, інакше «каталогів немає» зсувається за довжиною дати. */
@@ -210,6 +238,10 @@
   [data-histwhen] { flex: 0 0 80px; margin-left: auto; font-size: var(--text-xs); font-variant-numeric: tabular-nums; color: var(--text-faint); text-align: right; }
 
   @media (max-width: 639px) {
+    /* На телефоні примітку читають тільки через цей значок, тому площа влучання
+       розтягується до 44 px невидимою накладкою — сам значок лишається 20 px. */
+    [data-notebtn] { position: relative; }
+    [data-notebtn]::before { content: ''; position: absolute; inset: -12px; }
     [data-lookup] { gap: var(--space-3); padding: var(--space-3); }
     [data-lookup] > * { flex: 1 1 100%; }
     [data-lookup] button { width: 100%; }
@@ -326,9 +358,12 @@
         <div style="display:grid;gap:4px">
           <p class="t-eyebrow" style="margin:0">Машину розпізнано</p>
           <p style="margin:0;font-family:var(--font-display);font-size:var(--display-xs);font-weight:600;line-height:1.1;letter-spacing:.01em;text-transform:uppercase;color:var(--text-strong)">Renault Megane III 1.5 dCi</p>
-          <p class="ds-article" style="margin:0;color:var(--text-muted)">VIN VF1BZ0R0642318907</p>
+          <span style="justify-self:start;display:inline-flex;flex-direction:column;justify-content:center;margin-top:6px;padding:5px 10px;border:1px solid var(--line-subtle);border-radius:var(--radius-sm);background:var(--surface-sunken)">
+            <span class="t-eyebrow" style="font-size:11px;line-height:1.2;color:var(--text-muted)">VIN</span>
+            <span class="ds-article" style="line-height:1.3">VF1BZ0R0642318907</span>
+          </span>
         </div>
-        <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="info" hint-size="100%,64px">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="info" dc-props="{{ centeredNotice }}" hint-size="100%,64px">
           Для цієї машини схем виробника немає. Каталог за авто працює для неї як завжди — оберіть машину там.
         </x-import>
         <div style="justify-self:start">
@@ -340,19 +375,15 @@
     <sc-if value="{{ hasCar }}" hint-placeholder-val="{{ false }}">
       <section style="display:grid;gap:var(--space-4)">
 
-        <sc-if value="{{ isUnit }}" hint-placeholder-val="{{ false }}">
-          <p style="margin:0;font-size:var(--text-sm)"><a href="#" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none">
-            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-left" size="15" hint-size="15px,15px"></x-import>
-            Назад до дерева
-          </a></p>
-        </sc-if>
-
         <div style="display:grid;gap:4px">
           <p style="margin:0;font-family:var(--font-display);font-size:{{ carTitleSize }};font-weight:600;line-height:1.1;letter-spacing:.01em;text-transform:uppercase;color:var(--text-strong)">Volkswagen Golf VII 1.6 TDI</p>
-          <p class="ds-article" style="margin:0;color:var(--text-muted)">VIN WVWZZZAUZHW123456</p>
+          <span style="justify-self:start;display:inline-flex;flex-direction:column;justify-content:center;margin-top:6px;padding:5px 10px;border:1px solid var(--line-subtle);border-radius:var(--radius-sm);background:var(--surface-sunken)">
+            <span class="t-eyebrow" style="font-size:11px;line-height:1.2;color:var(--text-muted)">VIN</span>
+            <span class="ds-article" style="line-height:1.3">WVWZZZAUZHW123456</span>
+          </span>
         </div>
 
-        <details data-info open="{{ infoOpen }}">
+        <details data-info open="{{ infoOpen }}" hidden="{{ noAttributes }}">
           <summary>
             <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="16" hint-size="16px,16px"></x-import>
             Інформація про автомобіль
@@ -474,10 +505,14 @@
                                   </sc-if>
                                 </td>
                                 <td>
-                                  <span style="color:var(--text-strong)">{{ row.name }}</span>
-                                  <sc-if value="{{ row.note }}" hint-placeholder-val="{{ false }}">
-                                    <span style="color:var(--text-muted)"> · {{ row.note }}</span>
-                                  </sc-if>
+                                  <span>
+                                    <span style="color:var(--text-strong)">{{ row.name }}</span>
+                                    <sc-if value="{{ row.hasNote }}" hint-placeholder-val="{{ false }}">
+                                      <button data-notebtn type="button" aria-label="{{ row.noteLabel }}" onMouseEnter="{{ row.noteOn }}" onMouseLeave="{{ row.noteOff }}" onFocus="{{ row.noteOn }}" onBlur="{{ row.noteOff }}">
+                                        <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="info" size="14" hint-size="14px,14px"></x-import>
+                                      </button>
+                                    </sc-if>
+                                  </span>
                                 </td>
                                 <td>
                                   <sc-if value="{{ row.hasOem }}" hint-placeholder-val="{{ true }}">
@@ -552,8 +587,8 @@
         </sc-if>
 
         <sc-if value="{{ showUnitBody }}" hint-placeholder-val="{{ true }}">
-          <div data-unitlayout>
-            <div style="display:grid;gap:var(--space-2)">
+          <div data-unitlayout data-comment-anchor="8453c8160d-div">
+            <div style="display:grid;gap:var(--space-2)" data-comment-anchor="c84c0ab3e1-div">
               <div data-diagram data-grab="{{ grabAttr }}" ref="{{ diagramRef }}" onPointerDown="{{ onPanStart }}" onPointerMove="{{ onPanMove }}" onPointerUp="{{ onPanEnd }}" onPointerLeave="{{ onPanEnd }}">
                 <div data-diagram-inner style="{{ zoomStyle }}">
                   <div data-diagram-note>
@@ -605,10 +640,14 @@
                           </sc-if>
                         </td>
                         <td>
-                          <span style="color:var(--text-strong)">{{ row.name }}</span>
-                          <sc-if value="{{ row.note }}" hint-placeholder-val="{{ false }}">
-                            <span style="color:var(--text-muted)"> · {{ row.note }}</span>
-                          </sc-if>
+                          <span>
+                            <span style="color:var(--text-strong)">{{ row.name }}</span>
+                            <sc-if value="{{ row.hasNote }}" hint-placeholder-val="{{ false }}">
+                              <button data-notebtn type="button" aria-label="{{ row.noteLabel }}" onMouseEnter="{{ row.noteOn }}" onMouseLeave="{{ row.noteOff }}" onFocus="{{ row.noteOn }}" onBlur="{{ row.noteOff }}">
+                                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="info" size="14" hint-size="14px,14px"></x-import>
+                              </button>
+                            </sc-if>
+                          </span>
                         </td>
                         <td>
                           <sc-if value="{{ row.hasOem }}" hint-placeholder-val="{{ true }}">
@@ -644,6 +683,10 @@
   </main>
 
   <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteFooter" hint-size="100%,260px"></x-import>
+
+  <sc-if value="{{ noteOpen }}" hint-placeholder-val="{{ false }}">
+    <div data-notetip role="tooltip" style="left:{{ noteLeft }};top:{{ noteTop }}">{{ noteText }}</div>
+  </sc-if>
 </div>
 
 </x-dc>
@@ -733,17 +776,30 @@ const CATS = [
   ['ОТОПИТЕЛЬ', 1, true],
 ]
 
+/* Постачальник віддає назви вузлів капсом. Опускаємо регістр у коді, а не через
+   text-transform: lowercase — бо CSS зіпсував би скорочення (ABS стало б «abs»).
+   Слово лишається як є, якщо в ньому немає малих літер і воно є у списку скорочень. */
+const KEEP_CAPS = ['ABS', 'ESP', 'ASR', 'EDS', 'TDI', 'TSI', 'FSI', 'DSG', 'LED', 'USB', 'GPS', 'VIN', 'OE', 'AT', 'MT']
+
+function sentenceCase(text) {
+  const lowered = text.replace(/[^\s]+/g, (word) => {
+    const bare = word.replace(/[^\p{L}\p{N}]/gu, '')
+    return KEEP_CAPS.includes(bare) ? word : word.toLocaleLowerCase('uk')
+  })
+  return lowered.replace(/\p{L}/u, (first) => first.toLocaleUpperCase('uk'))
+}
+
 const CATEGORY_UNITS = [
   'ТОРМОЗНОЙ ДИСК, ПЕРЕД',
   'СУППОРТ ТОРМОЗНОЙ, ПЕРЕД',
   'КОЛОДКИ ТОРМОЗНЫЕ, ПЕРЕД',
-  'ГЛАВНЫЙ ТОРМОЗНОЙ ЦИЛИНДР',
-  'ВАКУУМНЫЙ УСИЛИТЕЛЬ ТОРМОЗОВ',
+  'ГЛАВНЫЙ ТОРМОЗНОЙ ЦИЛИНДР С БАЧКОМ',
+  'ВАКУУМНЫЙ УСИЛИТЕЛЬ ТОРМОЗОВ И КРЕПЛЕНИЕ',
   'ТОРМОЗНЫЕ ТРУБКИ, ПЕРЕД',
   'ШЛАНГ ТОРМОЗНОЙ, ПЕРЕД',
   'БЛОК УПРАВЛЕНИЯ ABS',
   'ДАТЧИК ABS, ПЕРЕД',
-  'ЩИТОК ТОРМОЗНОГО ДИСКА',
+  'ЩИТОК ТОРМОЗНОГО ДИСКА, ЛЕВЫЙ И ПРАВЫЙ',
   'БАЧОК ТОРМОЗНОЙ ЖИДКОСТИ',
   'ПЕДАЛЬ ТОРМОЗА',
 ]
@@ -760,7 +816,9 @@ const UNIT_A = [
   { code: '5', name: 'Щиток тормозного диска', oem: '5Q0615312C', spec: '', note: 'Прим.: прав.' },
   { code: '6', name: 'Суппорт тормозной, корпус', oem: '5Q0615123F', spec: 'Ø 57', note: 'Прим.: лев.' },
   { code: '6', name: 'Суппорт тормозной, корпус', oem: '5Q0615124F', spec: 'Ø 57', note: 'Прим.: прав.' },
-  { code: '7', name: 'Направляющая колодок', oem: '5Q0615125A', spec: '', note: '' },
+  /* Постачальник інколи віддає у примітці цілий перелік кодів двигунів — саме тому
+     примітка живе окремим рядком під назвою, а не за розділювачем у тому самому. */
+  { code: '7', name: 'Направляющая колодок', oem: '5Q0615125A', spec: '', note: 'Прим.: Сайлент-блок;нижн.;BKC,BKD,AZV,;;BRU,AXX,BMM,;;BLS,BLG,BWA,;;BXF,BXE' },
   { code: '8', name: 'Болт направляющей', oem: 'N10648301', spec: 'M12 X 1,5 X 45', note: '' },
   { code: '9', name: 'Пыльник направляющей пальца', oem: '1K0615219', spec: '', note: '' },
   { code: '10', name: 'Шланг тормозной, перед', oem: '5Q0611701D', spec: 'L 430', note: 'Прим.: лев.' },
@@ -791,17 +849,29 @@ const HOTS = [
   { code: '11', x: 26, y: 80, w: 16, h: 12 },
 ]
 
+/* Порядок фіксований і згрупований по три, бо сітка тече рядками: перший рядок — що це за
+   машина, другий — силовий агрегат, третій — колір і ринок, четвертий — дати. Постачальник
+   віддає ці поля у довільному порядку й не завжди всі; порожні просто не малюються, тому
+   рядок може бути неповним — але поле завжди лежить у тому самому місці читання.
+   [мітка, значення, моно] — моно лише там, де символи порівнюють зі шильдиком. */
 const ATTRS = [
-  ['Двигун', 'CLHA 1.6 TDI 81 KW', true],
-  ['КПП', 'MQ200-6F', true],
-  ['Ринок', 'EUROPA', false],
-  ['Кузов', 'HATCHBACK', false],
-  ['Колір кузова', 'LD7X DEEP BLACK PEARL EFFECT', false],
-  ['Колір салона', 'TW TITANSCHWARZ', false],
-  ['Дата випуску', '12.03.2017', false],
-  ['Період виробництва', '2016 — 2020', false],
+  ['Модель', 'FSDALG9ZE0BUCC---A', true],
   ['Комплектація', 'COMFORTLINE', false],
-  ['Модельный год', '2017', false],
+  ['Кузов', 'HATCHBACK', false],
+
+  ['Двигун', 'CLHA 1.6 TDI 81 KW', true],
+  ['Номер двигуна', 'CLHA 084219', true],
+  ['КПП', 'MQ200-6F', true],
+
+  ['Колір кузова', 'LD7X DEEP BLACK PEARL EFFECT', false],
+  ['Колір салону', 'TW TITANSCHWARZ', false],
+  ['Ринок', 'EUROPA', false],
+
+  ['Дата випуску', '12.03.2017', false],
+  ['Випущено', '10.2016', false],
+  ['Період виробництва', '2016 — 2020', false],
+
+  ['Опції', 'Пакет зимовий; фаркоп знімний', false],
 ]
 
 /* Історія запитів до оригінальних каталогів — держномер, VIN, назва машини, коли.
@@ -920,19 +990,32 @@ class Component extends DCLogic {
     return { open }
   })
 
+  /* Масштаб ходить драбинкою, а не рівним кроком: нижче 100 % схема віддаляється,
+     щоб на вузькій рамці було видно весь вузол. */
+  ZOOMS = [0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5]
+
+  nextZoom = (from, dir) => {
+    const i = this.ZOOMS.indexOf(from)
+    const base = i >= 0 ? i : this.ZOOMS.findIndex((z) => z >= from)
+    return this.ZOOMS[Math.min(this.ZOOMS.length - 1, Math.max(0, (base < 0 ? this.ZOOMS.length - 1 : base) + dir))]
+  }
+
+  /* Переміщення має сенс лише коли схема більша за рамку. */
+  panLimit = (zoom) => Math.max(0, (zoom - 1) * 220)
+
   stepZoom = (dir) => () => {
-    const next = Math.min(5, Math.max(1, Math.round((this.state.zoom + dir * 0.5) * 100) / 100))
-    this.setState(next === 1 ? { zoom: 1, panX: 0, panY: 0 } : { zoom: next })
+    const next = this.nextZoom(this.state.zoom, dir)
+    this.setState(next <= 1 ? { zoom: next, panX: 0, panY: 0 } : { zoom: next })
   }
 
   onPanStart = (event) => {
-    if (this.state.zoom === 1) return
+    if (this.state.zoom <= 1) return
     this.drag = { x: event.clientX, y: event.clientY, panX: this.state.panX, panY: this.state.panY }
   }
 
   onPanMove = (event) => {
     if (!this.drag) return
-    const limit = (this.state.zoom - 1) * 220
+    const limit = this.panLimit(this.state.zoom)
     const clamp = (v) => Math.min(limit, Math.max(-limit, v))
     this.setState({
       panX: clamp(this.drag.panX + event.clientX - this.drag.x),
@@ -965,7 +1048,20 @@ class Component extends DCLogic {
 
   /* Колесо мишки треба слухати неспішно (passive: false), інакше сторінка прокручується
      разом зі схемою — тому це власний слухач, а не onWheel. */
-  componentDidMount() { this.bindWheel() }
+  componentDidMount() {
+    this.bindWheel()
+    /* Підказка прив'язана до місця на екрані, а не до рядка, тому будь-яка прокрутка її
+       гасить. Capture — щоб ловити й прокрутку самого переліку деталей, не лише сторінки.
+       На телефоні палець не викликає blur, і без цього примітка лишалася б висіти. */
+    window.addEventListener('scroll', this.dropNote, { capture: true, passive: true })
+    window.addEventListener('resize', this.dropNote)
+  }
+
+  dropNote = () => {
+    if (!this.state.note) return
+    this.noteFocused = false
+    this.setState({ note: null })
+  }
   componentDidUpdate(prevProps) {
     this.bindWheel()
     /* Переключення стану зверху скасовує перехід з історії. */
@@ -983,9 +1079,9 @@ class Component extends DCLogic {
   onWheel = (event) => {
     event.preventDefault()
     const from = this.state.zoom
-    const to = Math.min(5, Math.max(1, Math.round((from + (event.deltaY < 0 ? 0.5 : -0.5)) * 100) / 100))
+    const to = this.nextZoom(from, event.deltaY < 0 ? 1 : -1)
     if (to === from) return
-    if (to === 1) return this.setState({ zoom: 1, panX: 0, panY: 0 })
+    if (to <= 1) return this.setState({ zoom: to, panX: 0, panY: 0 })
 
     /* Точка під курсором лишається на місці: pan₂ = c − (c − pan)·(zoom₂ / zoom).
        c міряється від центру рамки, бо transform-origin — 50% 50%. */
@@ -993,7 +1089,7 @@ class Component extends DCLogic {
     const cx = event.clientX - rect.left - rect.width / 2
     const cy = event.clientY - rect.top - rect.height / 2
     const ratio = to / from
-    const limit = (to - 1) * 220
+    const limit = this.panLimit(to)
     const clamp = (v) => Math.min(limit, Math.max(-limit, v))
     this.setState({
       zoom: to,
@@ -1010,8 +1106,32 @@ class Component extends DCLogic {
   }
 
   componentWillUnmount() {
+    window.removeEventListener('scroll', this.dropNote, { capture: true })
+    window.removeEventListener('resize', this.dropNote)
     clearTimeout(this.copyTimer)
     if (this.wheelNode) this.wheelNode.removeEventListener('wheel', this.onWheel)
+  }
+
+  /* Примітка постачальника буває на пів рядка кодів двигунів, тому в таблиці стоїть
+     значок, а текст показуємо поруч із ним. Підказка з position:fixed, бо перелік
+     деталей — контейнер зі скролом, і абсолютна її обрізала б по краю. */
+  noteOn = (text) => (event) => {
+    if (event.type === 'focus') this.noteFocused = true
+    const r = event.currentTarget.getBoundingClientRect()
+    /* Підказку тримаємо у вікні: на телефоні значок часто стоїть біля правого краю
+       прокрученої таблиці, і нецентрована підказка виїхала б за екран назовсім. */
+    const vw = window.innerWidth
+    const half = Math.min(300, vw - 16) / 2
+    const left = Math.round(Math.min(Math.max(r.left + r.width / 2, 8 + half), vw - 8 - half))
+    this.setState({ note: { text, left, top: Math.round(r.bottom + 8) } })
+  }
+
+  /* Мишка й клавіатура тримають підказку незалежно: відведення курсору не гасить те,
+     що досі у фокусі. */
+  noteOff = (event) => {
+    if (event && event.type === 'blur') this.noteFocused = false
+    else if (this.noteFocused) return
+    this.setState({ note: null })
   }
 
   rows(details, marks, behaviour) {
@@ -1032,6 +1152,10 @@ class Component extends DCLogic {
         copyIcon: this.state.copied === detail.oem ? 'check' : 'copy',
         copyLabel: this.state.copied === detail.oem ? 'Скопійовано' : 'Скопіювати номер ' + detail.oem,
         copy: this.copy(detail.oem),
+        hasNote: detail.note !== '',
+        noteLabel: detail.note,
+        noteOn: this.noteOn(detail.note),
+        noteOff: this.noteOff,
       }
 
       if (!behaviour) return row
@@ -1071,6 +1195,7 @@ class Component extends DCLogic {
   renderVals() {
     const s = this.state
     const screen = s.nav ?? (this.props.state ?? 'tree')
+    const centeredNotice = { style: { alignItems: 'center' } }
     /* Позначка наявності: «absent» — сірим те, чого немає; «available» — зеленим те, що є;
        «none» — не питали, і тоді не малюється жодна, бо це третій стан, а не синонім другого. */
     const marks = this.props.stockMarks ?? 'available'
@@ -1101,7 +1226,13 @@ class Component extends DCLogic {
       when,
       /* У каталог можна зайти лише з того запиту, де машина розпізнана й схеми є. */
       disabled: car === '' || status === 'nocatalog',
-      open: () => this.setState({ plate, vin, nav: 'tree' }),
+      /* Номер і VIN можна виділяти мишею просто в рядку. Виділення всередині кнопки
+         все одно завершується клацанням, тому перехід скасовуємо, якщо щось виділили. */
+      open: () => {
+        const sel = window.getSelection()
+        if (sel && !sel.isCollapsed && String(sel).trim() !== '') return
+        this.setState({ plate, vin, nav: 'tree' })
+      },
     }))
 
     const treeRows = this.treeRowsOf(quickTab ? QUICK : CATS, slot, chosen, needle)
@@ -1129,11 +1260,18 @@ class Component extends DCLogic {
       if (screen === 'nocatalog') crumbs.push({ label: 'Renault Megane III' })
       else if (isUnit) {
         crumbs.push({ label: 'Volkswagen Golf VII', href: '#' })
+        /* Назва вузла — це текст постачальника, його показуємо як є. Наші власні мітки
+           українською, дані з каталогу виробника — дослівно. */
         crumbs.push({ label: 'Тормозная система, перед' })
       } else crumbs.push({ label: 'Volkswagen Golf VII' })
     }
 
     return {
+      centeredNotice,
+      noteOpen: !!s.note,
+      noteText: s.note ? s.note.text : '',
+      noteLeft: s.note ? s.note.left + 'px' : '0px',
+      noteTop: s.note ? s.note.top + 'px' : '0px',
       cartCount: 2,
       crumbs,
       isLookup: isEntry,
@@ -1164,7 +1302,12 @@ class Component extends DCLogic {
       clearHistory: () => this.setState({ historyCleared: true }),
 
       infoOpen: this.props.vehicleInfoOpen ?? false,
-      attributes: ATTRS.map(([name, value, mono]) => ({ name, value, mono: mono ? 'true' : 'false' })),
+      noAttributes: !ATTRS.some(([, v]) => v != null && String(v).trim() !== ''),
+      /* Поля без значення відпадають: прочерк у половині клітинок читається як зламаний
+         блок, а не як факт про машину. Якщо не лишилося жодного — блоку немає взагалі. */
+      attributes: ATTRS
+        .filter(([, value]) => value != null && String(value).trim() !== '')
+        .map(([name, value, mono]) => ({ name, value, mono: mono ? 'true' : 'false' })),
 
       tabs: [
         { key: 'quick', label: 'Швидкі групи' },
@@ -1195,7 +1338,7 @@ class Component extends DCLogic {
       chosenQuick: s.quick,
       chosenCategory: s.category,
       previewUnits,
-      categoryUnits: CATEGORY_UNITS.map((name) => ({ name })),
+      categoryUnits: CATEGORY_UNITS.map((name) => ({ name: sentenceCase(name) })),
       unitCount: CATEGORY_UNITS.length,
 
       showUnitBody: isUnit && !limit,
@@ -1212,7 +1355,7 @@ class Component extends DCLogic {
       tableRef: this.tableRef,
       zoomLabel: Math.round(s.zoom * 100) + '%',
       /* На межах масштабу відповідна кнопка гаситься, а не зникає — місце не стрибає. */
-      atMin: s.zoom <= 1,
+      atMin: s.zoom <= 0.5,
       atMax: s.zoom >= 5,
       zoomed: s.zoom > 1,
       zoomHint: s.zoom > 1 ? 'Тягніть схему лівою кнопкою' : 'Масштаб — колесом мишки',
