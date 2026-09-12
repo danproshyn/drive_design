@@ -61,7 +61,19 @@
   }
   [data-branch]:hover { color: var(--text-action-hover); }
   [data-plain] { display: block; padding: 9px 12px; font-size: var(--text-sm); color: var(--text-muted); }
-  [data-depth="1"] { padding-left: 42px; }
+
+  /* Дерево виробника буває глибоким — до пʼяти рівнів. Рівень читається відступом;
+     верхній лишається набором заголовків, глибші — звичайним текстом. */
+  [data-tree] li[data-depth="1"] > [data-groupline] { padding-left: 16px; }
+  [data-tree] li[data-depth="2"] > [data-groupline] { padding-left: 32px; }
+  [data-tree] li[data-depth="3"] > [data-groupline] { padding-left: 48px; }
+  [data-tree] li[data-depth="4"] > [data-groupline] { padding-left: 64px; }
+  [data-tree] li:not([data-depth="0"]) > [data-groupline] { border-bottom: 0; }
+  [data-tree] li:not([data-depth="0"]) [data-branch] {
+    font-family: var(--font-sans); font-size: var(--text-sm); font-weight: 400;
+    letter-spacing: 0; text-transform: none; color: var(--text-body);
+  }
+  [data-nokids] { flex: none; width: 34px; height: 40px; }
 
   /* Гілка згорнута, поки її не відкрили: розділів багато, і всі одразу — це не перелік */
   [data-groupline] { display: flex; align-items: center; gap: 0; border-bottom: 1px solid var(--line-subtle); }
@@ -121,6 +133,16 @@
     touch-action: none;
   }
   [data-diagram][data-grab="true"] { cursor: grab; }
+
+  /* Масштаб: дві світлі квадратні кнопки праворуч під схемою */
+  [data-zoombtn] {
+    width: 44px; height: 44px; display: grid; place-items: center; flex: none;
+    border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--white);
+    color: var(--text-body); cursor: pointer; transition: var(--transition-colors);
+  }
+  [data-zoombtn]:hover:not(:disabled) { background: var(--surface-sunken); border-color: var(--ink-300); color: var(--text-strong); }
+  [data-zoombtn]:active:not(:disabled) { transform: translateY(1px); }
+  [data-zoombtn]:disabled { color: var(--ink-300); border-color: var(--line-subtle); cursor: default; }
   [data-diagram-inner] { position: absolute; inset: 0; transform-origin: 50% 50%; }
   [data-diagram-note] { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 8px; color: var(--ink-300); pointer-events: none; }
   [data-hot] {
@@ -135,7 +157,11 @@
      й схема забирає більшу частку — це єдине місце, де ширина сайту не тримається. */
   [data-unitlayout] { display: grid; gap: var(--space-5); grid-template-columns: minmax(0, 1fr); align-items: start; }
   @media (min-width: 900px) {
-    [data-unitlayout] { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+    [data-unitlayout] { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); align-items: stretch; }
+    /* Перелік праворуч не має бути довшим за схему: колонка сама не додає висоти
+       (height: 0), а розтягується рівно на висоту рядка, яку задає схема. */
+    [data-unitcol] { height: 0; min-height: 100%; grid-template-rows: auto minmax(120px, 1fr); }
+    [data-unitcol] [data-unittable] { max-height: none; height: 100%; }
   }
   @media (min-width: 1360px) {
     /* Ширшає лише ця секція, а не сторінка: власна ширина плюс відʼємні поля виводять її
@@ -144,6 +170,8 @@
     [data-unitlayout] { grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: var(--space-6); }
   }
   [data-diagram][data-grab="true"]:active { cursor: grabbing; }
+  /* В одну колонку перелік просто обмежений висотою; від 900 px його ріже висота схеми */
+  [data-unittable] { max-height: 520px; }
 
   /* Інформація про автомобіль — постачальникові поля, згорнуті під пошуком */
   [data-info] { border: 1px solid var(--line); border-radius: var(--radius-lg); }
@@ -155,11 +183,41 @@
   [data-info] dd { margin: 0; font-size: var(--text-sm); color: var(--text-strong); }
   [data-info] dd[data-mono="true"] { font-family: var(--font-mono); letter-spacing: var(--tracking-mono); }
 
+  /* Історія запитів — під формою на екрані входу. Рядок поводиться як рядок каталогу:
+     підкладка плюс червона лінія ліворуч. */
+  [data-hist] { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; }
+  [data-hist] li + li { border-top: 1px solid var(--line-subtle); }
+  [data-histrow] {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--space-4);
+    width: 100%; min-height: 56px; padding: 8px var(--space-4);
+    border: 0; border-left: 3px solid transparent; background: none;
+    font: inherit; text-align: left; cursor: pointer; transition: var(--transition-colors);
+  }
+  [data-histrow]:hover:not(:disabled) { background: var(--surface-sunken); border-left-color: var(--red-500); }
+  [data-histrow]:disabled { cursor: default; }
+  /* Колонка номерів фіксованої ширини — держномер коротший за VIN, а назва машини мусить починатися на одній лінії. */
+  [data-histids] { flex: 0 0 156px; width: 156px; display: flex; align-items: center; gap: var(--space-3); }
+  [data-plate] {
+    font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 600; letter-spacing: .07em;
+    color: var(--ink-800); border: 1px solid var(--line-strong); border-radius: 3px; padding: 2px 7px; white-space: nowrap;
+  }
+  [data-histvin] { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: var(--tracking-mono); color: var(--text-muted); white-space: nowrap; }
+  [data-histcar] { flex: 1 1 180px; min-width: 0; font-size: var(--text-sm); font-weight: 600; color: var(--text-strong); }
+  [data-histcar][data-unknown="true"] { font-weight: 400; color: var(--stock-out); }
+  /* Примітка й дата — теж свої колонки, інакше «каталогів немає» зсувається за довжиною дати. */
+  .ds-empty--tight { gap: var(--space-2); padding: var(--space-6) var(--space-5); }
+  [data-histnote] { flex: 0 0 120px; font-size: var(--text-xs); color: var(--stock-out); white-space: nowrap; }
+  [data-histwhen] { flex: 0 0 80px; margin-left: auto; font-size: var(--text-xs); font-variant-numeric: tabular-nums; color: var(--text-faint); text-align: right; }
+
   @media (max-width: 639px) {
     [data-lookup] { gap: var(--space-3); padding: var(--space-3); }
     [data-lookup] > * { flex: 1 1 100%; }
     [data-lookup] button { width: 100%; }
     [data-units] { gap: var(--space-2); }
+    [data-histids] { flex: none; width: auto; flex-direction: column; align-items: flex-start; gap: 4px; }
+    [data-histcar] { flex-basis: 100%; }
+    [data-histnote] { flex: none; }
+    [data-histwhen] { flex: none; margin-left: 0; text-align: left; }
   }
 </style>
 </helmet>
@@ -179,6 +237,7 @@
       </header>
     </sc-if>
 
+    <sc-if value="{{ isLookup }}" hint-placeholder-val="{{ true }}">
     <section data-lookup data-compact="{{ compactLookup }}">
       <div class="ds-field" style="flex:0 0 auto">
         <span class="ds-field__label">Держномер</span>
@@ -208,6 +267,7 @@
 
       <button class="ds-btn ds-btn--md ds-btn--dark" style="flex:none" onClick="{{ noop }}">Знайти машину</button>
     </section>
+    </sc-if>
 
 
     <sc-if value="{{ showNotFound }}" hint-placeholder-val="{{ false }}">
@@ -215,8 +275,50 @@
         <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="danger" hint-size="100%,64px">
           Не вдалося розпізнати цей VIN або держномер.
         </x-import>
-        <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="secondary" icon="car-front" hint-size="auto,40px">Перейти до каталогу за авто</x-import>
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="dark" icon="car-front" hint-size="auto,40px">Перейти до каталогу за авто</x-import>
       </div>
+    </sc-if>
+
+    <sc-if value="{{ showHistory }}" hint-placeholder-val="{{ false }}">
+      <section style="display:grid;gap:var(--space-3)">
+        <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--space-3)">
+          <h2 class="t-eyebrow" style="margin:0">Нещодавні запити</h2>
+          <span style="font-size:var(--text-xs);color:var(--text-faint)">зберігаємо 10 останніх</span>
+          <sc-if value="{{ hasHistory }}" hint-placeholder-val="{{ true }}">
+            <button type="button" class="ds-btn ds-btn--link" style="margin-left:auto;font-size:var(--text-sm)" onClick="{{ clearHistory }}">Очистити</button>
+          </sc-if>
+        </div>
+
+        <sc-if value="{{ hasHistory }}" hint-placeholder-val="{{ true }}">
+          <ul data-hist>
+            <sc-for list="{{ history }}" as="item" hint-placeholder-count="6">
+              <li>
+                <button data-histrow type="button" disabled="{{ item.disabled }}" onClick="{{ item.open }}">
+                  <span data-histids>
+                    <sc-if value="{{ item.hasPlate }}" hint-placeholder-val="{{ true }}">
+                      <span data-plate>{{ item.plate }}</span>
+                    </sc-if>
+                    <sc-if value="{{ item.hasVin }}" hint-placeholder-val="{{ true }}">
+                      <span data-histvin>{{ item.vin }}</span>
+                    </sc-if>
+                  </span>
+                  <span data-histcar data-unknown="{{ item.unknown }}">{{ item.car }}</span>
+                  <sc-if value="{{ item.noCatalog }}" hint-placeholder-val="{{ false }}">
+                    <span data-histnote>каталогів немає</span>
+                  </sc-if>
+                  <span data-histwhen>{{ item.when }}</span>
+                </button>
+              </li>
+            </sc-for>
+          </ul>
+        </sc-if>
+
+        <sc-if value="{{ historyEmpty }}" hint-placeholder-val="{{ false }}">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" class-name="ds-empty--tight" icon="package-search" title="Історія порожня" hint-size="100%,120px">
+            Тут зʼявляться VIN-коди й держномери, які ви шукали.
+          </x-import>
+        </sc-if>
+      </section>
     </sc-if>
 
     <sc-if value="{{ isNoCatalog }}" hint-placeholder-val="{{ false }}">
@@ -230,7 +332,7 @@
           Для цієї машини схем виробника немає. Каталог за авто працює для неї як завжди — оберіть машину там.
         </x-import>
         <div style="justify-self:start">
-          <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="secondary" icon="car-front" hint-size="auto,40px">Перейти до каталогу за авто</x-import>
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="dark" icon="car-front" hint-size="auto,40px">Перейти до каталогу за авто</x-import>
         </div>
       </section>
     </sc-if>
@@ -296,35 +398,27 @@
               </sc-if>
 
               <ul data-tree>
-                <sc-for list="{{ treeGroups }}" as="group" hint-placeholder-count="7">
-                  <li>
+                <sc-for list="{{ treeRows }}" as="row" hint-placeholder-count="9">
+                  <li data-depth="{{ row.depth }}">
                     <div data-groupline>
-                      <button data-toggle type="button" aria-expanded="{{ group.openAttr }}" aria-label="{{ group.toggleLabel }}" onClick="{{ group.toggle }}">
-                        <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-right" size="16" hint-size="16px,16px"></x-import>
-                      </button>
-                      <sc-if value="{{ group.callable }}" hint-placeholder-val="{{ false }}">
-                        <button data-node aria-current="{{ group.current }}" onClick="{{ group.pick }}">{{ group.name }}</button>
+                      <sc-if value="{{ row.hasKids }}" hint-placeholder-val="{{ true }}">
+                        <button data-toggle type="button" aria-expanded="{{ row.openAttr }}" aria-label="{{ row.toggleLabel }}" onClick="{{ row.toggle }}">
+                          <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-right" size="16" hint-size="16px,16px"></x-import>
+                        </button>
                       </sc-if>
-                      <sc-if value="{{ group.plain }}" hint-placeholder-val="{{ true }}">
-                        <button data-branch type="button" onClick="{{ group.toggle }}">{{ group.name }}</button>
+                      <sc-if value="{{ row.noKids }}" hint-placeholder-val="{{ false }}">
+                        <span data-nokids></span>
                       </sc-if>
-                      <span data-count>{{ group.count }}</span>
+                      <sc-if value="{{ row.callable }}" hint-placeholder-val="{{ false }}">
+                        <button data-node aria-current="{{ row.current }}" onClick="{{ row.pick }}">{{ row.name }}</button>
+                      </sc-if>
+                      <sc-if value="{{ row.plain }}" hint-placeholder-val="{{ true }}">
+                        <button data-branch type="button" onClick="{{ row.toggle }}">{{ row.name }}</button>
+                      </sc-if>
+                      <sc-if value="{{ row.hasKids }}" hint-placeholder-val="{{ true }}">
+                        <span data-count>{{ row.count }}</span>
+                      </sc-if>
                     </div>
-
-                    <sc-if value="{{ group.open }}" hint-placeholder-val="{{ true }}">
-                      <ul data-subtree>
-                        <sc-for list="{{ group.children }}" as="child" hint-placeholder-count="3">
-                          <li>
-                            <sc-if value="{{ child.isNode }}" hint-placeholder-val="{{ true }}">
-                              <button data-node data-depth="1" aria-current="{{ child.current }}" onClick="{{ child.pick }}">{{ child.name }}</button>
-                            </sc-if>
-                            <sc-if value="{{ child.isPlain }}" hint-placeholder-val="{{ false }}">
-                              <span data-plain data-depth="1">{{ child.name }}</span>
-                            </sc-if>
-                          </li>
-                        </sc-for>
-                      </ul>
-                    </sc-if>
                   </li>
                 </sc-for>
               </ul>
@@ -352,13 +446,13 @@
 
                 <sc-for list="{{ previewUnits }}" as="unit" hint-placeholder-count="2">
                   <article style="display:grid;gap:var(--space-3);padding:var(--space-4);border:1px solid var(--line);border-radius:var(--radius-lg)">
-                    <a href="#" style="font-size:var(--text-sm);font-weight:600;text-decoration:none">{{ unit.name }}</a>
+                    <a href="#" style="font-size:var(--text-md);font-weight:600">{{ unit.name }}</a>
 
                     <div style="display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:flex-start">
-                      <div data-ph style="flex:0 0 224px;width:224px;border:1px solid var(--line-subtle);border-radius:var(--radius-md)">
+                      <a data-ph href="#" aria-label="{{ unit.name }}" style="flex:0 0 224px;width:224px;border:1px solid var(--line-subtle);border-radius:var(--radius-md);text-decoration:none;cursor:pointer" style-hover="border-color:var(--ink-300);background:var(--surface-sunken)">
                         <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="image-off" size="26" hint-size="26px,26px"></x-import>
                         <em>Знімок вузла</em>
-                      </div>
+                      </a>
 
                       <div style="flex:1 1 320px;min-width:0;display:grid;gap:var(--space-2)">
                       <div data-tablewrap style="min-width:0;max-height:280px">
@@ -412,7 +506,7 @@
                       </div>
 
                       <sc-if value="{{ unit.hasRest }}" hint-placeholder-val="{{ true }}">
-                        <p style="margin:0"><button type="button" class="ds-btn ds-btn--link" onClick="{{ unit.showRest }}">{{ unit.restLabel }}</button></p>
+                        <p style="margin:0"><button type="button" class="ds-btn ds-btn--link" style="font-size:var(--text-sm)" onClick="{{ unit.showRest }}">{{ unit.restLabel }}</button></p>
                       </sc-if>
                       </div>
                     </div>
@@ -472,18 +566,27 @@
                 </div>
               </div>
 
-              <div style="display:flex;align-items:center;gap:var(--space-3)">
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="minus" label="Зменшити" size="sm" tone="outline" onClick="{{ zoomOut }}" hint-size="36px,36px"></x-import>
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="plus" label="Збільшити" size="sm" tone="outline" onClick="{{ zoomIn }}" hint-size="36px,36px"></x-import>
-                <span style="font-size:var(--text-sm);font-family:var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text-muted)">{{ zoomLabel }}</span>
-                <span style="font-size:var(--text-xs);color:var(--text-muted)">{{ zoomHint }}</span>
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3)">
+                <span style="display:grid;gap:2px;font-size:var(--text-xs);line-height:1.35;color:var(--text-muted)">
+                  <span>Масштаб — колесом мишки</span>
+                  <span>Переміщення — тягніть схему лівою кнопкою</span>
+                </span>
+                <span style="margin-left:auto;display:flex;align-items:center;gap:var(--space-3)">
+                  <span style="font-size:var(--text-sm);font-family:var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text-muted)">{{ zoomLabel }}</span>
+                  <button data-zoombtn type="button" aria-label="Зменшити" disabled="{{ atMin }}" onClick="{{ zoomOut }}">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="minus" size="18" hint-size="18px,18px"></x-import>
+                  </button>
+                  <button data-zoombtn type="button" aria-label="Збільшити" disabled="{{ atMax }}" onClick="{{ zoomIn }}">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="plus" size="18" hint-size="18px,18px"></x-import>
+                  </button>
+                </span>
               </div>
             </div>
 
-            <div style="min-width:0;display:grid;gap:var(--space-3);align-content:start">
+            <div data-unitcol style="min-width:0;display:grid;gap:var(--space-3);align-content:start">
               <h2 class="ds-section-title" style="margin:0;font-size:var(--display-xs)">Деталі на схемі<span class="ds-section-title__count">{{ unitRowCount }}</span></h2>
 
-              <div data-tablewrap style="max-height:520px">
+              <div data-tablewrap data-unittable ref="{{ tableRef }}">
                 <table data-dtable>
                   <thead>
                     <tr>
@@ -495,7 +598,7 @@
                   </thead>
                   <tbody>
                     <sc-for list="{{ unitRows }}" as="row" hint-placeholder-count="8">
-                      <tr data-row data-sel="{{ row.sel }}" onMouseEnter="{{ row.hover }}" onMouseLeave="{{ row.unhover }}" onClick="{{ row.pick }}">
+                      <tr data-row data-code="{{ row.code }}" data-sel="{{ row.sel }}" onMouseEnter="{{ row.hover }}" onMouseLeave="{{ row.unhover }}" onClick="{{ row.pick }}">
                         <td data-col="pos">
                           <sc-if value="{{ row.showCode }}" hint-placeholder-val="{{ true }}">
                             <button data-posbtn type="button" aria-label="{{ row.posLabel }}" onClick="{{ row.pick }}">{{ row.code }}</button>
@@ -544,24 +647,38 @@
 </div>
 
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1260},&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;lookup&quot;,&quot;notfound&quot;,&quot;tree&quot;,&quot;unit&quot;,&quot;nocatalog&quot;],&quot;default&quot;:&quot;tree&quot;,&quot;tsType&quot;:&quot;'lookup' | 'notfound' | 'tree' | 'unit' | 'nocatalog'&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;stockMarks&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;available&quot;,&quot;absent&quot;,&quot;none&quot;],&quot;default&quot;:&quot;available&quot;,&quot;tsType&quot;:&quot;'available' | 'absent' | 'none'&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;vehicleInfoOpen&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;limitReached&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1260},&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;lookup&quot;,&quot;notfound&quot;,&quot;tree&quot;,&quot;unit&quot;,&quot;nocatalog&quot;],&quot;default&quot;:&quot;tree&quot;,&quot;tsType&quot;:&quot;'lookup' | 'notfound' | 'tree' | 'unit' | 'nocatalog'&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;stockMarks&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;available&quot;,&quot;absent&quot;,&quot;none&quot;],&quot;default&quot;:&quot;available&quot;,&quot;tsType&quot;:&quot;'available' | 'absent' | 'none'&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;vehicleInfoOpen&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;limitReached&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;historyEmpty&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;}}">
 /*
  * Оригінальні каталоги (/oem). Чотири екрани однієї гілки — вхід за VIN/держномером,
  * два дерева з переглядом праворуч, сторінка вузла зі схемою, і «каталогу для цієї
  * машини немає». Логіка й копірайт узяті з репозиторію: назви вузлів і деталей —
  * постачальникові, швидкі групи — локалізовані, ціни тут не показуються взагалі.
  */
+/* Дерева задані плоским списком [назва, рівень, чи можна запитати]. Рівнів до пʼяти:
+   у постачальникових каталогах гілка «тормоза» розкладена саме так глибоко. */
 const QUICK = [
   ['Двигун і система охолодження', 0, false],
-  ['Деталі для ТО', 1, true],
-  ['Ремені й ролики', 1, true],
-  ['Прокладки й сальники', 1, true],
+  ['Деталі для ТО', 1, false],
+  ['Масло й масляний фільтр', 2, true],
+  ['Ремені й ролики', 2, true],
+  ['Прокладки й сальники', 2, true],
+  ['Система охолодження', 1, false],
+  ['Помпа й термостат', 2, true],
+  ['Радіатор і патрубки', 2, true],
   ['Гальмівна система', 0, true],
   ['Гальмівні диски й колодки', 1, true],
+  ['Передня вісь', 2, true],
+  ['Диски', 3, true],
+  ['Ø 288 мм', 4, true],
+  ['Ø 312 мм', 4, true],
+  ['Колодки', 3, true],
+  ['Задня вісь', 2, true],
   ['Гальмівні шланги й трубки', 1, true],
   ['ABS і датчики', 1, true],
   ['Підвіска й рульове керування', 0, false],
   ['Амортизатори й пружини', 1, true],
+  ['Передня підвіска', 2, true],
+  ['Задня підвіска', 2, true],
   ['Важелі, опори, стійки стабілізатора', 1, true],
   ['Рульові тяги й наконечники', 1, true],
   ['Фільтри й рідини', 0, false],
@@ -575,16 +692,36 @@ const QUICK = [
 
 const CATS = [
   ['КУЗОВ', 0, false],
-  ['КУЗОВ (ПЕРЕД,КРЫША И ПОЛ)', 1, true],
-  ['ДВЕРИ И КРЫШКА БАГАЖНИКА', 1, true],
+  ['КУЗОВ (ПЕРЕД,КРЫША И ПОЛ)', 1, false],
+  ['ПЕРЕДНЯЯ ЧАСТЬ КУЗОВА', 2, true],
+  ['КРЫША', 2, true],
+  ['ПОЛ И ТУННЕЛЬ', 2, true],
+  ['ДВЕРИ И КРЫШКА БАГАЖНИКА', 1, false],
+  ['ДВЕРЬ ПЕРЕДНЯЯ', 2, false],
+  ['КАРКАС И ПЕТЛИ', 3, true],
+  ['ЗАМОК И РУЧКИ', 3, true],
+  ['СТЕКЛОПОДЪЕМНИК', 3, true],
+  ['ДВЕРЬ ЗАДНЯЯ', 2, true],
+  ['КРЫШКА БАГАЖНИКА', 2, true],
   ['ОБЛИЦОВКА КУЗОВА', 1, true],
   ['ДВИГАТЕЛЬ', 0, false],
-  ['БЛОК ЦИЛИНДРОВ', 1, true],
+  ['БЛОК ЦИЛИНДРОВ', 1, false],
+  ['КОЛЕНВАЛ И ПОРШНИ', 2, true],
+  ['МАСЛЯНЫЙ ПОДДОН', 2, true],
   ['ГОЛОВКА БЛОКА ЦИЛИНДРОВ', 1, true],
   ['СИСТЕМА СМАЗКИ', 1, true],
   ['ТОПЛИВНАЯ СИСТЕМА', 1, true],
   ['ТОРМОЗА', 0, false],
   ['ТОРМОЗНАЯ СИСТЕМА, ПЕРЕД', 1, true],
+  ['СУППОРТ И ДИСК', 2, true],
+  ['ДИСК И КОЛОДКИ', 3, true],
+  ['ДИСК Ø 288 X 25', 4, true],
+  ['ДИСК Ø 312 X 25', 4, true],
+  ['КОЛОДКИ, КОМПЛЕКТ', 4, true],
+  ['КОРПУС СУППОРТА', 3, true],
+  ['ЩИТОК ТОРМОЗНОГО ДИСКА', 3, true],
+  ['ШЛАНГИ И ТРУБКИ, ПЕРЕД', 2, true],
+  ['ДАТЧИК ABS, ПЕРЕД', 2, true],
   ['ТОРМОЗНАЯ СИСТЕМА, ЗАД', 1, true],
   ['ПЕДАЛЬНЫЙ УЗЕЛ', 1, true],
   ['ХОДОВАЯ ЧАСТЬ', 0, false],
@@ -620,6 +757,17 @@ const UNIT_A = [
   { code: '4', name: 'Винт', oem: 'N90813202', spec: 'M6 X 12', note: '' },
   { code: '4', name: 'Винт', oem: 'N90813203', spec: 'M6 X 16', note: '' },
   { code: '5', name: 'Щиток тормозного диска', oem: '5Q0615311C', spec: '', note: 'Прим.: лев.' },
+  { code: '5', name: 'Щиток тормозного диска', oem: '5Q0615312C', spec: '', note: 'Прим.: прав.' },
+  { code: '6', name: 'Суппорт тормозной, корпус', oem: '5Q0615123F', spec: 'Ø 57', note: 'Прим.: лев.' },
+  { code: '6', name: 'Суппорт тормозной, корпус', oem: '5Q0615124F', spec: 'Ø 57', note: 'Прим.: прав.' },
+  { code: '7', name: 'Направляющая колодок', oem: '5Q0615125A', spec: '', note: '' },
+  { code: '8', name: 'Болт направляющей', oem: 'N10648301', spec: 'M12 X 1,5 X 45', note: '' },
+  { code: '9', name: 'Пыльник направляющей пальца', oem: '1K0615219', spec: '', note: '' },
+  { code: '10', name: 'Шланг тормозной, перед', oem: '5Q0611701D', spec: 'L 430', note: 'Прим.: лев.' },
+  { code: '10', name: 'Шланг тормозной, перед', oem: '5Q0611702D', spec: 'L 430', note: 'Прим.: прав.' },
+  { code: '11', name: 'Датчик ABS, перед', oem: '5Q0927803A', spec: '', note: '' },
+  { code: '12', name: 'Винт крепления датчика', oem: 'N90701502', spec: 'M6 X 16', note: '' },
+  { code: '13', name: 'Комплект смазки для направляющих', oem: 'G052150A2', spec: '10 г', note: '' },
   { code: '', name: 'Комплект не является запчастью, имеется в позиции:', oem: '', spec: '', note: 'Прим.: 2' },
 ]
 
@@ -637,6 +785,10 @@ const HOTS = [
   { code: '3', x: 30, y: 57, w: 15, h: 16 },
   { code: '4', x: 60, y: 46, w: 19, h: 24 },
   { code: '5', x: 11, y: 60, w: 13, h: 13 },
+  { code: '6', x: 46, y: 62, w: 18, h: 20 },
+  { code: '7', x: 68, y: 22, w: 14, h: 14 },
+  { code: '10', x: 80, y: 62, w: 12, h: 24 },
+  { code: '11', x: 26, y: 80, w: 16, h: 12 },
 ]
 
 const ATTRS = [
@@ -650,6 +802,24 @@ const ATTRS = [
   ['Період виробництва', '2016 — 2020', false],
   ['Комплектація', 'COMFORTLINE', false],
   ['Модельный год', '2017', false],
+]
+
+/* Історія запитів до оригінальних каталогів — держномер, VIN, назва машини, коли.
+   Держномер зберігається, якщо його вводили; у розпізнаних записів є і номер, і VIN.
+   Записів не більше 10 — старші випадають. */
+const HISTORY_LIMIT = 10
+
+const HISTORY = [
+  ['AA1234BB', 'WVWZZZAUZHW123456', 'Volkswagen Golf VII 1.6 TDI', 'сьогодні'],
+  ['', 'VF1BZ0R0642318907', 'Renault Megane III 1.5 dCi', 'сьогодні', 'nocatalog'],
+  ['AX7712CE', '', '', 'вчора'],
+  ['KA0456IO', 'ZFA31200003251177', 'Fiat Doblo II 1.6 MultiJet', 'вчора'],
+  ['', 'WAUZZZ8K9BA123456', 'Audi A4 B8 2.0 TDI', '10 вер', 'nocatalog'],
+  ['BH5521AP', 'JTMHV05J104085233', 'Toyota RAV4 IV 2.2 D-4D', '9 вер'],
+  ['', 'WBA3B11080NP12345', '', '8 вер'],
+  ['AE3390MK', '', '', '6 вер'],
+  ['', 'KMHD35LE0EU123456', 'Hyundai Elantra MD 1.6', '4 вер'],
+  ['CB1188EI', 'Z94CT41DBER123456', 'Hyundai Accent RB 1.4', '2 вер'],
 ]
 
 /* Наш каталог тримає не кожен номер зі схеми — позначка малюється до будь-якого натискання. */
@@ -674,18 +844,74 @@ class Component extends DCLogic {
     plate: '',
     vin: 'WVWZZZAUZHW123456',
     vinHint: false,
+    historyCleared: false,
+    nav: null,
   }
 
   pick = (key, value) => () => this.setState({ [key]: value, treeOpen: false })
 
-  /* Гілки згорнуті, поки їх не відкрили; відкритою за замовчуванням лишається та, у якій обраний вузол. */
-  groupsOf(source) {
-    const out = []
+  /* Плоский список → дерево будь-якої глибини. Шлях потрібен для ключа відкриття:
+     однакові назви трапляються в різних гілках. */
+  nodesOf(source) {
+    const roots = []
+    const stack = []
     source.forEach(([name, depth, callable]) => {
-      if (depth === 0) out.push({ name, callable, children: [] })
-      else out[out.length - 1].children.push({ name, callable })
+      const parent = depth === 0 ? null : stack[depth - 1]
+      const path = (parent ? parent.path + '/' : '') + name
+      const node = { name, callable, depth, path, children: [] }
+      if (parent) parent.children.push(node)
+      else roots.push(node)
+      stack[depth] = node
+      stack.length = depth + 1
     })
-    return out
+    return roots
+  }
+
+  holds(node, chosen) {
+    if (node.name === chosen) return true
+    return node.children.some((kid) => this.holds(kid, chosen))
+  }
+
+  /* Дерево віддається шаблону плоским списком видимих рядків: рівень — в data-depth,
+     згорнута гілка просто не дає своїх нащадків. Гілки згорнуті, поки їх не відкрили;
+     відкритою за замовчуванням лишається та, у якій обраний вузол. */
+  treeRowsOf(source, slot, chosen, needle) {
+    const s = this.state
+    const searching = needle.length > 0
+    const keep = (node) => !searching
+      || node.name.toLowerCase().indexOf(needle) !== -1
+      || node.children.some(keep)
+
+    const rows = []
+    const walk = (node) => {
+      const kids = searching ? node.children.filter(keep) : node.children
+      const key = slot + '|' + node.path
+      const open = kids.length > 0
+        && (searching ? true : key in s.open ? s.open[key] : this.holds(node, chosen))
+      rows.push({
+        name: node.name,
+        depth: String(node.depth),
+        hasKids: kids.length > 0,
+        noKids: kids.length === 0,
+        count: kids.length,
+        callable: node.callable,
+        plain: !node.callable,
+        current: chosen === node.name ? 'true' : 'false',
+        openAttr: open ? 'true' : 'false',
+        toggleLabel: (open ? 'Згорнути ' : 'Розгорнути ') + node.name,
+        toggle: this.toggleGroup(key),
+        /* Гілку, яку можна запитати, натискання й обирає, і розкриває — інакше вона
+           виглядає як зламана стрілка. */
+        pick: () => this.setState((prev) => ({
+          [slot]: node.name,
+          treeOpen: false,
+          open: Object.assign({}, prev.open, { [key]: true }),
+        })),
+      })
+      if (open) kids.forEach(walk)
+    }
+    this.nodesOf(source).filter(keep).forEach(walk)
+    return rows
   }
 
   toggleGroup = (key) => () => this.setState((prev) => {
@@ -717,11 +943,34 @@ class Component extends DCLogic {
   onPanEnd = () => { this.drag = null }
 
   diagramRef = React.createRef()
+  tableRef = React.createRef()
+
+  /* Натискання на позицію схеми підсвічує рядок і підтягує його у видиму частину таблиці:
+     прокручуємо лише саму обгортку, і лише якщо рядок справді за краєм. */
+  revealRow = (code) => {
+    const wrap = this.tableRef.current
+    if (!wrap || !code) return
+    const row = wrap.querySelector('tr[data-code="' + code + '"]')
+    if (!row) return
+    const r = row.getBoundingClientRect()
+    const w = wrap.getBoundingClientRect()
+    const pad = 44 /* висота приклеєної шапки таблиці */
+    let delta = 0
+    if (r.top < w.top + pad) delta = r.top - w.top - pad
+    else if (r.bottom > w.bottom - 8) delta = r.bottom - w.bottom + 8
+    if (delta) wrap.scrollTo({ top: wrap.scrollTop + delta, behavior: 'smooth' })
+  }
+
+  selectCode = (code) => () => this.setState({ sel: code }, () => this.revealRow(code))
 
   /* Колесо мишки треба слухати неспішно (passive: false), інакше сторінка прокручується
      разом зі схемою — тому це власний слухач, а не onWheel. */
   componentDidMount() { this.bindWheel() }
-  componentDidUpdate() { this.bindWheel() }
+  componentDidUpdate(prevProps) {
+    this.bindWheel()
+    /* Переключення стану зверху скасовує перехід з історії. */
+    if (prevProps.state !== this.props.state && this.state.nav) this.setState({ nav: null })
+  }
 
   bindWheel() {
     const node = this.diagramRef.current
@@ -821,7 +1070,7 @@ class Component extends DCLogic {
 
   renderVals() {
     const s = this.state
-    const screen = this.props.state ?? 'tree'
+    const screen = s.nav ?? (this.props.state ?? 'tree')
     /* Позначка наявності: «absent» — сірим те, чого немає; «available» — зеленим те, що є;
        «none» — не питали, і тоді не малюється жодна, бо це третій стан, а не синонім другого. */
     const marks = this.props.stockMarks ?? 'available'
@@ -836,48 +1085,26 @@ class Component extends DCLogic {
 
     const query = s.query[s.tab] ?? ''
     const needle = query.trim().toLocaleLowerCase()
-    const searching = needle !== ''
-    const hit = (name) => name.toLocaleLowerCase().includes(needle)
     const chosen = quickTab ? s.quick : s.category
     const slot = quickTab ? 'quick' : 'category'
 
-    const child = (node) => ({
-      name: node.name,
-      isNode: node.callable,
-      isPlain: !node.callable,
-      current: chosen === node.name ? 'true' : 'false',
-      pick: this.pick(slot, node.name),
-    })
+    /* Повторний запит просто заповнює форму — людина бачить, що саме шукає, і може виправити. */
+    const cleared = (this.props.historyEmpty ?? false) || s.historyCleared
+    const history = cleared ? [] : HISTORY.slice(0, HISTORY_LIMIT).map(([plate, vin, car, when, status]) => ({
+      plate: this.masked('plate', plate),
+      vin,
+      hasPlate: plate !== '',
+      hasVin: vin !== '' && plate === '',
+      car: car === '' ? 'Не розпізнано' : car,
+      unknown: car === '' ? 'true' : 'false',
+      noCatalog: status === 'nocatalog',
+      when,
+      /* У каталог можна зайти лише з того запиту, де машина розпізнана й схеми є. */
+      disabled: car === '' || status === 'nocatalog',
+      open: () => this.setState({ plate, vin, nav: 'tree' }),
+    }))
 
-    const treeGroups = this.groupsOf(quickTab ? QUICK : CATS)
-      .map((group) => {
-        const own = searching && hit(group.name)
-        const children = searching && !own ? group.children.filter((node) => hit(node.name)) : group.children
-        const key = slot + '|' + group.name
-        const holds = group.name === chosen || group.children.some((node) => node.name === chosen)
-        const open = searching ? true : key in s.open ? s.open[key] : holds
-        return {
-          name: group.name,
-          callable: group.callable,
-          plain: !group.callable,
-          count: children.length,
-          current: chosen === group.name ? 'true' : 'false',
-          /* Гілку, яку можна запитати, натискання й обирає, і розкриває — інакше вона
-             виглядає як зламана стрілка. */
-          pick: () => this.setState((prev) => ({
-            [slot]: group.name,
-            treeOpen: false,
-            open: Object.assign({}, prev.open, { [key]: true }),
-          })),
-          open,
-          openAttr: open ? 'true' : 'false',
-          toggleLabel: (open ? 'Згорнути ' : 'Розгорнути ') + group.name,
-          toggle: this.toggleGroup(key),
-          children: children.map(child),
-          visible: !searching || own || children.length > 0,
-        }
-      })
-      .filter((group) => group.visible)
+    const treeRows = this.treeRowsOf(quickTab ? QUICK : CATS, slot, chosen, needle)
 
     const previewUnits = [
       { key: 'a', name: 'ТОРМОЗНОЙ ДИСК/КОЛОДКИ, ПЕРЕД', details: UNIT_A },
@@ -930,6 +1157,12 @@ class Component extends DCLogic {
       onVinCaret: this.onMaskedCaret('vin', 'vin'),
       noop: () => {},
 
+      showHistory: isEntry,
+      hasHistory: isEntry && history.length > 0,
+      historyEmpty: isEntry && history.length === 0,
+      history,
+      clearHistory: () => this.setState({ historyCleared: true }),
+
       infoOpen: this.props.vehicleInfoOpen ?? false,
       attributes: ATTRS.map(([name, value, mono]) => ({ name, value, mono: mono ? 'true' : 'false' })),
 
@@ -947,8 +1180,8 @@ class Component extends DCLogic {
       },
       hasQuery: query.length > 0,
       onClearQuery: () => this.setState((prev) => ({ query: Object.assign({}, prev.query, { [prev.tab]: '' }) })),
-      treeGroups,
-      treeEmpty: treeGroups.length === 0,
+      treeRows,
+      treeEmpty: treeRows.length === 0,
       searchLabel: quickTab ? 'Шукати групу' : 'Шукати розділ',
       treeToggleLabel: quickTab ? 'Швидкі групи' : 'Каталог виробника',
       treeOpen: s.treeOpen,
@@ -973,10 +1206,14 @@ class Component extends DCLogic {
         label: 'Позиція ' + hot.code + ' на схемі',
         sel: s.sel === hot.code ? 'true' : s.hover === hot.code ? 'true' : 'false',
         style: 'left:' + hot.x + '%;top:' + hot.y + '%;width:' + hot.w + '%;height:' + hot.h + '%',
-        pick: () => this.setState({ sel: hot.code }),
+        pick: this.selectCode(hot.code),
       })),
       diagramRef: this.diagramRef,
+      tableRef: this.tableRef,
       zoomLabel: Math.round(s.zoom * 100) + '%',
+      /* На межах масштабу відповідна кнопка гаситься, а не зникає — місце не стрибає. */
+      atMin: s.zoom <= 1,
+      atMax: s.zoom >= 5,
       zoomed: s.zoom > 1,
       zoomHint: s.zoom > 1 ? 'Тягніть схему лівою кнопкою' : 'Масштаб — колесом мишки',
       grabAttr: s.zoom > 1 ? 'true' : 'false',
