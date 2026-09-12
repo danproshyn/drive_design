@@ -100,8 +100,8 @@
   }
   [data-unitcard]:hover { background: var(--surface-sunken); border-color: var(--ink-300); text-decoration: none; }
   /* Назва обтягує текст: один рядок — один рядок висоти, без запасу під другий. */
-  [data-unitcard] span { display: block; padding: 6px 10px 8px; font-size: var(--text-sm); font-weight: 500; line-height: var(--leading-snug); color: var(--text-strong); }
-  [data-unitcard] span[data-ph] { display: grid; }
+  [data-unitcard] > span { display: block; padding: 10px 12px 12px; font-size: var(--text-sm); font-weight: 500; line-height: var(--leading-snug); color: var(--text-strong); }
+  [data-unitcard] > span[data-ph] { display: grid; }
 
   /* Заглушка зображення: постачальникове фото/схема, яких у макеті немає */
   [data-ph] { display: grid; place-items: center; gap: 6px; background: var(--surface-sunken); border-bottom: 1px solid var(--line-subtle); color: var(--ink-300); aspect-ratio: 4 / 3; }
@@ -195,7 +195,9 @@
   [data-unittable] { max-height: 520px; }
 
   /* Інформація про автомобіль — постачальникові поля, згорнуті під пошуком */
-  [data-info] { border: 1px solid var(--line); border-radius: var(--radius-lg); }
+  /* Згорнутий блок — компактна кнопка по ширині напису; розгорнутий займає рядок під поля. */
+  [data-info] { width: max-content; max-width: 100%; border: 1px solid var(--line); border-radius: var(--radius-lg); }
+  [data-info][open] { width: auto; }
   [data-info] summary { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 var(--space-4); font-size: var(--text-sm); font-weight: 600; color: var(--text-strong); cursor: pointer; list-style: none; }
   [data-info] summary::-webkit-details-marker { display: none; }
   [data-info][open] summary { border-bottom: 1px solid var(--line-subtle); }
