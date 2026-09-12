@@ -992,9 +992,8 @@ class Component extends DCLogic {
     return { open }
   })
 
-  /* Масштаб ходить драбинкою, а не рівним кроком: нижче 100 % схема віддаляється,
-     щоб на вузькій рамці було видно весь вузол. */
-  ZOOMS = [0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5]
+  /* Масштаб ходить драбинкою, а не рівним кроком; 100 % — мінімум. */
+  ZOOMS = [1, 1.5, 2, 2.5, 3, 4, 5]
 
   nextZoom = (from, dir) => {
     const i = this.ZOOMS.indexOf(from)
@@ -1357,7 +1356,7 @@ class Component extends DCLogic {
       tableRef: this.tableRef,
       zoomLabel: Math.round(s.zoom * 100) + '%',
       /* На межах масштабу відповідна кнопка гаситься, а не зникає — місце не стрибає. */
-      atMin: s.zoom <= 0.5,
+      atMin: s.zoom <= 1,
       atMax: s.zoom >= 5,
       zoomed: s.zoom > 1,
       zoomHint: s.zoom > 1 ? 'Тягніть схему лівою кнопкою' : 'Масштаб — колесом мишки',
