@@ -114,6 +114,10 @@
           </div>
 
           <p style="margin:0;padding:12px var(--space-5);border-top:1px solid var(--line);font-size:var(--text-sm);color:var(--text-muted)">Немає вашої модифікації — оберіть її вручну нижче.</p>
+
+          <sc-if value="{{ oemWithCandidates }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0;padding:12px var(--space-5);border-top:1px solid var(--line-subtle);font-size:var(--text-sm);color:var(--text-muted)">Для цієї машини також відкриті схеми виробника — вузол, розкладка й оригінальні номери деталей: <a href="Оригінальні каталоги.dc.html" style="font-weight:500">оригінальні каталоги</a>.</p>
+          </sc-if>
           </sc-if>
 
           <sc-if value="{{ noCandidates }}" hint-placeholder-val="{{ false }}">
@@ -319,17 +323,28 @@
 </div>
 
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1000},&quot;garageBlock&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Головна&quot;},&quot;vinResult&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Кілька двигунів&quot;,&quot;Без деталей — оригінальні каталоги&quot;],&quot;default&quot;:&quot;Кілька двигунів&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Підбір за авто&quot;},&quot;stepLatencyMs&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:650,&quot;min&quot;:0,&quot;max&quot;:2500,&quot;step&quot;:50,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Підбір за авто&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1000},&quot;garageBlock&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Головна&quot;},&quot;vinResult&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Кілька двигунів&quot;,&quot;Не зіставлено — оригінальні каталоги&quot;,&quot;Кілька двигунів + оригінальні каталоги&quot;],&quot;default&quot;:&quot;Кілька двигунів&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Підбір за авто&quot;},&quot;stepLatencyMs&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:650,&quot;min&quot;:0,&quot;max&quot;:2500,&quot;step&quot;:50,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Підбір за авто&quot;}}">
 /* Ширини смуг скелета — нерівні, щоб він читався як список назв, а не як таблиця. */
 const SKELETON_WIDTHS = [58, 72, 46, 64, 80, 52, 68, 44, 74, 60, 50, 66]
 
-const MODES = ['Кілька двигунів', 'Без деталей — оригінальні каталоги']
+const MODES = ['Кілька двигунів', 'Не зіставлено — оригінальні каталоги', 'Кілька двигунів + оригінальні каталоги']
 
 const ANSWERS = {
   engines: {
     name: 'BMW 3 (E90)',
     fixed: 'Седан · 2005–2011',
     vin: 'WBAVB13506PT22180',
+    candidates: [
+      { id: 'e90-143', name: 'BMW 3 (E90) Седан 2.0 318 i', engine: 'Бензин', volume: '2.0 Л', power: '143 к.с.', period: '2007–2011', fuel: 'Бензин', drive: 'Задній привід' },
+      { id: 'e90-150', name: 'BMW 3 (E90) Седан 2.0 320 i', engine: 'Бензин', volume: '2.0 Л', power: '150 к.с.', period: '2005–2007', fuel: 'Бензин', drive: 'Задній привід' },
+      { id: 'e90-170', name: 'BMW 3 (E90) Седан 2.0 320 i', engine: 'Бензин', volume: '2.0 Л', power: '170 к.с.', period: '2007–2011', fuel: 'Бензин', drive: 'Задній привід' },
+    ],
+  },
+  enginesOem: {
+    name: 'BMW 3 (E90)',
+    fixed: 'Седан · 2005–2011',
+    vin: 'WBAVB13506PT22180',
+    oem: true,
     candidates: [
       { id: 'e90-143', name: 'BMW 3 (E90) Седан 2.0 318 i', engine: 'Бензин', volume: '2.0 Л', power: '143 к.с.', period: '2007–2011', fuel: 'Бензин', drive: 'Задній привід' },
       { id: 'e90-150', name: 'BMW 3 (E90) Седан 2.0 320 i', engine: 'Бензин', volume: '2.0 Л', power: '150 к.с.', period: '2005–2007', fuel: 'Бензин', drive: 'Задній привід' },
@@ -585,7 +600,8 @@ class Component extends DCLogic {
    * твіках показує обидва. */
   answer() {
     if (!this.state.resolved) return null
-    const a = ANSWERS[(this.props.vinResult ?? MODES[0]) === MODES[1] ? 'nocatalog' : 'engines']
+    const mode = this.props.vinResult ?? MODES[0]
+    const a = ANSWERS[mode === MODES[1] ? 'nocatalog' : mode === MODES[2] ? 'enginesOem' : 'engines']
     const vin = this.state.resolved.typedVin || a.vin
     return { ...a, vin, code: this.masked('vin', vin) }
   }
@@ -837,6 +853,8 @@ class Component extends DCLogic {
         ? 'VIN визначив марку, модель, кузов і рік, але не двигун. Оберіть модифікацію — від неї залежить перелік деталей.'
         : 'Ми впізнали цю машину. Перевірте й переходьте до деталей.',
       hasCandidates: !!answer && answer.candidates.length > 0,
+      /* Схеми виробника є не для кожної машини — рядок про них показуємо лише коли вони справді відкриті. */
+      oemWithCandidates: !!answer && answer.candidates.length > 0 && !!answer.oem,
       noCandidates: !!answer && answer.candidates.length === 0,
       candidates: (answer ? answer.candidates : []).map((c) => ({ ...c, pick: () => this.pickCandidate(c) })),
       onClearResolved: this.clearResolved,
