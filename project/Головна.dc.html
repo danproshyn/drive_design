@@ -79,19 +79,17 @@
           <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--space-4);padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--line)">
             <div style="flex:1 1 320px;min-width:240px">
               <p class="t-eyebrow" style="margin:0 0 6px">Розпізнано</p>
-              <p style="margin:0;font-family:var(--font-display);font-size:22px;line-height:1.05;letter-spacing:.01em;text-transform:uppercase;color:var(--text-strong)">{{ resolvedName }}</p>
+              <p style="margin:0;font-family:var(--font-display);font-size:22px;line-height:1.05;letter-spacing:.01em;text-transform:uppercase;color:var(--text-strong)" data-comment-anchor="d276151ff8-p">{{ resolvedName }}</p>
               <div style="margin-top:10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px" data-comment-anchor="6ed34cec8d-p">
                 <span style="display:inline-flex;flex-direction:column;justify-content:center;padding:5px 10px;border:1px solid var(--line-subtle);border-radius:var(--radius-sm);background:var(--surface-sunken)" data-comment-anchor="f6f83b9c8e-span">
-                  <span style="font-size:11px;line-height:1.2;color:var(--text-muted)">VIN</span>
+                  <span style="font-size:11px;font-weight:600;line-height:1.2;color:var(--text-muted)" data-comment-anchor="29c4b7ccd2-span">VIN</span>
                   <span style="font-family:var(--font-mono);font-size:var(--text-sm);line-height:1.3;letter-spacing:.04em;color:var(--text-strong)">{{ resolvedCode }}</span>
                 </span>
-                <sc-for list="{{ resolvedSpecs }}" as="spec" hint-placeholder-count="2">
-                  <span style="display:inline-flex;align-items:center;height:26px;padding:0 10px;border:1px solid var(--line);border-radius:var(--radius-full);background:var(--surface);font-size:var(--text-xs);color:var(--text-muted)">{{ spec.label }}</span>
-                </sc-for>
               </div>
             </div>
           </div>
 
+          <sc-if value="{{ hasCandidates }}" hint-placeholder-val="{{ true }}">
           <div style="padding:var(--space-4) var(--space-5) 0">
             <h3 style="margin:0;font-family:var(--font-display);font-size:var(--text-lg);line-height:1.05;letter-spacing:.01em;text-transform:uppercase;color:var(--text-strong)">Оберіть двигун</h3>
             <p style="margin:6px 0 0;font-size:var(--text-sm);color:var(--text-muted);max-width:62ch" data-comment-anchor="4dde99af34-p">{{ resolvedHint }}</p>
@@ -116,10 +114,21 @@
           </div>
 
           <p style="margin:0;padding:12px var(--space-5);border-top:1px solid var(--line);font-size:var(--text-sm);color:var(--text-muted)">Немає вашої модифікації — оберіть її вручну нижче.</p>
+          </sc-if>
+
+          <sc-if value="{{ noCandidates }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:var(--space-4) var(--space-5) var(--space-5)">
+            <p style="margin:0;max-width:60ch;font-size:var(--text-md);font-weight:600;line-height:1.4;color:var(--text-strong)" data-comment-anchor="bd7763f002-p">Ми впізнали цю машину, але не змогли зіставити її з каталогом.</p>
+            <p style="margin:6px 0 0;max-width:62ch;font-size:var(--text-sm);line-height:1.5;color:var(--text-muted)">Деталі для неї майже напевно є — оберіть машину вручну, за маркою, моделлю й двигуном.</p>
+            <a class="ds-btn ds-btn--md ds-btn--dark" href="#manual" style="margin-top:var(--space-4)">Обрати машину вручну</a>
+          </div>
+
+          <p style="margin:0;padding:12px var(--space-5);border-top:1px solid var(--line);font-size:var(--text-sm);color:var(--text-muted)" data-comment-anchor="6058fd611c-p">Схеми виробника для цієї машини вже відкриті — вузол, розкладка й оригінальні номери деталей: <a href="Оригінальні каталоги.dc.html" style="font-weight:500">оригінальні каталоги</a>.</p>
+          </sc-if>
         </div>
       </sc-if>
 
-      <div style="display:flex;align-items:center;gap:var(--space-5);margin-block:var(--space-3)">
+      <div id="manual" style="scroll-margin-top:96px;display:flex;align-items:center;gap:var(--space-5);margin-block:var(--space-3)">
         <span style="height:1px;flex:1;background:var(--line)"></span>
         <span class="t-eyebrow" style="flex:none">або оберіть вручну</span>
         <span style="height:1px;flex:1;background:var(--line)"></span>
@@ -310,9 +319,30 @@
 </div>
 
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1000},&quot;garageBlock&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Головна&quot;},&quot;stepLatencyMs&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:650,&quot;min&quot;:0,&quot;max&quot;:2500,&quot;step&quot;:50,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Підбір за авто&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1000},&quot;garageBlock&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Головна&quot;},&quot;vinResult&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Кілька двигунів&quot;,&quot;Без деталей — оригінальні каталоги&quot;],&quot;default&quot;:&quot;Кілька двигунів&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Підбір за авто&quot;},&quot;stepLatencyMs&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:650,&quot;min&quot;:0,&quot;max&quot;:2500,&quot;step&quot;:50,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Підбір за авто&quot;}}">
 /* Ширини смуг скелета — нерівні, щоб він читався як список назв, а не як таблиця. */
 const SKELETON_WIDTHS = [58, 72, 46, 64, 80, 52, 68, 44, 74, 60, 50, 66]
+
+const MODES = ['Кілька двигунів', 'Без деталей — оригінальні каталоги']
+
+const ANSWERS = {
+  engines: {
+    name: 'BMW 3 (E90)',
+    fixed: 'Седан · 2005–2011',
+    vin: 'WBAVB13506PT22180',
+    candidates: [
+      { id: 'e90-143', name: 'BMW 3 (E90) Седан 2.0 318 i', engine: 'Бензин', volume: '2.0 Л', power: '143 к.с.', period: '2007–2011', fuel: 'Бензин', drive: 'Задній привід' },
+      { id: 'e90-150', name: 'BMW 3 (E90) Седан 2.0 320 i', engine: 'Бензин', volume: '2.0 Л', power: '150 к.с.', period: '2005–2007', fuel: 'Бензин', drive: 'Задній привід' },
+      { id: 'e90-170', name: 'BMW 3 (E90) Седан 2.0 320 i', engine: 'Бензин', volume: '2.0 Л', power: '170 к.с.', period: '2007–2011', fuel: 'Бензин', drive: 'Задній привід' },
+    ],
+  },
+  nocatalog: {
+    name: 'Nissan Leaf',
+    fixed: 'Хетчбек · 2013–2017',
+    vin: '1N4AZ0CP9FC316755',
+    candidates: [],
+  },
+}
 
 /* Скелет повторює щойно виміряну картку: та сама сітка 150 px і стільки ж рядків
  * по 44 px, за вирахуванням поля пошуку, якщо воно там було. */
@@ -543,38 +573,33 @@ class Component extends DCLogic {
   /* VIN закріплює марку, модель, кузов і рік, але часто не двигун — тому відповіддю
    * сервера є список типів, і між ними обирає людина. Ніякого авто-переходу тут немає:
    * гілка, що пропускає список з одного рядка, — та сама, що взяла б перший із пʼяти. */
-  resolve = () => {
-    const plate = this.state.plate || ''
-    const vin = this.state.vin || 'WBAVB13506PT22180'
-    this.setState({
-      resolved: {
-        name: 'BMW 3 (E90)',
-        fixed: 'Седан · 2005–2011',
-        /* За держномером сервер повертає ту саму машину разом із її VIN, тож тут
-         * завжди VIN: це той номер, який людина потім порівнює символ за символом. */
-        source: plate ? 'plate' : 'vin',
-        code: this.masked('vin', vin),
-        vin: vin,
-        candidates: [
-          { id: 'e90-143', name: 'BMW 3 (E90) Седан 2.0 318 i', engine: 'Бензин', volume: '2.0 Л', power: '143 к.с.', period: '2007–2011', fuel: 'Бензин', drive: 'Задній привід' },
-          { id: 'e90-150', name: 'BMW 3 (E90) Седан 2.0 320 i', engine: 'Бензин', volume: '2.0 Л', power: '150 к.с.', period: '2005–2007', fuel: 'Бензин', drive: 'Задній привід' },
-          { id: 'e90-170', name: 'BMW 3 (E90) Седан 2.0 320 i', engine: 'Бензин', volume: '2.0 Л', power: '170 к.с.', period: '2007–2011', fuel: 'Бензин', drive: 'Задній привід' },
-        ],
-      },
-    })
+  resolve = () => this.setState({
+    /* За держномером сервер повертає ту саму машину разом із її VIN, тож на екрані
+     * завжди VIN: це той номер, який людина потім порівнює символ за символом. */
+    resolved: { source: this.state.plate ? 'plate' : 'vin', typedVin: this.state.vin || '' },
+  })
+
+  /* Відповідь сервера буває двох видів, і вони дають два різні екрани: список
+   * модифікацій, між якими обирає людина, або впізнана машина без деталей у
+   * каталозі — тоді єдиний шлях до номерів це схеми виробника. Перемикач у
+   * твіках показує обидва. */
+  answer() {
+    if (!this.state.resolved) return null
+    const a = ANSWERS[(this.props.vinResult ?? MODES[0]) === MODES[1] ? 'nocatalog' : 'engines']
+    const vin = this.state.resolved.typedVin || a.vin
+    return { ...a, vin, code: this.masked('vin', vin) }
   }
 
   clearResolved = () => this.setState({ resolved: null })
 
   pickCandidate = (candidate) => {
-    const r = this.state.resolved
-    if (!r) return
-    const power = candidate.power
+    const a = this.answer()
+    if (!a) return
     this.goCatalog({
       id: Date.now(),
       name: candidate.name,
-      spec: [r.fixed.split(' · ')[0], candidate.period, power, candidate.fuel].join(' · '),
-      vin: r.vin,
+      spec: [a.fixed.split(' · ')[0], candidate.period, candidate.power, candidate.fuel].join(' · '),
+      vin: a.vin,
       oemHref: '#',
     })
   }
@@ -666,6 +691,7 @@ class Component extends DCLogic {
 
   renderVals() {
     const { chosen, step, query, filter } = this.state
+    const answer = this.answer()
     const q = query.trim().toLowerCase()
     const level = LEVELS[Math.min(step, 5)]
     const isSpec = step === 5
@@ -801,16 +827,18 @@ class Component extends DCLogic {
       onPlate: this.onMasked('plate', 'plate'),
       onPlateCaret: this.onMaskedCaret('plate', 'plate'),
       onResolve: this.resolve,
-      resolved: !!this.state.resolved,
-      resolvedName: this.state.resolved ? this.state.resolved.name : '',
-      resolvedFixed: this.state.resolved ? this.state.resolved.fixed : '',
-      resolvedCode: this.state.resolved ? this.state.resolved.code : '',
-      resolvedSpecs: (this.state.resolved ? this.state.resolved.fixed.split(' · ') : []).map((label, i) => ({ id: i, label })),
+      resolved: !!answer,
+      resolvedName: answer ? answer.name : '',
+      resolvedFixed: answer ? answer.fixed : '',
+      resolvedCode: answer ? answer.code : '',
+      resolvedSpecs: (answer ? answer.fixed.split(' · ') : []).map((label, i) => ({ id: i, label })),
       /* Дві різні ситуації: кількох кандидатів людину просять обрати, одного — перевірити. */
-      resolvedHint: !this.state.resolved ? '' : this.state.resolved.candidates.length > 1
+      resolvedHint: !answer ? '' : answer.candidates.length > 1
         ? 'VIN визначив марку, модель, кузов і рік, але не двигун. Оберіть модифікацію — від неї залежить перелік деталей.'
         : 'Ми впізнали цю машину. Перевірте й переходьте до деталей.',
-      candidates: (this.state.resolved ? this.state.resolved.candidates : []).map((c) => ({ ...c, pick: () => this.pickCandidate(c) })),
+      hasCandidates: !!answer && answer.candidates.length > 0,
+      noCandidates: !!answer && answer.candidates.length === 0,
+      candidates: (answer ? answer.candidates : []).map((c) => ({ ...c, pick: () => this.pickCandidate(c) })),
       onClearResolved: this.clearResolved,
       garageEmpty: this.state.garage.length === 0,
       garage: this.state.garage.map((c) => ({ ...c, remove: () => this.setState((s) => ({ garage: s.garage.filter((x) => x.id !== c.id) })) })),
