@@ -64,9 +64,10 @@
     /* Блок запиту на підбір: 280 px мінімуму плюс паддинги не вміщувалися в 360 px. */
     [data-cta] { min-width: 0 !important; padding-inline: var(--space-4) !important; }
     [data-cta-copy] { min-width: 0 !important; flex-basis: 100% !important; }
-    /* Сортування й «Фільтри» — двома рядками, по лівому краю, кожна кнопка своєї ширини. */
+    /* Сортування й «Фільтри» — двома рядками, по лівому краю, кожна кнопка своєї ширини.
+       «Фільтри» вище: вони змінюють склад списку, сортування лише впорядковує відібране. */
     [data-toolbar-actions] { margin-left: 0 !important; flex-direction: column !important; align-items: flex-start !important; }
-    [data-facets-toggle] { flex: 0 0 auto !important; justify-content: flex-start !important; }
+    [data-facets-toggle] { flex: 0 0 auto !important; justify-content: flex-start !important; order: -1; }
   }
   /* Ширина колонки пропозицій тут не залежить від ширини екрана: від неї віднімається
      216 px ідентичності деталі та 248 px фасетів, які зʼявляються з 900 px. Тому розкладка
@@ -77,7 +78,7 @@
        і ціна стоять в одну лінію в усіх пропозиціях. Колонка дати бере свою природну ширину,
        щоб «Відправка …» і час відсічення лишалися кожне в один рядок. */
     .ds-offers { grid-template-columns: minmax(0, 1fr) minmax(0, max-content) !important; justify-content: space-between !important; column-gap: var(--space-2) !important; }
-    .ds-offerline { grid-template-columns: subgrid !important; justify-content: normal !important; row-gap: 6px !important; align-items: start !important; padding: var(--space-2) !important; }
+    .ds-offerline { grid-template-columns: subgrid !important; justify-content: normal !important; row-gap: 6px !important; align-items: start !important; padding: var(--space-2) var(--space-3) !important; }
     .ds-offerline .ds-cutoff { grid-column: 1 / -1 !important; white-space: normal !important; }
     /* Назва складу переноситься — в один рядок вона в цій ширині не вміщається. */
     .ds-offerline > [data-cell='ship'] > span { white-space: normal !important; }
@@ -107,7 +108,7 @@
     /* Колонка дати ширша: назва складу має лишатися в один рядок при тому ж кеглі. */
     /* Колонка міток найтісніша, тому проміжки та крайні колонки віддають їй запас:
        сума колонок = ширина контейнера мінус 24 px паддінгів рядка і мінус проміжки. */
-    .ds-offers[data-staff='true'] { grid-template-columns: 216px 64px minmax(120px, 1fr) 116px 58px !important; column-gap: 4px !important; }
+    .ds-offers[data-staff='true'] { grid-template-columns: 232px 64px minmax(110px, 1fr) 116px 58px !important; column-gap: 4px !important; }
     .ds-offers[data-staff='true'] .ds-offerline { column-gap: 4px !important; }
     .ds-offerline { grid-template-columns: subgrid !important; justify-content: normal !important; row-gap: 2px !important; padding-block: 6px !important; }
     .ds-offerline > [data-cell] { grid-column: auto !important; grid-row: auto !important; justify-self: auto !important; }
@@ -271,7 +272,7 @@
                             <div data-cell="ship" style="min-width:0;display:grid;gap:1px">
                               <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="{{ offer.shipDate }}" relative="{{ offer.shipRelative }}" cutoff="{{ offer.shipCutoff }}" hint-size="auto,34px"></x-import>
                               <sc-if value="{{ offer.warehouse }}" hint-placeholder-val="{{ false }}">
-                                <span style="font-size:var(--text-xs);color:var(--amber-600);white-space:nowrap">{{ offer.warehouse }}</span>
+                                <span style="font-size:var(--text-sm);color:var(--amber-600);white-space:nowrap">{{ offer.warehouse }}</span>
                               </sc-if>
                             </div>
 

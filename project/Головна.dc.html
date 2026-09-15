@@ -32,7 +32,12 @@
   [data-garage-grid] .ds-garage__actions { margin-top: 0; }
   [data-garage-grid] .ds-garage__body:not(:has(.ds-garage__vin)) .ds-garage__actions { margin-top: auto; }
   @media (max-width: 639px) {
-    [data-garage-grid] { grid-template-columns: minmax(0, 1fr) !important; }
+    /* Одна картка в рядку — вирівнювати VIN по нижньому краю нема з чим,
+       тому висота вільна й порожнього місця в картці не залишається. */
+    [data-garage-grid] { grid-template-columns: minmax(0, 1fr) !important; grid-auto-rows: auto !important; }
+    [data-garage-grid] > .sc-host-x, [data-garage-grid] > .sc-host-x > li { height: auto; }
+    [data-garage-grid] .ds-garage__vin { margin-top: 0; }
+    [data-garage-grid] .ds-garage__body:not(:has(.ds-garage__vin)) .ds-garage__actions { margin-top: 0; }
   }
 </style>
 </helmet>

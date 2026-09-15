@@ -152,9 +152,12 @@
     .ds-row { padding-inline: var(--space-3) !important; }
     .ds-pager { flex-wrap: wrap; }
     [data-carphoto] { width: 112px !important; height: 74px !important; }
-    /* Сортування й фільтри — окремими рядками, притиснуті вліво */
+    /* Сортування й фільтри — окремими рядками, притиснуті вліво. «Фільтри» стоять
+       вище: вони змінюють склад списку й несуть стан, а сортування лише впорядковує
+       те, що вже відібрано, тому сидить одразу над рядками. */
     [data-toolbar] { flex-direction: column; align-items: flex-start !important; }
     [data-toolbar] > * { margin-left: 0 !important; max-width: 100%; }
+    [data-toolbar] > [data-facets-toggle] { order: -1; }
     [data-toolbar] .ds-sortfield__menu { right: auto; left: 0; }
     /* Дії над машиною в шапці вузла: свій рядок, інакше рядок не вміщається */
     [data-vehicleactions] { flex: 1 1 100% !important; }
