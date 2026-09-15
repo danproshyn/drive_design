@@ -62,6 +62,10 @@
   [data-magnifier][data-zoom='on'] .ds-thumb { transform: scale(2.5); }
   /* Лайтбокс — одне з трьох місць, де тінь дозволена */
   [data-lightbox] { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: var(--space-4); background: var(--surface-overlay); }
+  /* Межу між пропозиціями показує волосінь, а не проміжок — на вузьких екранах рядок
+     багаторядковий, і проміжок не читався як розділювач. */
+  .ds-offers { row-gap: 0 !important; }
+  .ds-offerline + .ds-offerline { border-top: 1px solid var(--line) !important; }
   /* Список пропозицій на всю ширину контейнера: пʼятиколонковий рядок вміщується від 700 px,
      тому складання в два рядки, яке дизайн-система вмикає під 1200 px, тут скасовуємо. */
   @media (min-width: 700px) and (max-width: 1199px) {
@@ -100,7 +104,7 @@
     .ds-offerline { grid-template-columns: minmax(0, 1fr) minmax(0, max-content) !important; justify-content: space-between !important; column-gap: var(--space-2) !important; row-gap: 6px !important; align-items: start !important; }
     /* Час відсічення — єдиний рядок з nowrap у пропозиції; на телефоні він виносив
        колонку дати за межі рядка, тому тут йому дозволено переноситися. */
-    .ds-offerline .ds-cutoff { grid-column: 1 / -1 !important; white-space: normal !important; }
+    .ds-offerline .ds-cutoff { grid-column: 1 / -1 !important; }
     /* Назва складу на телефоні переноситься — в один рядок вона тут не вміщається. */
     .ds-offerline > [data-cell='ship'] > span { white-space: normal !important; }
 
