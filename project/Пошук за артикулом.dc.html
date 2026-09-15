@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
-<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=10"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=14"></script>
 <script src="cart-store.js?v=2"></script>
 <style>
 
@@ -43,10 +43,76 @@
       padding: var(--space-4) var(--space-4) var(--space-8);
     }
     [data-sheet-close] { display: inline-flex; }
+    /* Кнопка застосування — на всю ширину аркуша, а не по ширині напису. */
+    [data-sheet-apply] { display: block !important; }
   }
   @media (max-width: 639px) {
     .ds-row { padding-inline: var(--space-3) !important; }
     .ds-pager { flex-wrap: wrap; }
+  }
+  /* Колонка сторінки не розтягується під min-content таблиці пропозицій. */
+  .ds-main { grid-template-columns: minmax(0, 1fr); }
+  /* Панель фільтрів — елемент сітки, тому без min-width:0 її min-content виносив рядок
+     чипів за межі контейнера на телефоні. */
+  [data-toolbar] { min-width: 0; }
+  [data-results] { grid-template-columns: minmax(0, 1fr); }
+  /* Телефон: рядок результату стає одноколонковим — ідентифікація зверху, пропозиції під нею
+     на всю ширину. */
+  @media (max-width: 699px) {
+    .ds-rows, .ds-rows > li, .ds-row { min-width: 0 !important; }
+    .ds-row { grid-template-columns: minmax(0, 1fr) !important; }
+    /* Блок запиту на підбір: 280 px мінімуму плюс паддинги не вміщувалися в 360 px. */
+    [data-cta] { min-width: 0 !important; padding-inline: var(--space-4) !important; }
+    [data-cta-copy] { min-width: 0 !important; flex-basis: 100% !important; }
+    /* Сортування й «Фільтри» — двома рядками, по лівому краю, кожна кнопка своєї ширини. */
+    [data-toolbar-actions] { margin-left: 0 !important; flex-direction: column !important; align-items: flex-start !important; }
+    [data-facets-toggle] { flex: 0 0 auto !important; justify-content: flex-start !important; }
+  }
+  /* Ширина колонки пропозицій тут не залежить від ширини екрана: від неї віднімається
+     216 px ідентичності деталі та 248 px фасетів, які зʼявляються з 900 px. Тому розкладка
+     рядка міряє саму колонку, а не вікно. */
+  [data-offers-col] { container-type: inline-size; container-name: offers; }
+  @container offers (max-width: 399px) {
+    /* Колонки живуть на списку, а рядки їх підхоплюють через subgrid — тільки так кількість
+       і ціна стоять в одну лінію в усіх пропозиціях. Колонка дати бере свою природну ширину,
+       щоб «Відправка …» і час відсічення лишалися кожне в один рядок. */
+    .ds-offers { grid-template-columns: minmax(0, 1fr) minmax(0, max-content) !important; justify-content: space-between !important; column-gap: var(--space-2) !important; }
+    .ds-offerline { grid-template-columns: subgrid !important; justify-content: normal !important; row-gap: 6px !important; align-items: start !important; padding: var(--space-2) !important; }
+    .ds-offerline .ds-cutoff { grid-column: 1 / -1 !important; white-space: normal !important; }
+    /* Назва складу переноситься — в один рядок вона в цій ширині не вміщається. */
+    .ds-offerline > [data-cell='ship'] > span { white-space: normal !important; }
+    .ds-offerline > [data-cell='ship'] { grid-column: 1 !important; grid-row: 1 !important; min-width: 0 !important; }
+    .ds-offerline > [data-cell='price'] { grid-column: 2 !important; grid-row: 1 !important; justify-self: end !important; }
+    .ds-offerline > [data-cell='stock'] { grid-column: 1 !important; grid-row: 2 !important; display: flex !important; align-items: center !important; gap: var(--space-2) !important; justify-self: start !important; align-self: center !important; }
+    .ds-offerline > [data-cell='btn'] { grid-column: 2 !important; grid-row: 2 !important; justify-self: end !important; }
+    .ds-offerline > [data-cell='marks'] { grid-column: 1 / -1 !important; grid-row: 3 !important; }
+  }
+  @container offers (min-width: 400px) and (max-width: 599px) {
+    /* Планшет: три спільні колонки — дата, кількість, ціна; мітки й кнопка другим рядком.
+       Колонки задані на списку, тому кількість вирівняна в усіх пропозиціях. */
+    .ds-offers { grid-template-columns: minmax(0, 1fr) 68px 126px !important; column-gap: var(--space-3) !important; }
+    .ds-offerline { grid-template-columns: subgrid !important; justify-content: normal !important; row-gap: 4px !important; padding-block: var(--space-2) !important; }
+    .ds-offerline > [data-cell='ship'] { grid-column: 1 !important; grid-row: 1 !important; }
+    .ds-offerline > [data-cell='ship'] > span { white-space: normal !important; }
+    .ds-offerline > [data-cell='stock'] { grid-column: 2 !important; grid-row: 1 !important; justify-self: stretch !important; justify-items: center !important; }
+    .ds-offerline > [data-cell='price'] { grid-column: 3 !important; grid-row: 1 !important; justify-self: end !important; }
+    .ds-offerline > [data-cell='marks'] { grid-column: 1 / 3 !important; grid-row: 2 !important; align-self: center !important; }
+    .ds-offerline > [data-cell='btn'] { grid-column: 3 !important; grid-row: 2 !important; justify-self: end !important; }
+  }
+  /* Колонка достатньо широка — рядок дизайн-системи в пʼять колонок, як на десктопі. */
+  @container offers (min-width: 600px) {
+    .ds-offers { grid-template-columns: 186px 68px minmax(120px, 1fr) 104px 126px !important; }
+    /* Бюджет колонок у вигляді продавця рахується від ширини контейнера мінус 24 px власних
+       паддінгів рядка та проміжки: інакше subgrid виходить за контейнер і крайні колонки обрізаються. */
+    /* Колонка дати ширша: назва складу має лишатися в один рядок при тому ж кеглі. */
+    /* Колонка міток найтісніша, тому проміжки та крайні колонки віддають їй запас:
+       сума колонок = ширина контейнера мінус 24 px паддінгів рядка і мінус проміжки. */
+    .ds-offers[data-staff='true'] { grid-template-columns: 216px 64px minmax(120px, 1fr) 116px 58px !important; column-gap: 4px !important; }
+    .ds-offers[data-staff='true'] .ds-offerline { column-gap: 4px !important; }
+    .ds-offerline { grid-template-columns: subgrid !important; justify-content: normal !important; row-gap: 2px !important; padding-block: 6px !important; }
+    .ds-offerline > [data-cell] { grid-column: auto !important; grid-row: auto !important; justify-self: auto !important; }
+    .ds-offerline > [data-cell='stock'] { justify-items: center !important; }
+    .ds-offerline > [data-cell='price'] { justify-self: end !important; }
   }
 </style>
 </helmet>
@@ -106,11 +172,11 @@
     </sc-if>
 
     <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
-      <div style="display:grid;gap:var(--space-4)">
+      <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-4)">
         <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="package-search" title="{{ emptyTitle }}" hint-size="100%,180px">Перевірте артикул — можливо, у ньому помилка або цієї деталі та її аналогів немає в каталозі.</x-import>
 
-        <section style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-5);padding:var(--space-5) var(--space-6);border:1px solid var(--line);border-left:3px solid var(--red-500);border-radius:var(--radius-lg);background:var(--surface-sunken)">
-          <div style="flex:1 1 420px;min-width:280px">
+        <section data-cta style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-5);padding:var(--space-5) var(--space-6);border:1px solid var(--line);border-left:3px solid var(--red-500);border-radius:var(--radius-lg);background:var(--surface-sunken)">
+          <div data-cta-copy style="flex:1 1 420px;min-width:280px">
             <p class="t-eyebrow" style="margin:0 0 6px">Запит на підбір запчастин</p>
             <p style="margin:0;font-size:var(--text-lg);font-weight:600;line-height:1.3;color:var(--text-strong)">Надішліть VIN і список потрібного — менеджер підбере деталь вручну</p>
             <p style="margin:6px 0 0;font-size:var(--text-sm);color:var(--text-muted)">Менеджер підбере запчастини вручну й передзвонить. Список можна написати словами або прикріпити файлом.</p>
@@ -123,12 +189,12 @@
     <sc-if value="{{ hasList }}" hint-placeholder-val="{{ true }}">
       <div data-layout data-facets="{{ facetsAttr }}" style="display:grid;gap:var(--space-6);align-items:start">
 
-        <div style="min-width:0;display:grid;gap:var(--space-4)">
+        <div data-results style="min-width:0;display:grid;gap:var(--space-4)">
 
           <div data-toolbar style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--space-3) var(--space-4)">
           <sc-if value="{{ showKindFilter }}" hint-placeholder-val="{{ false }}">
             <div style="flex:1 1 auto;min-width:0;display:grid;gap:var(--space-3)">
-              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)" data-comment-anchor="aceb17f502-div">
+              <div data-kind-chips style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)" data-comment-anchor="aceb17f502-div">
                 <span class="t-eyebrow" style="margin-right:var(--space-2)">Вид</span>
                 <x-import component-from-global-scope="DesignSystem_d7c4f4.Chip" as="button" active="{{ kindAll }}" onClick="{{ setKindAll }}" hint-size="auto,34px">Усі</x-import>
                 <x-import component-from-global-scope="DesignSystem_d7c4f4.Chip" as="button" active="{{ kindCross }}" count="{{ countCross }}" onClick="{{ setKindCross }}" hint-size="auto,34px">Аналог (кроси)</x-import>
@@ -143,7 +209,7 @@
             </div>
           </sc-if>
 
-          <div style="flex:0 1 auto;margin-left:auto;display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)">
+          <div data-toolbar-actions style="flex:0 1 auto;margin-left:auto;display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)">
             <div class="ds-sortfield" data-sortfield>
               <button type="button" class="ds-sortfield__trigger" data-sorttrigger aria-haspopup="listbox" aria-expanded="{{ sortOpenAttr }}" onClick="{{ toggleSort }}">
                 <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-down" size="15" hint-size="15px,15px"></x-import>
@@ -167,7 +233,7 @@
           </div>
 
           <sc-if value="{{ hasRows }}" hint-placeholder-val="{{ true }}">
-            <div style="display:grid;gap:var(--space-5)">
+            <div data-results-list style="display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-5)">
               <ul class="ds-rows" data-list="results" style="list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
                 <sc-for list="{{ rows }}" as="row" hint-placeholder-count="4">
                   <sc-if value="{{ row.startsOutOfStock }}" hint-placeholder-val="{{ false }}">
@@ -198,14 +264,14 @@
                       </div>
                     </div>
 
-                    <div style="min-width:0;display:grid;gap:var(--space-2)">
+                    <div data-offers-col style="min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-2)">
                       <div class="ds-offers" data-offers data-staff="{{ staffAttr }}">
                         <sc-for list="{{ row.offers }}" as="offer" hint-placeholder-count="2">
                           <div class="ds-offerline" data-offer data-pinned="{{ offer.pinnedAttr }}" data-primary="{{ offer.primaryAttr }}">
                             <div data-cell="ship" style="min-width:0;display:grid;gap:1px">
                               <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="{{ offer.shipDate }}" relative="{{ offer.shipRelative }}" cutoff="{{ offer.shipCutoff }}" hint-size="auto,34px"></x-import>
                               <sc-if value="{{ offer.warehouse }}" hint-placeholder-val="{{ false }}">
-                                <span style="font-size:var(--text-xs);color:var(--amber-600)">{{ offer.warehouse }}</span>
+                                <span style="font-size:var(--text-xs);color:var(--amber-600);white-space:nowrap">{{ offer.warehouse }}</span>
                               </sc-if>
                             </div>
 
@@ -239,6 +305,7 @@
                             <div data-cell="btn">
                               <x-import component-from-global-scope="DesignSystem_d7c4f4.AddToCartButton" line-id="{{ offer.lineId }}" min-qty="{{ offer.minQty }}" max-qty="{{ offer.maxQty }}" more-href="" icon-only="{{ staffCart }}" hint-size="auto,34px"></x-import>
                             </div>
+
                           </div>
                         </sc-for>
                       </div>
@@ -386,7 +453,7 @@
                 <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="27" count="2" hint-size="100%,28px"></x-import>
               </x-import>
 
-              <div data-sheet-close style="margin-top:var(--space-5)" onClick="{{ toggleFacets }}">
+              <div data-sheet-apply style="display:none;margin-top:var(--space-5)" onClick="{{ toggleFacets }}">
                 <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="dark" size="lg" block="{{ true }}" hint-size="100%,48px">Показати результати</x-import>
               </div>
             </div>
@@ -425,8 +492,8 @@ const EXACT = [
   {
     id: 'automega', brand: 'AUTOMEGA', article: '1 987 946 573', name: 'Комплект ГРМ з водяним насосом', isOem: false, kind: null, inStock: true,
     offers: [
-      { key: 'a1', price: 8640, qty: 10, qtyCapped: true, day: 1 },
-      { key: 'a2', price: 9120, qty: 5, day: 0, cutoff: '18:00' }
+      { key: 'a1', price: 18640, qty: 10, qtyCapped: true, day: 1 },
+      { key: 'a2', price: 19120, qty: 5, day: 0, cutoff: '18:00' }
     ]
   }
 ]
@@ -445,23 +512,23 @@ const ANALOG = [
   {
     id: 'skf', brand: 'SKF', article: 'VKMC 01250', name: 'Комплект ГРМ з водяним насосом', isOem: false, kind: 'cross', inStock: true,
     offers: [
-      { key: 'f1', price: 9340, qty: 6, day: 1 },
-      { key: 'f2', price: 9880, qty: 10, qtyCapped: true, day: 0, cutoff: '18:00' },
+      { key: 'f1', price: 19340, qty: 6, day: 1 },
+      { key: 'f2', price: 19880, qty: 10, qtyCapped: true, day: 0, cutoff: '18:00' },
       { key: 'f3', price: 10460, qty: 1, day: 0 }
     ]
   },
   {
     id: 'dayco', brand: 'DAYCO', article: 'KTBWP3390', name: 'Комплект ГРМ з водяним насосом', isOem: false, kind: 'oe', inStock: true,
     offers: [
-      { key: 'h1', price: 7620, qty: 3, day: 0, cutoff: '21:00' },
-      { key: 'h2', price: 8190, qty: 10, qtyCapped: true, day: 3, date: '4 вер, пт' }
+      { key: 'h1', price: 17620, qty: 3, day: 0, cutoff: '21:00' },
+      { key: 'h2', price: 18190, qty: 10, qtyCapped: true, day: 3, date: '4 вер, пт' }
     ]
   },
   {
     id: 'gates', brand: 'GATES', article: 'KP15577XS', name: 'Комплект ГРМ з водяним насосом', isOem: false, kind: 'oe', inStock: true,
     offers: [
-      { key: 'w1', price: 8950, qty: 8, minQty: 4, day: 1 },
-      { key: 'w2', price: 9470, qty: 10, qtyCapped: true, day: 2, date: '3 вер, чт' }
+      { key: 'w1', price: 18950, qty: 8, minQty: 4, day: 1 },
+      { key: 'w2', price: 19470, qty: 10, qtyCapped: true, day: 2, date: '3 вер, чт' }
     ]
   },
   {
@@ -472,7 +539,7 @@ const ANALOG = [
   },
   {
     id: 'ruville', brand: 'RUVILLE', article: '55787712', name: 'Комплект ГРМ з водяним насосом', isOem: false, kind: 'cross', inStock: true,
-    offers: [{ key: 'p1', price: 7480, qty: 2, day: 2, date: '3 вер, чт' }]
+    offers: [{ key: 'p1', price: 17480, qty: 2, day: 2, date: '3 вер, чт' }]
   },
   {
     id: 'bando', brand: 'BANDO', article: '6PK2000', isOem: false, kind: 'cross', inStock: true,
@@ -488,7 +555,7 @@ const KIND_LABEL = { cross: 'Аналог (кроси)', oe: 'Аналог (OE �
 
 /* Рядок складу переписаний під читання: спершу те, що персонал упізнає — код постачальника
  * і склад, після тире логістика — строк доставки, час відсічення в будні та (в дужках) у суботу. */
-const WAREHOUSES = ['ЕЛ ЦЕНТР — 1д, до 17:00 (17:00)', 'АЛ ОДЕСА — 2д, до 10:00 (18:00)', 'ВЛ ЗАПОРІЖЖЯ — 0д, до 14:00 (12:00)', 'ІК ЛЬВІВ — 3д, до 09:00 (16:00)']
+const WAREHOUSES = ['АЛ ОДЕСА1 — 2д, до 10:00 (18:00)']
 
 function plural(n) {
   const ten = n % 10

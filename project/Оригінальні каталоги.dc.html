@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
-<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=10"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=13"></script>
 <style>
 
   /* Пошук машини — той самий блок, що й на головній; на екранах з машиною він стискається в один рядок */
@@ -147,6 +147,8 @@
   /* Схема вузла: рамка з прямокутниками позицій, масштаб і перетягування */
   [data-diagram] {
     position: relative; overflow: hidden; aspect-ratio: 4 / 3;
+    /* Ширина веде, а не пропорція: інакше min-height розтягує схему за колонку на вузьких екранах. */
+    width: 100%; max-width: 100%;
     /* На низьких екранах (ноутбуки 13″, планшети) схема не має бути вищою за вікно:
        пропорція 4/3 поступається межі по висоті, тож схема видна цілком без прокрутки. */
     max-height: calc(100svh - 260px); min-height: 300px;
@@ -604,10 +606,6 @@
               </div>
 
               <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3)">
-                <span style="display:grid;gap:2px;font-size:var(--text-xs);line-height:1.35;color:var(--text-muted)">
-                  <span>Масштаб — колесом мишки</span>
-                  <span>Переміщення — тягніть схему лівою кнопкою</span>
-                </span>
                 <span style="margin-left:auto;display:flex;align-items:center;gap:var(--space-3)">
                   <span style="font-size:var(--text-sm);font-family:var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text-muted)">{{ zoomLabel }}</span>
                   <button data-zoombtn type="button" aria-label="Зменшити" disabled="{{ atMin }}" onClick="{{ zoomOut }}">
@@ -1359,7 +1357,6 @@ class Component extends DCLogic {
       atMin: s.zoom <= 1,
       atMax: s.zoom >= 5,
       zoomed: s.zoom > 1,
-      zoomHint: s.zoom > 1 ? 'Тягніть схему лівою кнопкою' : 'Масштаб — колесом мишки',
       grabAttr: s.zoom > 1 ? 'true' : 'false',
       zoomStyle: 'transform:translate(' + s.panX + 'px,' + s.panY + 'px) scale(' + s.zoom + ')',
       zoomIn: this.stepZoom(1),

@@ -19,13 +19,15 @@
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
-<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=10"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=13"></script>
 <style>
   @keyframes drive-skel { 0%, 100% { opacity: 1 } 50% { opacity: .45 } }
   [data-garage-grid] { grid-auto-rows: 1fr; }
   [data-garage-grid] > .sc-host-x, [data-garage-grid] > .sc-host-x > li { height: 100%; }
   /* Spare height in the card falls between the spec pills and the VIN strip,
      so VINs line up along the bottom of a row whatever the name length. */
+  [data-garage-grid] .ds-garage__cover { position: relative; cursor: pointer; }
+  [data-garage-grid] .ds-garage__x { z-index: 2; }
   [data-garage-grid] .ds-garage__vin { margin-top: auto; }
   [data-garage-grid] .ds-garage__actions { margin-top: 0; }
   [data-garage-grid] .ds-garage__body:not(:has(.ds-garage__vin)) .ds-garage__actions { margin-top: auto; }
@@ -105,7 +107,7 @@
                     <td style="padding:13px 16px;color:var(--text-body);white-space:nowrap">{{ c.engine }}</td>
                     <td style="padding:13px 16px;color:var(--text-body);white-space:nowrap;font-variant-numeric:tabular-nums">{{ c.volume }}</td>
                     <td style="padding:13px 16px;color:var(--text-body);white-space:nowrap;font-variant-numeric:tabular-nums">{{ c.power }}</td>
-                    <td style="padding:13px 16px;color:var(--text-body)">{{ c.drive }}</td>
+                    <td style="padding:13px 16px;color:var(--text-body);white-space:nowrap">{{ c.drive }}</td>
                     <td style="padding:13px 20px 13px 16px;color:var(--text-muted);white-space:nowrap;font-variant-numeric:tabular-nums">{{ c.period }}</td>
                   </tr>
                 </sc-for>
@@ -223,7 +225,7 @@
                         <td style="padding:13px 16px;color:var(--text-body);white-space:nowrap">{{ s.engine }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);white-space:nowrap;font-variant-numeric:tabular-nums">{{ s.volume }}</td>
                         <td style="padding:13px 16px;color:var(--text-body);white-space:nowrap;font-variant-numeric:tabular-nums">{{ s.power }}</td>
-                        <td style="padding:13px 16px;color:var(--text-body)">{{ s.drive }}</td>
+                        <td style="padding:13px 16px;color:var(--text-body);white-space:nowrap">{{ s.drive }}</td>
                         <td style="padding:13px 12px 13px 16px;color:var(--text-muted);white-space:nowrap;font-variant-numeric:tabular-nums">{{ s.period }}</td>
                       </tr>
                     </sc-for>
@@ -261,7 +263,7 @@
     </sc-if>
 
     <section id="request" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-5);padding:var(--space-5) var(--space-6);border:1px solid var(--line);border-left:3px solid var(--red-500);border-radius:var(--radius-lg);background:var(--surface-sunken);scroll-margin-top:96px">
-      <div style="flex:1 1 420px;min-width:280px">
+      <div style="flex:1 1 420px;min-width:min(280px, 100%)">
         <p class="t-eyebrow" style="margin:0 0 6px">Запит на підбір запчастин</p>
         <p style="margin:0;font-size:var(--text-lg);font-weight:600;line-height:1.3;color:var(--text-strong)">Не знайшли деталь у каталозі — надішліть VIN і список потрібного</p>
         <p style="margin:6px 0 0;font-size:var(--text-sm);color:var(--text-muted)">Менеджер підбере запчастини вручну й передзвонить. Список можна написати словами або прикріпити файлом.</p>
@@ -313,7 +315,7 @@
           <x-import component-from-global-scope="DesignSystem_d7c4f4.PhoneField" label="Телефон" digits="{{ reqDigits }}" on-digits="{{ onReqDigits }}" hint-size="100%,70px"></x-import>
         </div>
 
-        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:var(--space-3);padding:var(--space-5) var(--space-6);border-top:1px solid var(--line);background:var(--surface-sunken)">
+        <div class="ds-modal__footer" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:var(--space-3);padding:var(--space-5) var(--space-6);border-top:1px solid var(--line);background:var(--surface-sunken)">
           <button class="ds-btn ds-btn--md ds-btn--ghost" onClick="{{ onCloseRequest }}">Скасувати</button>
           <button class="ds-btn ds-btn--md ds-btn--primary" onClick="{{ onSubmitRequest }}">Надіслати запит</button>
         </div>
@@ -560,7 +562,34 @@ class Component extends DCLogic {
     )
   }
 
-  componentWillUnmount() { clearTimeout(this.stepTimer) }
+  /* Обкладинка машини в гаражі веде туди ж, куди й «Каталог для авто»: посилання беремо
+   * з самої картки, тому воно не може розійтися з кнопкою. Накладка додається після
+   * рендера картки дизайн-системи й поновлюється, якщо список перемалювався. */
+  componentDidMount() {
+    this.linkCovers()
+    this.coverObserver = new MutationObserver(() => this.linkCovers())
+    this.coverObserver.observe(document.body, { childList: true, subtree: true })
+  }
+
+  linkCovers = () => {
+    document.querySelectorAll('[data-garage-grid] .ds-garage').forEach((card) => {
+      const cover = card.querySelector('.ds-garage__cover')
+      const go = card.querySelector('.ds-garage__go')
+      if (!cover || !go || cover.querySelector('[data-cover-link]')) return
+      const link = document.createElement('a')
+      link.setAttribute('data-cover-link', '')
+      link.href = go.getAttribute('href') || '#'
+      link.setAttribute('aria-label', 'Каталог для авто')
+      link.tabIndex = -1
+      link.style.cssText = 'position:absolute;inset:0;z-index:1;border-radius:inherit'
+      cover.appendChild(link)
+    })
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.stepTimer)
+    if (this.coverObserver) this.coverObserver.disconnect()
+  }
 
   pick = (levelIndex, value) => {
     const key = LEVELS[levelIndex].key

@@ -283,7 +283,7 @@ function AddToCartButton({
       ceiling && qty + batch > ceiling && moreHref
         ? React.createElement('a', { className: 'ds-addcart__more', href: moreHref },
             React.createElement(__ds_scope.Icon, { name: 'arrow-up-right', size: 13 }),
-            React.createElement('span', null, 'Більше на складах'))
+            React.createElement('span', null, 'Інші склади'))
         : null);
   }
   if (iconOnly) {
@@ -3499,6 +3499,43 @@ function HeaderSearch({ parts, onOpenPart, onSearch, initialValue = '' }) {
     }));
 }
 
+/* На телефоні шапка займала до чотирьох рядків: лого, поле пошуку, і навігація в два
+   рядки — при sticky це з'їдало пів екрана. Каталожні посилання переїхали в це меню
+   (разом з телефонами й обіцянкою кешбеку, бо службова смуга на телефоні схована),
+   рахунок і кабінет лишились у рядку як іконки. На ≥640 px меню сховане. */
+function HeaderMenu({ items, phones, cashbackPercent, onNavigate }) {
+  const [open, setOpen] = React.useState(false);
+  React.useEffect(() => {
+    if (!open) return undefined;
+    const close = () => setOpen(false);
+    const esc = (e) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('click', close);
+    document.addEventListener('keydown', esc);
+    return () => { document.removeEventListener('click', close); document.removeEventListener('keydown', esc); };
+  }, [open]);
+  return h('div', { className: 'ds-headermenu' },
+    h('button', {
+      type: 'button', className: 'ds-headermenu__trigger', 'aria-label': 'Меню',
+      'aria-expanded': open ? 'true' : 'false',
+      onClick: (e) => { e.stopPropagation(); setOpen(!open); },
+    }, h(__ds_scope.Icon, { name: open ? 'x' : 'menu', size: 22 })),
+    open
+      ? h('div', { className: 'ds-headermenu__panel' },
+          items.map((item) => h('a', {
+            key: item.key, href: item.href, className: 'ds-headermenu__link',
+            'data-active': item.active ? 'true' : 'false',
+            onClick: (e) => { setOpen(false); if (onNavigate) { e.preventDefault(); onNavigate(item.key); } },
+          }, item.label)),
+          h('div', { className: 'ds-headermenu__phones' }, phones.map((p) => h('a', {
+            key: p.number, href: p.href, 'aria-label': p.operator + ' ' + p.number,
+          }, h('span', { className: 'ds-phonemenu__mark' }, h(OperatorGlyph, { name: p.glyph, size: 17 })), p.number))),
+          cashbackPercent
+            ? h('div', { className: 'ds-headermenu__promo' },
+                'Отримуйте до ', h('strong', null, cashbackPercent + '%'), ' кешбеку на будь-яке замовлення')
+            : null)
+      : null);
+}
+
 /**
  * The site header. Two bands: the black utility bar (the one cashback promise plus the
  * shop's numbers) and the white band with the mark, the article search and the nav.
@@ -3549,16 +3586,20 @@ function SiteHeader({
           : null,
         h(PhoneMenu, { phones }))),
     h('div', {
-      className: 'ds-container',
+      className: 'ds-container ds-header__bar',
       style: {
         display: 'flex', flexWrap: 'wrap', alignItems: 'center',
         gap: 'var(--space-4) var(--space-6)', minHeight: 'var(--header-h)',
         paddingBlock: 'var(--space-3)',
       },
     },
+      h(HeaderMenu, {
+        items: nav.map((item) => ({ key: item.key, label: item.label, href: link(item.key), active: active === item.key })),
+        phones, cashbackPercent, onNavigate,
+      }),
       h('a', { href: link('home'), style: { flex: 'none' }, onClick: nav_('home') },
-        h('img', { src: logoSrc, alt: 'Драйв', style: { height: 38, width: 'auto', display: 'block' } })),
-      h('div', { style: { flex: '1 1 240px', minWidth: 200, maxWidth: 520 } },
+        h('img', { src: logoSrc, alt: 'Драйв', className: 'ds-header__logo', style: { height: 38, width: 'auto', display: 'block' } })),
+      h('div', { className: 'ds-header__search', style: { flex: '1 1 240px', minWidth: 200, maxWidth: 520 } },
         h(HeaderSearch, {
           /* The field is the ADDRESS's, not its own: on the results page it shows the query
              that page is answering, and it is empty everywhere else. */
@@ -3568,17 +3609,20 @@ function SiteHeader({
         })),
       h('nav', { className: 'ds-header__nav', style: { marginLeft: 'auto' } },
         nav.map((item) => h('a', {
-          key: item.key, href: link(item.key), className: 'ds-navlink',
+          key: item.key, href: link(item.key), className: 'ds-navlink ds-navlink--wide',
           'data-active': active === item.key ? 'true' : 'false', onClick: nav_(item.key),
         }, item.label)),
         h('a', {
           href: link('account'), className: 'ds-navlink',
+          'aria-label': signedIn ? 'Мій кабінет' : 'Увійти',
           'data-active': active === 'account' ? 'true' : 'false', onClick: nav_('account'),
-        }, h(__ds_scope.Icon, { name: 'user', size: 17 }), signedIn ? 'Мій кабінет' : 'Увійти'),
+        }, h(__ds_scope.Icon, { name: 'user', size: 17 }),
+          h('span', { className: 'ds-navlink__text' }, signedIn ? 'Мій кабінет' : 'Увійти')),
         h('a', {
-          href: link('cart'), className: 'ds-navlink',
+          href: link('cart'), className: 'ds-navlink', 'aria-label': 'Кошик',
           'data-active': active === 'cart' ? 'true' : 'false', onClick: nav_('cart'),
-        }, h(__ds_scope.Icon, { name: 'shopping-cart', size: 17 }), 'Кошик',
+        }, h(__ds_scope.Icon, { name: 'shopping-cart', size: 17 }),
+          h('span', { className: 'ds-navlink__text' }, 'Кошик'),
           cartCount > 0 ? h('span', { className: 'ds-navlink__count' }, cartCount) : null))));
 }
 
@@ -3751,7 +3795,7 @@ function RequestModal({ open, onClose, vin = '' }) {
         onClick: (e) => caret(e.target, form.digits),
       }))),
 
-    h('div', { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-3)', padding: 'var(--space-5) var(--space-6)', borderTop: '1px solid var(--line)', background: 'var(--surface-sunken)' } },
+    h('div', { className: 'ds-modal__footer', style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-3)', padding: 'var(--space-5) var(--space-6)', borderTop: '1px solid var(--line)', background: 'var(--surface-sunken)' } },
       h('button', { className: 'ds-btn ds-btn--md ds-btn--ghost', onClick: onClose }, 'Скасувати'),
       h('button', { className: 'ds-btn ds-btn--md ds-btn--primary', onClick: onClose }, 'Надіслати запит'))));
 }

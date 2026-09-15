@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
-<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=10"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=14"></script>
 <style>
   /* Кошик: рядки й підсумок. Підсумок липкий від 900px — інакше він під рядками. */
   [data-cart] { display: grid; gap: var(--space-6) var(--space-8); grid-template-columns: minmax(0, 1fr); align-items: start; }
@@ -39,8 +39,9 @@
   [data-cell="id"] { grid-area: id; min-width: 0; }
   [data-cell="qty"] { grid-area: qty; }
   [data-cell="money"] { grid-area: money; }
+  /* Фото займає всю колонку лічильника, щоб проміжок до назви був такий жа, як на решті екранів. */
   @media (max-width: 639px) {
-    [data-cell="thumb"] .ds-thumb { width: 72px !important; height: 72px !important; }
+    [data-cell="thumb"] .ds-thumb { width: 132px !important; height: 132px !important; }
   }
   /* Дата відправки й кількість — таблиця без рамок: колонка кількості стоїть на місці,
      якою б довгою не була дата. Час відсічення — під датою, у тій самій колонці. */
@@ -64,11 +65,18 @@
     [data-cell="qty"] { min-width: 156px; }
     [data-cell="money"] { align-self: start; }
   }
-  @media (min-width: 900px) {
+  /* Від планшета вертикально лічильник стає в один рядок із ціною — так само, як на
+     ширших екранах: місця для чотирьох колонок уже достатньо. */
+  @media (min-width: 720px) {
     [data-line] {
       grid-template-columns: 88px minmax(0, 1fr) 156px 130px;
       grid-template-areas: "thumb id qty money";
     }
+  }
+  /* Підсумок під рядками (планшет) — не одна колонка на всю ширину: картка тримає ту саму
+     ширину, що й на десктопі, і стоїть праворуч. Кнопка на 900 px завширшки — це не кнопка. */
+  @media (min-width: 640px) and (max-width: 1119px) {
+    [data-summary] { max-width: 340px; margin-left: auto; }
   }
 </style>
 </helmet>
@@ -175,11 +183,11 @@
                 </sc-if>
 
                 <sc-if value="{{ line.showNeedMore }}" hint-placeholder-val="{{ false }}">
-                  <a href="Картка деталі.dc.html" style="display:inline-flex;align-items:center;gap:5px;width:132px;box-sizing:border-box;padding:5px 0;font-size:var(--text-2xs);font-weight:500;line-height:1.3;color:var(--text-muted);text-decoration:none;text-wrap:pretty;transition:var(--transition-colors)" style-hover="color:var(--text-strong)">
+                  <a href="Картка деталі.dc.html" style="display:inline-flex;align-items:center;justify-content:center;gap:5px;width:132px;box-sizing:border-box;padding:5px 0;font-size:var(--text-2xs);font-weight:500;line-height:1.3;color:var(--text-muted);text-decoration:none;text-wrap:pretty;transition:var(--transition-colors)" style-hover="color:var(--text-strong)">
                     <span style="flex:none;display:inline-flex;color:var(--text-faint)">
                       <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-right" size="13" hint-size="13px,13px"></x-import>
                     </span>
-                    <span style="text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:2px">Більше на складах</span>
+                    <span style="text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:2px">Інші склади</span>
                   </a>
                 </sc-if>
               </div>

@@ -19,12 +19,32 @@
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
-<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=10"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=14"></script>
 <script src="cart-store.js?v=2"></script>
 <style>
   /* Картка: галерея фіксованої ширини, ідентичність і пропозиції — решта */
+  /* Колонка сторінки не повинна розтягуватися під min-content вкладених таблиць —
+     інакше на телефоні весь контейнер зсувається за екран. */
+  .ds-main { grid-template-columns: minmax(0, 1fr); }
   [data-part] { display: grid; gap: var(--space-6) var(--space-8); align-items: start; grid-template-columns: minmax(0, 1fr); }
-  @media (min-width: 900px) { [data-part] { grid-template-columns: 380px minmax(0, 1fr); } }
+  /* Телефон: спершу ідентичність деталі — бренд, назва, артикул, — і лише потім фото. */
+  [data-part-info] { order: -1; }
+  /* Планшет і вузький десктоп: галерея й ідентичність деталі стоять рядом, а пропозиції
+     займають усю ширину контейнера під ними — у вузькій колонці рядок пропозиції не тримається. */
+  @media (min-width: 700px) {
+    [data-part] { grid-template-columns: minmax(180px, 320px) minmax(0, 1fr); }
+    [data-part-info] { order: 0; }
+    [data-part-media] { grid-column: 1; grid-row: 1; }
+    [data-part-info] { grid-column: 2; grid-row: 1; }
+    [data-part-offers] { grid-column: 1 / -1; grid-row: 2; }
+  }
+  @media (min-width: 900px) { [data-part] { grid-template-columns: minmax(200px, 380px) minmax(0, 1fr); } }
+  /* Від 1200 px пропозиції вміщуються поруч із галереєю — повертаємо праву колонку. */
+  @media (min-width: 1200px) {
+    [data-part] { grid-template-columns: 380px minmax(0, 1fr); row-gap: var(--space-5); }
+    [data-part-media] { grid-row: 1 / span 2; }
+    [data-part-offers] { grid-column: 2; grid-row: 2; }
+  }
   /* Стрічки з горизонтальним скролом: мініатюри галереї та останні переглянуті */
   /* 3 px паддингу — щоб рамка вибраної мініатюри не обрізалася скролом стрічки. */
   [data-strip] { display: flex; gap: var(--space-2); margin: 0; padding: 3px; list-style: none; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: thin; }
@@ -42,7 +62,58 @@
   [data-magnifier][data-zoom='on'] .ds-thumb { transform: scale(2.5); }
   /* Лайтбокс — одне з трьох місць, де тінь дозволена */
   [data-lightbox] { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: var(--space-4); background: var(--surface-overlay); }
-  @media (max-width: 639px) {
+  /* Список пропозицій на всю ширину контейнера: пʼятиколонковий рядок вміщується від 700 px,
+     тому складання в два рядки, яке дизайн-система вмикає під 1200 px, тут скасовуємо. */
+  @media (min-width: 700px) and (max-width: 1199px) {
+    .ds-offers { grid-template-columns: 186px 68px minmax(120px, 1fr) 104px 126px !important; }
+    /* У вигляді продавця колонка дати ширша: назва складу має лишатися в один рядок
+       при тому ж кеглі. Ширина знята з решти колонок, які мали запас. */
+    .ds-offers[data-staff='true'] { grid-template-columns: 240px 72px minmax(72px, 1fr) 160px 72px !important; }
+    .ds-offerline { grid-template-columns: subgrid !important; row-gap: 2px !important; padding-block: 6px !important; }
+    .ds-offerline > [data-cell] { grid-column: auto !important; grid-row: auto !important; justify-self: auto !important; }
+    .ds-offerline > [data-cell='stock'] { justify-items: center !important; }
+  }
+  /* Телефон: два рядки в дві колонки — дата і ціна зверху, кількість і кнопка під ними,
+     мітки останнім рядком. Колонка дати лишається найширшою, тому нічого не обрізається. */
+  @media (max-width: 699px) {
+    /* Смуга вкладок на телефоні переноситься, а не ховається за горизонтальним скролом:
+       «Застосовність» була за краєм і до неї не можна було дотягнутися. */
+    .ds-tabs { flex-wrap: wrap !important; overflow-x: visible !important; gap: 0 var(--space-4) !important; }
+    .ds-tab { padding-block: var(--space-2) !important; }
+    /* На дотику немає наведення, тому в лайтбоксі лупи немає — і підказки про неї теж. */
+    [data-zoom-hint] { display: none !important; }
+    [data-part-media='none'] { display: none !important; }
+    [data-magnifier] { cursor: default !important; }
+    [data-magnifier][data-zoom='on'] .ds-thumb { transform: none !important; }
+    /* Рядок машини: чотири колонки не вміщуються, тому двигун і потужність стають першим
+       рядком, пальне й привод — другим. Відступ дерева зменшено, щоб лишити місце тексту. */
+    [data-veh-type] { padding-left: var(--space-6) !important; }
+    [data-veh-leaf] { grid-template-columns: minmax(0, 1fr) max-content !important; padding-left: var(--space-6) !important; row-gap: 2px !important; }
+    [data-veh-leaf] > span:nth-child(1) { grid-column: 1; grid-row: 1; }
+    [data-veh-leaf] > span:nth-child(3) { grid-column: 2; grid-row: 1; }
+    [data-veh-leaf] > span:nth-child(2) { grid-column: 1; grid-row: 2; }
+    [data-veh-leaf] > span:nth-child(4) { grid-column: 2; grid-row: 2; text-align: right; }
+    /* Сортування завжди окремим рядком під заголовком — навіть коли вміщується поруч. */
+    [data-offers-head] { flex-direction: column !important; align-items: flex-start !important; }
+    /* Тригер стоїть біля лівого краю, тому список розкривається вправо, а не вліво. */
+    .ds-sortfield__menu { right: auto !important; left: 0 !important; }
+    .ds-offerline { grid-template-columns: minmax(0, 1fr) minmax(0, max-content) !important; justify-content: space-between !important; column-gap: var(--space-2) !important; row-gap: 6px !important; align-items: start !important; }
+    /* Час відсічення — єдиний рядок з nowrap у пропозиції; на телефоні він виносив
+       колонку дати за межі рядка, тому тут йому дозволено переноситися. */
+    .ds-offerline .ds-cutoff { grid-column: 1 / -1 !important; white-space: normal !important; }
+    /* Назва складу на телефоні переноситься — в один рядок вона тут не вміщається. */
+    .ds-offerline > [data-cell='ship'] > span { white-space: normal !important; }
+
+    .ds-offerline > [data-cell='ship'] { grid-column: 1 !important; grid-row: 1 !important; min-width: 0 !important; }
+    .ds-offerline > [data-cell='price'] { grid-column: 2 !important; grid-row: 1 !important; justify-self: end !important; }
+    /* Кількість і кратність на телефоні стоять одним рядком — вертикально вони з'їдали висоту. */
+    .ds-offerline > [data-cell='stock'] { grid-column: 1 !important; grid-row: 2 !important; display: flex !important; align-items: center !important; gap: var(--space-2) !important; justify-self: start !important; align-self: center !important; }
+    .ds-offerline > [data-cell='btn'] { grid-column: 2 !important; grid-row: 2 !important; justify-self: end !important; }
+    .ds-offerline > [data-cell='marks'] { grid-column: 1 / -1 !important; grid-row: 3 !important; }
+  }
+  /* Той самий ширший бюджет колонок і на великих екранах. */
+  @media (min-width: 1200px) {
+    .ds-offers[data-staff='true'] { grid-template-columns: 240px 72px minmax(72px, 1fr) 160px 72px !important; }
   }
 </style>
 </helmet>
@@ -57,7 +128,7 @@
 
     <article data-part>
 
-      <div style="min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-3)">
+      <div data-part-media="{{ mediaAttr }}" style="min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-3)">
         <sc-if value="{{ hasPhotos }}" hint-placeholder-val="{{ true }}">
           <button data-gallery-main type="button" onClick="{{ openZoom }}" aria-label="Збільшити фото" style="display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in">
             <x-import component-from-global-scope="DesignSystem_d7c4f4.PartThumb" size="{{ mainSize }}" hint-size="100%,380px"></x-import>
@@ -91,7 +162,7 @@
         </sc-if>
       </div>
 
-      <div style="min-width:0;display:grid;gap:var(--space-5);align-content:start">
+      <div data-part-info style="min-width:0;display:grid;gap:var(--space-5);align-content:start">
 
         <header style="display:grid;gap:var(--space-2)">
           <p class="ds-row__meta" style="margin:0;gap:var(--space-2)" data-comment-anchor="43-brand">
@@ -108,9 +179,12 @@
           </div>
         </sc-if>
 
+      </div>
+
+      <div data-part-offers style="min-width:0">
         <sc-if value="{{ hasOffers }}" hint-placeholder-val="{{ true }}">
         <section style="display:grid;gap:var(--space-3)">
-          <div style="display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:var(--space-3)">
+          <div data-offers-head style="display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:var(--space-3)">
             <h2 class="ds-section-title" style="margin:0;font-size:var(--display-xs)">
               Пропозиції
               <sc-if value="{{ hasOffers }}" hint-placeholder-val="{{ true }}">
@@ -141,7 +215,7 @@
                   <div data-cell="ship" style="min-width:0;display:grid;gap:1px">
                     <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="{{ offer.shipDate }}" relative="{{ offer.shipRelative }}" cutoff="{{ offer.shipCutoff }}" hint-size="auto,34px"></x-import>
                     <sc-if value="{{ offer.warehouse }}" hint-placeholder-val="{{ false }}">
-                      <span style="font-size:var(--text-sm);color:var(--amber-600)">{{ offer.warehouse }}</span>
+                      <span style="font-size:var(--text-sm);color:var(--amber-600);white-space:nowrap">{{ offer.warehouse }}</span>
                     </sc-if>
                   </div>
 
@@ -175,6 +249,7 @@
                   <div data-cell="btn">
                     <x-import component-from-global-scope="DesignSystem_d7c4f4.AddToCartButton" onAdd="{{ addToCart }}" line-id="{{ offer.lineId }}" min-qty="{{ offer.minQty }}" max-qty="{{ offer.maxQty }}" more-href="" icon-only="{{ staffCart }}" hint-size="auto,34px"></x-import>
                   </div>
+
                 </li>
               </sc-for>
             </ul>
@@ -254,7 +329,7 @@
                           <div>
                             <sc-for list="{{ model.types }}" as="type" hint-placeholder-count="2">
                               <div style="border-top:1px solid var(--line-subtle)">
-                                <p style="display:flex;align-items:baseline;gap:var(--space-2);margin:0;padding:var(--space-2) var(--space-4) var(--space-1) var(--space-16)">
+                                <p data-veh-type style="display:flex;align-items:baseline;gap:var(--space-2);margin:0;padding:var(--space-2) var(--space-4) var(--space-1) var(--space-16)">
                                   <span style="font-family:var(--font-display);font-size:var(--text-xs);font-weight:600;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--text-strong)">{{ type.name }}</span>
                                   <sc-if value="{{ type.hasYears }}" hint-placeholder-val="{{ true }}">
                                     <span style="font-family:var(--font-mono);font-size:var(--text-2xs);letter-spacing:var(--tracking-mono);color:var(--text-muted)">{{ type.years }}</span>
@@ -263,7 +338,7 @@
                                 <ul style="list-style:none;margin:0 0 var(--space-2);padding:0">
                                   <sc-for list="{{ type.vehicles }}" as="vehicle" hint-placeholder-count="2">
                                     <li>
-                                      <a href="#" target="_blank" rel="noopener" style="display:grid;grid-template-columns:minmax(0,1fr) 172px 72px 100px;align-items:baseline;gap:2px var(--space-3);min-height:34px;padding:5px var(--space-4) 5px var(--space-16);color:var(--text-body);text-decoration:none;box-shadow:inset 3px 0 0 transparent;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);box-shadow:var(--keyline-red);color:var(--text-strong);text-decoration:none">
+                                      <a data-veh-leaf href="#" target="_blank" rel="noopener" style="display:grid;grid-template-columns:minmax(0,1fr) 172px 72px 100px;align-items:baseline;gap:2px var(--space-3);min-height:34px;padding:5px var(--space-4) 5px var(--space-16);color:var(--text-body);text-decoration:none;box-shadow:inset 3px 0 0 transparent;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);box-shadow:var(--keyline-red);color:var(--text-strong);text-decoration:none">
                                         <span style="font-size:var(--text-sm);font-weight:500;color:var(--text-strong)">{{ vehicle.engine }}</span>
                                         <span style="font-size:var(--text-xs);color:var(--text-muted)">{{ vehicle.fuel }}</span>
                                         <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-mono);color:var(--text-muted);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right">{{ vehicle.power }}</span>
@@ -340,7 +415,7 @@
       <div style="display:grid;gap:var(--space-3);width:min(760px,100%);padding:var(--space-4);border-radius:var(--radius-xl);background:var(--surface);box-shadow:var(--shadow-lg)">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-3)">
           <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">{{ photoPosition }}</p>
-          <p style="margin:0 auto 0 0;font-size:var(--text-xs);color:var(--text-faint)">Наведіть на фото, щоб роздивитися ближче</p>
+          <p data-zoom-hint style="margin:0 auto 0 0;font-size:var(--text-xs);color:var(--text-faint)">Наведіть на фото, щоб роздивитися ближче</p>
           <span onClick="{{ closeZoom }}">
             <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="x" label="Закрити" size="md" tone="plain" hint-size="44px,44px"></x-import>
           </span>
@@ -377,12 +452,15 @@
 const PHOTO_COUNT = 10
 
 const OFFERS = [
-  { key: 'o1', price: 486, qty: 10, day: 0, cutoff: '21:00', primary: true, visible: true },
-  { key: 'o2', price: 462, qty: 8, minQty: 4, day: 1, visible: true },
-  { key: 'o3', price: 512, qty: 8, day: 3, date: '4 вер, пт', visible: true },
-  { key: 'o4', price: 498, qty: 2, day: 4, date: '5 вер, сб' },
-  { key: 'o5', price: 541, qty: 10, day: 7, date: '8 вер, вт' },
-  { key: 'o6', price: 568, qty: 1, day: 9, date: '10 вер, чт' }
+  /* Пропозиція з усім одразу: час відсічення, кількість, кратність і обидві мітки —
+     вона і найдешевша, і найшвидша, тому на ній перевіряється найщільніший рядок. */
+  { key: 'o0', price: 10448, qty: 12, minQty: 4, day: 0, cutoff: '18:00', primary: true, visible: true },
+  { key: 'o1', price: 10486, qty: 10, day: 0, cutoff: '21:00', visible: true },
+  { key: 'o2', price: 10462, qty: 8, minQty: 4, day: 1, visible: true },
+  { key: 'o3', price: 10512, qty: 8, day: 3, date: '4 вер, пт', visible: true },
+  { key: 'o4', price: 10498, qty: 2, day: 4, date: '5 вер, сб' },
+  { key: 'o5', price: 10541, qty: 10, day: 7, date: '8 вер, вт' },
+  { key: 'o6', price: 10568, qty: 1, day: 9, date: '10 вер, чт' }
 ]
 
 /* Рядок складу переписаний під читання: спершу те, що персонал упізнає — код постачальника
@@ -393,14 +471,14 @@ const WAREHOUSES = ['ЕЛ ЦЕНТР — 1д, до 17:00 (17:00)', 'АЛ ОДЕ�
 const UAH = new Intl.NumberFormat('uk-UA')
 
 const SPECS = [
-  { name: 'Кількість ребер', value: '6' },
-  { name: 'Довжина', value: '2 000 мм' },
+  { name: 'Кількість ребер (ручейків)', value: '6' },
+  { name: 'Розрахункова довжина по зовнішньому колу', value: '2 000 мм (допуск ± 10 мм за DIN 7867)' },
   { name: 'Ширина', value: '21,36 мм' },
-  { name: 'Профіль', value: 'PK' },
-  { name: 'Матеріал', value: 'EPDM' },
-  { name: 'Тип ременя', value: 'Поліклиновий (ручейковий)' },
-  { name: 'Кількість ручейків', value: '6' },
-  { name: 'Виробник', value: 'BANDO' }
+  { name: 'Профіль', value: 'PK, крок ребра 3,56 мм' },
+  { name: 'Матеріал основи та корду', value: 'EPDM, корд — поліамід' },
+  { name: 'Тип ременя', value: 'Поліклиновий (ручейковий), привод навісного обладнання' },
+  { name: 'Робочий діапазон температур', value: 'від −40 °C до +130 °C' },
+  { name: 'Виробник', value: 'BANDO CHEMICAL INDUSTRIES, Японія' }
 ]
 
 /* Номери — рівно так, як їх надсилає постачальник: з пробілами й дефісами, бо так вибито на деталі. */
@@ -409,12 +487,13 @@ const OE = [
     carmaker: 'HYUNDAI',
     numbers: [
       '25212-37182', '25212-2F000', '25212-2A000', '25212-2F001', '25212-27400',
-      '25212-27000', '25212-2A400', '25212-2F100', '25212-4A000', '25212-2B000',
+      '25212-27000', '11920-4A00A', '25212-2F100', '25212-4A000', '25212 2B000 AS',
       '25212-2A100'
     ]
   },
-  { carmaker: 'KIA', numbers: ['25212-2F001', '25212-4A000'] },
-  { carmaker: 'MITSUBISHI', numbers: ['MD 371500'] }
+  { carmaker: 'KIA', numbers: ['25212-2F001', '0K9A2-15-908A', '25212-4A000'] },
+  { carmaker: 'MITSUBISHI', numbers: ['MD 371500', '1340A048'] },
+  { carmaker: 'MERCEDES-BENZ', numbers: ['A 000 993 25 96', '6PK2000'] }
 ]
 
 /* Дерево застосовності: марка → загальна модель → тип моделі (роки) → машини. */
@@ -445,7 +524,7 @@ const VEHICLES = [
           {
             label: 'IX35 (LM, EL, ELH) (2009–2017)',
             vehicles: [
-              '2.0 CRDi 4WD · 2.0 Дизель · 184 к.с. · Повний привод',
+              '2.0 CRDi 4WD Style Automatic Panorama Premium · 2.0 Дизель · 184 к.с. · Повний привод',
               '2.0 CRDi · 2.0 Дизель · 136 к.с. · Передній привод',
               '2.0 · 2.0 Бензин · 150 к.с. · Передній привод'
             ]
@@ -457,7 +536,14 @@ const VEHICLES = [
         types: [
           {
             label: 'SANTA FÉ II (CM) (2005–2012)',
-            vehicles: ['2.2 CRDi GLS · 2.2 Дизель · 155 к.с. · Повний привод']
+            vehicles: [
+              '2.2 CRDi GLS Premium AT 4WD 7 місць Panorama · 2.2 Дизель · 155 к.с. · Повний привод',
+              '2.7 V6 GLS Top Panorama Automatic Comfort Plus · 2.7 Бензин/зріджений газ (ЗПГ) · 189 к.с. · Повний привод'
+            ]
+          },
+          {
+            label: 'GRAND SANTA FÉ (NC) (2013–2018)',
+            vehicles: ['3.3 V6 GDI Prestige 7 місць Panorama AWD Automatic · 3.3 Бензин/зріджений газ (ЗПГ) · 270 к.с. · Повний привод']
           }
         ]
       }
@@ -487,7 +573,10 @@ const VEHICLES = [
         types: [
           {
             label: 'CARENS III (UN) (2006–2013)',
-            vehicles: ['2.0 CRDi 135 · 2.0 Дизель · 136 к.с. · Передній привод']
+            vehicles: [
+              '2.0 CRDi 135 EX Comfort Automatic 7 місць · 2.0 Дизель · 136 к.с. · Передній привод',
+              '2.0 CVVT LPI Business Comfort Plus Automatic · 2.0 Бензин/зріджений газ (ЗПГ) · 144 к.с. · Передній привод'
+            ]
           }
         ]
       }
@@ -776,6 +865,8 @@ class Component extends DCLogic {
 
       hasPhotos,
       noPhotos: !hasPhotos,
+      /* На телефоні блок без фото просто прибирається — заглушка там лише з'їдає екран. */
+      mediaAttr: hasPhotos ? 'photos' : 'none',
       /* Числа, а не рядки: PartThumb ставить їх у width/height, і "64" React відкидає. */
       mainSize: 380,
       zoomSize: 560,
@@ -783,7 +874,7 @@ class Component extends DCLogic {
       staffAttr: staffView ? 'true' : 'false',
       staffCart: staffView,
       recentThumbSize: 168,
-      lastKnownPrice: 462,
+      lastKnownPrice: 10462,
       photos: Array.from({ length: PHOTO_COUNT }, (unused, index) => ({
         label: 'Показати фото ' + (index + 1),
         current: index === photo ? 'true' : 'false',

@@ -226,11 +226,24 @@
 input[type='search']::-webkit-search-cancel-button,
 input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appearance: none; }
 
+/* Modal footer. Side by side while both buttons fit; below 640 px they wrapped into two
+   ragged right-aligned lines with the primary under the cancel, so there they stack full
+   width with «Надіслати запит» first — §4 › Responsive, controls go full-width not narrow. */
+@media (max-width: 639px) {
+  .ds-modal__footer { flex-direction: column-reverse; align-items: stretch !important; padding-inline: var(--space-5) !important; }
+  .ds-modal__footer .ds-btn { width: 100%; }
+}
+
 /* ═══ Search field ════════════════════════════════════════════════════════ */
 .ds-search { position: relative; display: flex; gap: var(--space-2); width: 100%; }
 .ds-search__wrap { position: relative; flex: 1; min-width: 0; }
 .ds-search__icon { position: absolute; left: var(--space-3); top: 50%; transform: translateY(-50%); color: var(--text-faint); pointer-events: none; }
 .ds-search__input { padding-left: 42px; padding-right: 46px; font-family: var(--font-mono); letter-spacing: var(--tracking-mono); }
+/* The field is mono because article numbers are compared character by character, but the
+   placeholder is prose — in mono it needs ~40 px more than the header ever gives it and gets
+   clipped. It also reclaims the right gutter, which is the clear cross's and empty until typing. */
+.ds-search__input::placeholder { font-family: var(--font-sans); letter-spacing: normal; }
+.ds-search__input:placeholder-shown { padding-right: var(--space-3); }
 .ds-search--hero .ds-search__input { padding-left: 50px; padding-right: 54px; }
 .ds-search--hero .ds-search__icon { left: var(--space-4); }
 .ds-suggest {
@@ -670,9 +683,62 @@ input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appe
   display: inline-grid; place-items: center;
 }
 @media (max-width: 899px) { .ds-header__nav { gap: var(--space-3); } }
+
+/* Меню шапки: до ~1050 px каталожні посилання, телефони й обіцянка кешбеку
+   живуть тут, щоб шапка лишалась двома рядками. На ширшому екрані його немає. */
+.ds-headermenu { display: none; position: relative; }
+.ds-headermenu__trigger {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; margin-left: calc(var(--space-2) * -1);
+  background: none; border: 0; border-radius: var(--radius-md);
+  color: var(--text-strong); cursor: pointer;
+}
+.ds-headermenu__trigger:hover { background: var(--surface-muted); }
+.ds-headermenu__panel {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: var(--z-dropdown, 40);
+  min-width: 248px; padding: var(--space-2) 0;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius-md); box-shadow: var(--shadow-md);
+}
+.ds-headermenu__link {
+  display: flex; align-items: center; min-height: 44px; padding: 0 var(--space-4);
+  font-family: var(--font-sans); font-size: var(--text-sm); color: var(--text-body); text-decoration: none;
+}
+.ds-headermenu__link:hover { background: var(--surface-muted); color: var(--text-strong); text-decoration: none; }
+.ds-headermenu__link[data-active='true'] { color: var(--text-strong); font-weight: var(--weight-semibold); box-shadow: inset 2px 0 0 var(--red-500); }
+.ds-headermenu__phones { display: flex; flex-direction: column; border-top: 1px solid var(--line); margin-top: var(--space-2); padding-top: var(--space-2); }
+.ds-headermenu__phones a {
+  display: flex; align-items: center; gap: var(--space-2); min-height: 44px; padding: 0 var(--space-4);
+  font-family: var(--font-mono); font-size: var(--text-sm); color: var(--text-body); text-decoration: none;
+}
+.ds-headermenu__phones a:hover { background: var(--surface-muted); text-decoration: none; }
+.ds-headermenu__promo {
+  padding: var(--space-2) var(--space-4) 0; font-family: var(--font-sans);
+  font-size: var(--text-2xs); line-height: 1.4; color: var(--text-muted);
+}
+.ds-headermenu__promo strong { color: var(--red-500); font-weight: var(--weight-semibold); }
+
+/* Щоб шапка трималася в одному рядку й на вертикальному планшеті (768): каталожні пункти — в меню,
+   кабінет і кошик — іконками. Від 1024 px (планшет горизонтально) — повна навігація. */
+@media (max-width: 1023px) {
+  .ds-headermenu { display: inline-flex; }
+  .ds-header__nav { flex-wrap: nowrap; gap: var(--space-2); justify-content: flex-end; margin-left: auto !important; }
+  .ds-navlink--wide, .ds-navlink__text { display: none; }
+  .ds-header__nav .ds-navlink { min-width: 44px; min-height: 44px; justify-content: center; padding: 0; }
+  .ds-header__nav .ds-navlink::after { content: none; }
+  .ds-navlink__count { position: absolute; top: 2px; right: 0; }
+}
+
+/* Телефони й кешбек потрібні в меню лише тоді, коли службова смуга схована. */
+@media (min-width: 640px) {
+  .ds-headermenu__phones, .ds-headermenu__promo { display: none; }
+}
+
 @media (max-width: 639px) {
   .ds-utilitybar { display: none; }
-  .ds-header__nav { flex-wrap: wrap; column-gap: var(--space-4); row-gap: var(--space-1); justify-content: flex-start; margin-left: 0 !important; }
+  .ds-header__bar { gap: var(--space-2) var(--space-3) !important; padding-block: var(--space-2) !important; min-height: 0 !important; }
+  .ds-header__logo { height: 30px !important; }
+  .ds-header__search { order: 2; flex: 1 1 100% !important; min-width: 0 !important; max-width: none !important; }
 }
 
 /* ═══ Footer content (owned by SiteFooter) ════════════════════════════════ */

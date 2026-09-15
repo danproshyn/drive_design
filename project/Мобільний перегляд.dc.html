@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/colors.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/space.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/motion.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/layout.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/base.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=13"></script>
+<style>
+  a { color: var(--text-action); }
+  a:hover { color: var(--text-action-hover); }
+</style>
+</helmet>
+
+<div style="min-height: 100vh; background: var(--surface-sunken); font-family: var(--font-sans); color: var(--ink-800)">
+
+  <div style="background: var(--ink-800); color: #fff; padding: 10px 20px; display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: center; position: sticky; top: 0; z-index: 5">
+    <div style="font-family: var(--font-display); text-transform: uppercase; letter-spacing: .04em; font-size: 15px; line-height: 1; white-space: nowrap">Перегляд по ширинах</div>
+
+    <select value="{{ file }}" onChange="{{ onFile }}" style="appearance: none; background: #35312C; color: #fff; border: 1px solid #4A453E; border-radius: 6px; padding: 9px 12px; font: inherit; font-size: 14px; min-height: 40px; max-width: 260px">
+      <sc-for list="{{ files }}" as="f" hint-placeholder-count="4">
+        <option value="{{ f }}">{{ f }}</option>
+      </sc-for>
+    </select>
+
+    <div style="display: flex; gap: 6px; flex-wrap: wrap">
+      <sc-for list="{{ presets }}" as="p" hint-placeholder-count="5">
+        <button type="button" onClick="{{ p.toggle }}" title="{{ p.title }}" style="{{ p.style }}" style-hover="border-color: var(--red-500)">{{ p.label }}</button>
+      </sc-for>
+    </div>
+
+    <div style="display: flex; gap: 6px; align-items: center; margin-left: auto">
+      <sc-for list="{{ zooms }}" as="z" hint-placeholder-count="3">
+        <button type="button" onClick="{{ z.pick }}" style="{{ z.style }}">{{ z.label }}</button>
+      </sc-for>
+      <button type="button" onClick="{{ reload }}" style="background: transparent; color: #fff; border: 1px solid #4A453E; border-radius: 6px; padding: 0 14px; height: 34px; font: inherit; font-size: 13px; cursor: pointer; margin-left: 8px" style-hover="border-color: var(--red-500)">Перезавантажити</button>
+    </div>
+  </div>
+
+  <sc-if value="{{ hasControls }}" hint-placeholder-val="{{ true }}">
+    <div style="background: #fff; border-bottom: 1px solid var(--line); padding: 14px 20px; display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: flex-start">
+      <sc-for list="{{ groups }}" as="g" hint-placeholder-count="2">
+        <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+          <div style="font-family: var(--font-display); text-transform: uppercase; font-size: 11px; letter-spacing: .06em; color: var(--text-muted)">{{ g.title }}</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center">
+            <sc-for list="{{ g.controls }}" as="c" hint-placeholder-count="3">
+              <div style="display: flex; align-items: center; gap: 8px; min-height: 34px">
+                <span style="font-size: 13px; color: var(--ink-800); white-space: nowrap">{{ c.label }}</span>
+
+                <sc-if value="{{ c.isBool }}" hint-placeholder-val="{{ false }}">
+                  <button type="button" onClick="{{ c.toggle }}" style="{{ c.boolStyle }}">{{ c.boolLabel }}</button>
+                </sc-if>
+
+                <sc-if value="{{ c.isEnum }}" hint-placeholder-val="{{ false }}">
+                  <div style="display: flex; gap: 4px; flex-wrap: wrap">
+                    <sc-for list="{{ c.options }}" as="o" hint-placeholder-count="3">
+                      <button type="button" onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ c.isRange }}" hint-placeholder-val="{{ false }}">
+                  <div style="display: flex; align-items: center; gap: 8px">
+                    <input type="range" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ c.value }}" onChange="{{ c.onNumber }}" style="width: 130px; accent-color: var(--red-600)">
+                    <span style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); min-width: 52px">{{ c.valueLabel }}</span>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ c.isText }}" hint-placeholder-val="{{ false }}">
+                  <input type="text" value="{{ c.value }}" onChange="{{ c.onText }}" style="border: 1px solid var(--line); border-radius: 6px; padding: 7px 10px; font: inherit; font-size: 13px; min-height: 34px; width: 160px">
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+
+      <button type="button" onClick="{{ resetControls }}" style="margin-left: auto; align-self: flex-end; background: transparent; color: var(--text-muted); border: 1px solid var(--line); border-radius: 6px; padding: 0 14px; height: 34px; font: inherit; font-size: 13px; cursor: pointer" style-hover="border-color: var(--red-500); color: var(--ink-800)">Скинути</button>
+    </div>
+  </sc-if>
+
+  <div style="display: flex; gap: 28px; align-items: flex-start; padding: 28px 24px 48px; overflow-x: auto">
+    <sc-for list="{{ frames }}" as="fr" hint-placeholder-count="3">
+      <div style="flex: 0 0 auto">
+        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px">
+          <span style="font-family: var(--font-display); text-transform: uppercase; font-size: 14px; letter-spacing: .04em">{{ fr.label }}</span>
+          <span style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted)">{{ fr.dims }}</span>
+        </div>
+        <div style="{{ fr.shellStyle }}">
+          <iframe src="{{ fr.src }}" title="{{ fr.label }}" onLoad="{{ fr.onLoad }}" style="{{ fr.frameStyle }}"></iframe>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="padding: 0 24px 40px; max-width: 720px; font-size: 14px; line-height: 1.55; color: var(--text-muted)">
+    Кожен фрейм — справжня сторінка на справжній ширині, тому медіазапити й тап-таргети поводяться як на пристрої. Перемикачі над фреймами — це твіки вибраного екрана; вони застосовуються до всіх ширин одночасно.
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;screen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Головна.dc.html&quot;,&quot;options&quot;:[&quot;Головна.dc.html&quot;,&quot;Каталог за авто.dc.html&quot;,&quot;Картка деталі.dc.html&quot;,&quot;Пошук за артикулом.dc.html&quot;,&quot;Кошик.dc.html&quot;,&quot;Вхід.dc.html&quot;,&quot;Гараж - варіанти.dc.html&quot;,&quot;Оригінальні каталоги.dc.html&quot;,&quot;Немає-в-наявності.dc.html&quot;,&quot;Документи.dc.html&quot;],&quot;tsType&quot;:&quot;string&quot;},&quot;widths&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;360,768,1024,1280&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Фрейми&quot;},&quot;zoom&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;1&quot;,&quot;options&quot;:[&quot;0.5&quot;,&quot;0.75&quot;,&quot;1&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Фрейми&quot;}}">
+const FILES = [
+  "Головна.dc.html",
+  "Каталог за авто.dc.html",
+  "Картка деталі.dc.html",
+  "Пошук за артикулом.dc.html",
+  "Кошик.dc.html",
+  "Вхід.dc.html",
+  "Гараж - варіанти.dc.html",
+  "Оригінальні каталоги.dc.html",
+  "Немає-в-наявності.dc.html",
+  "Документи.dc.html",
+  "Стандартизація - до і після.dc.html",
+  "Телефон - варіанти.dc.html",
+  "Логотип - варіант C і фавікон.dc.html"
+];
+
+const PRESETS = [
+  { key: "360", label: "360", w: 360, h: 780, title: "Телефон, найвужче" },
+  { key: "390", label: "390", w: 390, h: 844, title: "Телефон" },
+  { key: "768", label: "768", w: 768, h: 1024, title: "Планшет, вертикально" },
+  { key: "1024", label: "1024", w: 1024, h: 768, title: "Планшет, горизонтально" },
+  { key: "1280", label: "1280", w: 1280, h: 800, title: "Ноутбук HD" },
+  { key: "1440", label: "1440", w: 1440, h: 900, title: "Десктоп" }
+];
+
+class Component extends DCLogic {
+  state = {
+    file: this.props.screen || FILES[0],
+    active: (this.props.widths || "360,768,1024,1280").split(",").map(s => s.trim()),
+    zoom: this.props.zoom ? Number(this.props.zoom) : 1,
+    nonce: 0,
+    meta: {},        // file -> propsMeta harvested from the loaded page
+    overrides: {}    // file -> { propName: value }
+  };
+
+  frames = {};
+
+  /* Read the loaded page's own tweak metadata, then push current overrides into it.
+     Both go through the DC runtime globals the page installs on its window. */
+  onFrameLoad(key, file, el) {
+    this.frames[key] = { el, file };
+    const apply = (tries) => {
+      const w = el && el.contentWindow;
+      if (!w || !w.__dcRootName) {
+        if (tries > 0) setTimeout(() => apply(tries - 1), 120);
+        return;
+      }
+      const root = w.__dcRootName();
+      const entry = w.__dcRegistry && w.__dcRegistry[root];
+      const meta = (entry && entry.propsMeta) || null;
+      if (!meta && tries > 0) { setTimeout(() => apply(tries - 1), 120); return; }
+      if (meta && !this.state.meta[file]) {
+        this.setState(s => ({ meta: Object.assign({}, s.meta, { [file]: meta }) }));
+      }
+      const ov = this.state.overrides[file];
+      if (ov && Object.keys(ov).length) {
+        try { w.__dcSetProps(root, ov); } catch (e) {}
+      }
+    };
+    apply(20);
+  }
+
+  pushToFrames(file, ov) {
+    Object.keys(this.frames).forEach(k => {
+      const f = this.frames[k];
+      if (!f || f.file !== file) return;
+      const w = f.el && f.el.contentWindow;
+      if (!w || !w.__dcSetProps || !w.__dcRootName) return;
+      try { w.__dcSetProps(w.__dcRootName(), ov); } catch (e) {}
+    });
+  }
+
+  setProp(file, name, value) {
+    this.setState(s => {
+      const ov = Object.assign({}, s.overrides[file] || {}, { [name]: value });
+      this.pushToFrames(file, ov);
+      return { overrides: Object.assign({}, s.overrides, { [file]: ov }) };
+    });
+  }
+
+  chip(on, dark) {
+    const fg = dark ? "#fff" : "var(--ink-800)";
+    const bd = dark ? "#4A453E" : "var(--line)";
+    return [
+      "background:" + (on ? (dark ? "#fff" : "var(--ink-800)") : "transparent"),
+      "color:" + (on ? (dark ? "var(--ink-800)" : "#fff") : fg),
+      "border:1px solid " + (on ? (dark ? "#fff" : "var(--ink-800)") : bd),
+      "border-radius:6px",
+      "padding:0 13px",
+      "height:34px",
+      "min-width:44px",
+      "font:inherit",
+      "font-size:13px",
+      "font-family:var(--font-mono)",
+      "cursor:pointer",
+      "white-space:nowrap",
+      "transition:background 120ms cubic-bezier(.2,.8,.3,1), border-color 120ms cubic-bezier(.2,.8,.3,1)"
+    ].join(";");
+  }
+
+  buildControls(file) {
+    const meta = this.state.meta[file];
+    if (!meta) return [];
+    const ov = this.state.overrides[file] || {};
+    const out = [];
+
+    Object.keys(meta).forEach(name => {
+      if (name.charAt(0) === "$") return;
+      const m = meta[name] || {};
+      if (!m.editor) return;
+      const value = name in ov ? ov[name] : m.default;
+      const base = { name, label: name, section: m.section || "Твіки", isBool: false, isEnum: false, isRange: false, isText: false, options: [] };
+
+      if (m.editor === "boolean") {
+        out.push(Object.assign(base, {
+          isBool: true,
+          boolLabel: value ? "увімк" : "вимк",
+          boolStyle: this.chip(!!value),
+          toggle: () => this.setProp(file, name, !value)
+        }));
+      } else if (m.editor === "enum") {
+        out.push(Object.assign(base, {
+          isEnum: true,
+          options: (m.options || []).map(o => ({
+            label: String(o),
+            style: this.chip(String(o) === String(value)),
+            pick: () => this.setProp(file, name, o)
+          }))
+        }));
+      } else if (m.editor === "range" || m.editor === "int" || m.editor === "float") {
+        const step = m.step != null ? m.step : (m.editor === "float" ? 0.1 : 1);
+        out.push(Object.assign(base, {
+          isRange: true,
+          min: m.min != null ? m.min : 0,
+          max: m.max != null ? m.max : 100,
+          step,
+          value: Number(value != null ? value : 0),
+          valueLabel: String(value != null ? value : 0) + (m.unit ? " " + m.unit : ""),
+          onNumber: e => this.setProp(file, name, Number(e.target.value))
+        }));
+      } else {
+        out.push(Object.assign(base, {
+          isText: true,
+          value: value == null ? "" : String(value),
+          onText: e => this.setProp(file, name, e.target.value)
+        }));
+      }
+    });
+
+    return out;
+  }
+
+  renderVals() {
+    const { file, active, zoom, nonce } = this.state;
+    const controls = this.buildControls(file);
+
+    const sections = [];
+    controls.forEach(c => {
+      let g = sections.find(s => s.title === c.section);
+      if (!g) { g = { title: c.section, controls: [] }; sections.push(g); }
+      g.controls.push(c);
+    });
+
+    return {
+      files: FILES,
+      file,
+      onFile: e => {
+        this.frames = {};
+        this.setState({ file: e.target.value });
+      },
+      reload: () => { this.frames = {}; this.setState(s => ({ nonce: s.nonce + 1 })); },
+
+      hasControls: controls.length > 0,
+      groups: sections,
+      resetControls: () => this.setState(s => {
+        this.pushToFrames(file, {});
+        return { overrides: Object.assign({}, s.overrides, { [file]: {} }), nonce: s.nonce + 1 };
+      }),
+
+      presets: PRESETS.map(p => ({
+        label: p.label,
+        title: p.title,
+        style: this.chip(active.includes(p.key), true),
+        toggle: () => this.setState(s => ({
+          active: s.active.includes(p.key)
+            ? (s.active.length > 1 ? s.active.filter(k => k !== p.key) : s.active)
+            : PRESETS.filter(q => s.active.includes(q.key) || q.key === p.key).map(q => q.key)
+        }))
+      })),
+
+      zooms: [0.5, 0.75, 1].map(z => ({
+        label: Math.round(z * 100) + "%",
+        style: this.chip(Math.abs(z - zoom) < 0.01, true),
+        pick: () => this.setState({ zoom: z })
+      })),
+
+      frames: PRESETS.filter(p => active.includes(p.key)).map(p => ({
+        label: p.title,
+        dims: p.w + " × " + p.h,
+        src: encodeURI("./" + file) + "?w=" + p.w + "&n=" + nonce,
+        onLoad: e => this.onFrameLoad(p.key, file, e.target),
+        shellStyle: [
+          "width:" + Math.round(p.w * zoom) + "px",
+          "height:" + Math.round(p.h * zoom) + "px",
+          "overflow:hidden",
+          "background:#fff",
+          "border:1px solid var(--line)",
+          "border-radius:" + (p.w <= 430 ? "18px" : "10px"),
+          "box-shadow:0 8px 24px rgba(36,33,29,.10)"
+        ].join(";"),
+        frameStyle: [
+          "width:" + p.w + "px",
+          "height:" + p.h + "px",
+          "border:0",
+          "display:block",
+          "transform:scale(" + zoom + ")",
+          "transform-origin:top left"
+        ].join(";")
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>
