@@ -77,9 +77,11 @@
     /* Колонки живуть на списку, а рядки їх підхоплюють через subgrid — тільки так кількість
        і ціна стоять в одну лінію в усіх пропозиціях. Колонка дати бере свою природну ширину,
        щоб «Відправка …» і час відсічення лишалися кожне в один рядок. */
-    .ds-offers { grid-template-columns: minmax(0, 1fr) minmax(0, max-content) !important; justify-content: space-between !important; column-gap: var(--space-2) !important; }
+    .ds-offers { grid-template-columns: minmax(0, 1fr) minmax(0, max-content) !important; justify-content: space-between !important; column-gap: var(--space-2) !important; row-gap: 0 !important; }
+    /* Рядки стають багаторядковими, тому межу між пропозиціями показує волосінь, а не проміжок. */
+    .ds-offerline + .ds-offerline { border-top: 1px solid var(--line) !important; }
     .ds-offerline { grid-template-columns: subgrid !important; justify-content: normal !important; row-gap: 6px !important; align-items: start !important; padding: var(--space-2) var(--space-3) !important; }
-    .ds-offerline .ds-cutoff { grid-column: 1 / -1 !important; white-space: normal !important; }
+    .ds-offerline .ds-cutoff { grid-column: 1 / -1 !important; }
     /* Назва складу переноситься — в один рядок вона в цій ширині не вміщається. */
     .ds-offerline > [data-cell='ship'] > span { white-space: normal !important; }
     .ds-offerline > [data-cell='ship'] { grid-column: 1 !important; grid-row: 1 !important; min-width: 0 !important; }
@@ -91,7 +93,8 @@
   @container offers (min-width: 400px) and (max-width: 599px) {
     /* Планшет: три спільні колонки — дата, кількість, ціна; мітки й кнопка другим рядком.
        Колонки задані на списку, тому кількість вирівняна в усіх пропозиціях. */
-    .ds-offers { grid-template-columns: minmax(0, 1fr) 68px 126px !important; column-gap: var(--space-3) !important; }
+    .ds-offers { grid-template-columns: minmax(0, 1fr) 68px 126px !important; column-gap: var(--space-3) !important; row-gap: 0 !important; }
+    .ds-offerline + .ds-offerline { border-top: 1px solid var(--line) !important; }
     .ds-offerline { grid-template-columns: subgrid !important; justify-content: normal !important; row-gap: 4px !important; padding-block: var(--space-2) !important; }
     .ds-offerline > [data-cell='ship'] { grid-column: 1 !important; grid-row: 1 !important; }
     .ds-offerline > [data-cell='ship'] > span { white-space: normal !important; }
@@ -110,6 +113,8 @@
        сума колонок = ширина контейнера мінус 24 px паддінгів рядка і мінус проміжки. */
     .ds-offers[data-staff='true'] { grid-template-columns: 232px 64px minmax(110px, 1fr) 116px 58px !important; column-gap: 4px !important; }
     .ds-offers[data-staff='true'] .ds-offerline { column-gap: 4px !important; }
+    .ds-offers { row-gap: 0 !important; }
+    .ds-offerline + .ds-offerline { border-top: 1px solid var(--line) !important; }
     .ds-offerline { grid-template-columns: subgrid !important; justify-content: normal !important; row-gap: 2px !important; padding-block: 6px !important; }
     .ds-offerline > [data-cell] { grid-column: auto !important; grid-row: auto !important; justify-self: auto !important; }
     .ds-offerline > [data-cell='stock'] { justify-items: center !important; }
