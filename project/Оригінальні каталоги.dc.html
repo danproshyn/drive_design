@@ -308,8 +308,8 @@
 
     <sc-if value="{{ showNotFound }}" hint-placeholder-val="{{ false }}">
       <div style="display:grid;gap:var(--space-3);justify-items:start;max-width:66ch">
-        <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="danger" hint-size="100%,64px">
-          Не вдалося розпізнати цей VIN або держномер.
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="danger" dc-props="{{ centeredNotice }}" hint-size="100%,64px">
+          Не вдалося розпізнати цей VIN або держномер в оригінальних каталогах. Спробуйте обрати вашу машину у «Каталозі за авто».
         </x-import>
         <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="dark" icon="car-front" hint-size="auto,40px">Перейти до каталогу за авто</x-import>
       </div>
@@ -368,7 +368,7 @@
           </span>
         </div>
         <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="info" dc-props="{{ centeredNotice }}" hint-size="100%,64px">
-          Для цієї машини схем виробника немає. Каталог за авто працює для неї як завжди — оберіть машину там.
+          Для цієї машини схем виробника немає. «Каталог за авто» працює для неї як завжди — оберіть машину там.
         </x-import>
         <div style="justify-self:start">
           <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="dark" icon="car-front" hint-size="auto,40px">Перейти до каталогу за авто</x-import>
