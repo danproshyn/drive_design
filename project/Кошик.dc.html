@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
 <script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=14"></script>
+<script src="cashback-hint.js"></script>
 <style>
   /* Кошик: рядки й підсумок. Підсумок липкий від 900px — інакше він під рядками. */
   [data-cart] { display: grid; gap: var(--space-6) var(--space-8); grid-template-columns: minmax(0, 1fr); align-items: start; }
@@ -83,7 +84,7 @@
 
 <div class="ds-page">
 
-  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteHeader" active="cart" cart-count="{{ cartCount }}" hint-size="100%,150px"></x-import>
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteHeader" active="cart" cashback-percent="10" cart-count="{{ cartCount }}" hint-size="100%,150px"></x-import>
 
   <main class="ds-container ds-main">
 
@@ -194,7 +195,12 @@
 
               <div data-cell="money" style="display:grid;gap:2px;justify-items:end">
                 <div style="display:flex;align-items:center;gap:var(--space-3)">
-                  <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ line.total }}" size="md" hint-size="auto,24px"></x-import>
+                  <span style="position:relative;display:inline-flex">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ line.total }}" size="md" hint-size="auto,24px"></x-import>
+                    <span data-cashback style="position:absolute;top:-12px;right:-12px">
+                      <dc-import name="Бейдж кешбеку" percent="{{ line.cbPercent }}" bonus="{{ line.cbBonus }}" hint-size="18px,18px"></dc-import>
+                    </span>
+                  </span>
                   <button type="button" onClick="{{ line.remove }}" title="{{ line.removeLabel }}" aria-label="{{ line.removeLabel }}" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;padding:0;border:0;border-radius:var(--radius-full);background:none;color:var(--text-faint);cursor:pointer;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);color:var(--stock-out)">
                     <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="trash-2" size="15" hint-size="15px,15px"></x-import>
                   </button>
@@ -210,7 +216,12 @@
           <div style="display:grid;gap:var(--space-4);padding:var(--space-5);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)">
             <div style="display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3)">
               <span style="font-weight:500;color:var(--text-strong)">Разом</span>
-              <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ total }}" size="lg" hint-size="auto,32px"></x-import>
+              <span style="position:relative;display:inline-flex">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ total }}" size="lg" hint-size="auto,32px"></x-import>
+                <span data-cashback style="position:absolute;top:-10px;right:-14px">
+                  <dc-import name="Бейдж кешбеку" percent="{{ totalCbPercent }}" bonus="{{ totalCbBonus }}" tip="{{ totalCbTip }}" hint-size="18px,18px"></dc-import>
+                </span>
+              </span>
             </div>
             <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="dark" size="lg" block="{{ true }}" icon-after="arrow-right" hint-size="100%,52px">Оформити замовлення</x-import>
             <div style="display:grid;gap:var(--space-2);font-size:var(--text-2xs);color:var(--text-muted)">
@@ -250,6 +261,11 @@
  *
  * Залишок завжди приходить точним числом і так само точно показується.
  */
+/* Драбина кешбеку: 1–10% від ціни позиції, чим дорожче — тим менший відсоток. */
+const CASHBACK = (price) =>
+  price >= 10000 ? 1 : price >= 4000 ? 2 : price >= 1500 ? 3 : price >= 700 ? 5 : price >= 300 ? 7 : 10
+const CASHBACK_BONUS = (price) => Math.round((price * CASHBACK(price)) / 100)
+
 const LINES = [
   {
     id: 'bosch-0986452041',
@@ -369,6 +385,8 @@ class Component extends DCLogic {
     const { lines, drafts, notices } = this.state
     const filled = view === 'Заповнений' && lines.length > 0
 
+    const cartBonus = lines.reduce((sum, line) => sum + CASHBACK_BONUS(line.price) * line.qty, 0)
+
     const rows = lines.map((line) => {
       const ceiling = this.ceilingOf(line)
       /* Одне вираження і для вимкненого «+», і для виходу зі стелі — інакше одне з двох відстане. */
@@ -402,6 +420,8 @@ class Component extends DCLogic {
         showNeedMore: (atCeiling || capped) && line.offersRest > 0,
         notice: notice === null ? '' : notice.text,
         total: line.price * line.qty,
+        cbPercent: CASHBACK(line.price),
+        cbBonus: CASHBACK_BONUS(line.price) * line.qty,
         unitLabel: line.qty > 1 ? line.price + ' ₴ × ' + line.qty + ' шт' : '',
         removeLabel: 'Прибрати ' + line.article + ' з кошика',
         remove: this.remove(line)
@@ -417,6 +437,10 @@ class Component extends DCLogic {
       countLabel: lines.length + ' ' + PLURAL(lines.length),
       lines: rows,
       total: lines.reduce((sum, line) => sum + line.price * line.qty, 0),
+      /* Бонуси рахуються по кожній позиції окремо — відсоток залежить від її ціни. */
+      totalCbPercent: Math.max(...lines.map((line) => CASHBACK(line.price)), 1),
+      totalCbBonus: cartBonus,
+      totalCbTip: 'Повернемо ' + new Intl.NumberFormat('uk-UA').format(cartBonus) + ' ₴ бонусами — ви зможете їх витратити на наступне замовлення',
       skeletonRows: [{ width: '78%' }, { width: '54%' }, { width: '66%' }],
       /* Кнопка живе всередині EmptyState, тому вона вузол, а не розмітка. Бандл може ще не
          завантажитись на першому рендері — тоді просто нічого. */

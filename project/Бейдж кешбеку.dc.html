@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/colors.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/space.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/motion.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/layout.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/base.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js"></script>
+</helmet>
+
+<span style="position:relative;display:inline-flex;vertical-align:middle;cursor:help;border-radius:999px" style-focus="outline:2px solid var(--red-500);outline-offset:2px" ref="{{ setEl }}" tabIndex="0" role="note" aria-label="{{ tip }}" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onFocus="{{ onEnter }}" onBlur="{{ onLeave }}">
+
+  <sc-if value="{{ isA }}" hint-placeholder-val="{{ true }}">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:999px;background:var(--ink-800);color:var(--white)">
+      <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="percent" size="{{ s12 }}" hint-size="12px,12px"></x-import>
+    </span>
+  </sc-if>
+
+  <sc-if value="{{ isB }}" hint-placeholder-val="{{ false }}">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:999px;background:var(--red-600);color:var(--white)">
+      <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="percent" size="{{ s12 }}" hint-size="12px,12px"></x-import>
+    </span>
+  </sc-if>
+
+  <sc-if value="{{ isC }}" hint-placeholder-val="{{ false }}">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;color:var(--text-faint)" style-hover="color:var(--text-body)">
+      <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="badge-percent" size="{{ s17 }}" hint-size="17px,17px"></x-import>
+    </span>
+  </sc-if>
+
+  <sc-if value="{{ isD }}" hint-placeholder-val="{{ false }}">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:999px;border:1px solid var(--line);background:var(--white);color:var(--red-500)">
+      <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="coins" size="{{ s13 }}" hint-size="13px,13px"></x-import>
+    </span>
+  </sc-if>
+
+  <sc-if value="{{ showTip }}" hint-placeholder-val="{{ false }}">
+    <span style="{{ tipStyle }}">{{ tip }}</span>
+  </sc-if>
+
+</span>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:260,&quot;height&quot;:90},&quot;variant&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;a&quot;,&quot;b&quot;,&quot;c&quot;,&quot;d&quot;],&quot;default&quot;:&quot;c&quot;,&quot;tsType&quot;:&quot;'a'|'b'|'c'|'d'&quot;},&quot;percent&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:7,&quot;min&quot;:1,&quot;max&quot;:10,&quot;tsType&quot;:&quot;number&quot;},&quot;bonus&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:34,&quot;tsType&quot;:&quot;number&quot;},&quot;tip&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;pinned&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { hover: false, tipBox: null };
+
+  // Підказка розкривається вниз — списки деталей мають overflow:hidden, і вгору її обрізало б.
+  // Верх підказки — під ціною, а не під значком: ціна лишається видимою.
+  // Бік прив'язки обираємо за місцем ліворуч від значка, щоб вона не виїжджала за край екрана.
+  place = (el) => {
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    let price = null;
+    let node = el.parentElement;
+    for (let i = 0; i < 4 && node && !price; i += 1) {
+      price = node.querySelector('.ds-price');
+      node = node.parentElement;
+    }
+    const pr = price ? price.getBoundingClientRect() : r;
+
+    /* Нижня межа, за якою підказку обріже: найближчий предок з overflow, інакше вікно. */
+    let limit = window.innerHeight;
+    let node2 = el.parentElement;
+    while (node2 && node2 !== document.body) {
+      const o = getComputedStyle(node2).overflow + getComputedStyle(node2).overflowY;
+      if (o.includes('hidden') || o.includes('auto') || o.includes('scroll')) {
+        limit = Math.min(limit, node2.getBoundingClientRect().bottom);
+        break;
+      }
+      node2 = node2.parentElement;
+    }
+
+    const box = {};
+    if (r.right - 236 < 8) box.left = -4;
+    else box.right = -4;
+    /* Місця під ціною бракує — підказка йде вгору від значка, ціна лишається видимою. */
+    if (pr.bottom + 74 > limit) box.bottom = 'calc(100% + 6px)';
+    else box.top = 'calc(100% + ' + Math.max(6, Math.round(pr.bottom - r.bottom) + 6) + 'px)';
+    this.setState({ tipBox: box });
+  };
+
+  componentDidMount() { if (this.props.pinned) requestAnimationFrame(() => this.place(this.el)); }
+
+  renderVals() {
+    const v = (this.props.variant || 'c').toLowerCase();
+    const pct = this.props.percent ?? 3;
+    const bonus = this.props.bonus ?? 0;
+    const fmt = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
+    return {
+      s12: 12, s13: 13, s17: 17,
+      isA: v === 'a', isB: v === 'b', isC: v === 'c', isD: v === 'd',
+      tip: this.props.tip || ('Повернемо ' + fmt(bonus) + ' ₴ бонусами — ви зможете їх витратити на наступне замовлення'),
+      showTip: this.state.hover || !!this.props.pinned,
+      tipStyle: {
+        position: 'absolute',
+        ...(this.state.tipBox || { top: 'calc(100% + 6px)', right: -4 }),
+        zIndex: 60,
+        width: 'max-content',
+        maxWidth: 230,
+        padding: '7px 10px',
+        borderRadius: 6,
+        background: 'var(--ink-800)',
+        color: 'var(--white)',
+        fontSize: 12,
+        fontWeight: 400,
+        lineHeight: 1.35,
+        textAlign: 'left',
+        boxShadow: '0 8px 20px rgb(36 33 29 / .22)',
+        pointerEvents: 'none',
+      },
+      setEl: (el) => { this.el = el; },
+      onEnter: (e) => { this.place(e.currentTarget); this.setState({ hover: true }); },
+      onLeave: () => this.setState({ hover: false }),
+    };
+  }
+}
+</script>
+</body>
+</html>

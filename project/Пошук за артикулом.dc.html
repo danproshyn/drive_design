@@ -21,6 +21,7 @@
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
 <script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=14"></script>
 <script src="cart-store.js?v=2"></script>
+<script src="cashback-hint.js"></script>
 <style>
 
   [data-facets-toggle] { display: none !important; }
@@ -125,7 +126,7 @@
 
 <div class="ds-page">
 
-  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteHeader" cart-count="{{ cartCount }}" hint-size="100%,150px"></x-import>
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteHeader" cashback-percent="10" cart-count="{{ cartCount }}" hint-size="100%,150px"></x-import>
 
   <main class="ds-container ds-main">
 
@@ -298,7 +299,12 @@
                             </div>
 
                             <div data-cell="price" style="display:grid;justify-items:end;gap:1px">
-                              <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ offer.price }}" size="md" hint-size="auto,24px"></x-import>
+                              <span style="position:relative;display:inline-flex">
+                                <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ offer.price }}" size="md" hint-size="auto,24px"></x-import>
+                                <span data-cashback style="position:absolute;top:-12px;right:-14px">
+                                  <dc-import name="Бейдж кешбеку" percent="{{ offer.cbPercent }}" bonus="{{ offer.cbBonus }}" hint-size="18px,18px"></dc-import>
+                                </span>
+                              </span>
                               <sc-if value="{{ offer.sellerPrice }}" hint-placeholder-val="{{ false }}">
                                 <span title="Офлайн-ціна · закупівельна" style="display:flex;align-items:baseline;gap:5px;white-space:nowrap;font-size:var(--text-sm);font-weight:600;font-variant-numeric:tabular-nums">
                                   <span style="color:var(--amber-600)">{{ offer.sellerPrice }}</span>
@@ -582,6 +588,11 @@ function offersPlural(n) {
 /* Той самий формат, що й у PriceTag, — щоб службові ціни мали розділювач тисяч. */
 const UAH = new Intl.NumberFormat('uk-UA')
 
+/* Драбина кешбеку: 1–10% від ціни позиції, чим дорожче — тим менший відсоток. */
+const CASHBACK = (price) =>
+  price >= 10000 ? 1 : price >= 4000 ? 2 : price >= 1500 ? 3 : price >= 700 ? 5 : price >= 300 ? 7 : 10
+const CASHBACK_BONUS = (price) => Math.round((price * CASHBACK(price)) / 100)
+
 function minPrice(row) {
   return row.offers.length === 0 ? Infinity : Math.min(...row.offers.map((o) => o.price))
 }
@@ -805,6 +816,8 @@ class Component extends DCLogic {
             /* Кількість показуємо максимум 10 шт — рішення власника, без «більше». */
             qtyLabel: offer.qty + ' шт',
             minQtyLabel: offer.minQty > 1 ? 'від ' + offer.minQty + ' шт' : '',
+            cbPercent: CASHBACK(offer.price),
+            cbBonus: CASHBACK_BONUS(offer.price),
             bestPrice: offer.key === bestPriceKey,
             bestDate: offer.key === bestDateKey,
             primaryAttr: primary ? 'true' : 'false',

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/colors.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/space.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/motion.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/layout.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/base.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js"></script>
+<style>
+  body { margin: 0; background: var(--white); }
+  a { color: var(--text-action); }
+  a:hover { color: var(--text-action-hover); }
+</style>
+</helmet>
+
+<section style="padding:40px;display:flex;flex-direction:column;gap:32px;background:var(--white)">
+
+  <header style="max-width:780px;display:flex;flex-direction:column;gap:8px">
+    <p style="margin:0;font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted)">Бонуси</p>
+    <h1 style="margin:0;font-family:var(--font-display);font-size:32px;font-weight:600;letter-spacing:.01em;line-height:1.05;text-transform:uppercase;color:var(--text-strong)">Значок кешбеку біля ціни</h1>
+    <p style="margin:0;font-size:15px;line-height:1.5;color:var(--text-body);text-wrap:pretty">Чотири варіанти. Значок без тексту й цифр, у списку деталей і в пропозиціях стоїть над правим кутом ціни й не займає місця в рядку. Відсоток і суму бонусів показує підказка на ховер; у картці деталі вона відкрита.</p>
+  </header>
+
+  <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+
+    <!-- ══ 1a ══════════════════════════════════════════════ -->
+    <div id="1a" style="width:470px;display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;display:flex;align-items:center;gap:8px">
+          <span style="display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:3px;background:var(--ink-800);color:var(--white);font-family:var(--font-mono);font-size:11px;font-weight:600">1a</span>
+          <span style="font-family:var(--font-display);font-size:17px;font-weight:600;letter-spacing:.01em;text-transform:uppercase;color:var(--text-strong)">Чорне коло</span>
+        </p>
+        <p style="margin:0;font-size:13px;line-height:1.45;color:var(--text-muted);text-wrap:pretty">Той самий чорний, що в банері кешбеку. Помітний і не сперечається з червоною кнопкою.</p>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)">Список деталей</p>
+        <ul class="ds-rows" style="border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
+          <li class="ds-row">
+            <div style="display:flex;gap:var(--space-4);align-items:flex-start">
+              <span style="flex:none">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PartThumb" alt="Фільтр масляний" size="{{ n76 }}" hint-size="76px,76px"></x-import>
+              </span>
+              <div style="min-width:0;flex:1">
+                <p class="ds-row__meta" style="margin:0">
+                  <span style="font-weight:600;color:var(--text-body)">MANN-FILTER</span>
+                  <span class="ds-article">W 712/95</span>
+                </p>
+                <a href="#1a" class="ds-row__title" style="margin-top:4px">Фільтр масляний</a>
+                <div style="margin-top:8px">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="4 вер, пт" relative="завтра" hint-size="auto,20px"></x-import>
+                </div>
+              </div>
+              <div style="flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:var(--space-2)">
+                <span style="position:relative;display:inline-flex">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="486" size="md" hint-size="auto,24px"></x-import>
+                  <dc-import name="Бейдж кешбеку" variant="a" percent="{{ p7 }}" bonus="{{ b34 }}" style="position:absolute;top:-13px;right:-17px" hint-size="20px,20px"></dc-import>
+                </span>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="primary" size="sm" icon="shopping-cart" hint-size="auto,34px">Купити</x-import>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)">Пропозиції</p>
+        <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px">
+          <li class="ds-offer ds-offer--primary" style="gap:var(--space-3)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="3 вер, чт" relative="сьогодні" hint-size="auto,20px"></x-import>
+            <span class="ds-stock ds-stock--in">більше 10 шт</span>
+            <span style="margin-left:auto;display:flex;align-items:center;gap:var(--space-4)">
+              <span style="position:relative;display:inline-flex">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="486" size="md" hint-size="auto,24px"></x-import>
+                <dc-import name="Бейдж кешбеку" variant="a" percent="{{ p7 }}" bonus="{{ b34 }}" style="position:absolute;top:-13px;right:-17px" hint-size="20px,20px"></dc-import>
+              </span>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="primary" size="sm" icon="shopping-cart" hint-size="auto,34px">В кошик</x-import>
+            </span>
+          </li>
+          <li class="ds-offer" style="gap:var(--space-3)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="5 вер, сб" hint-size="auto,20px"></x-import>
+            <span class="ds-stock ds-stock--in">4 шт</span>
+            <span style="margin-left:auto;display:flex;align-items:center;gap:var(--space-4)">
+              <span style="position:relative;display:inline-flex">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="452" size="md" hint-size="auto,24px"></x-import>
+                <dc-import name="Бейдж кешбеку" variant="a" percent="{{ p7 }}" bonus="{{ b32 }}" style="position:absolute;top:-13px;right:-17px" hint-size="20px,20px"></dc-import>
+              </span>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="primary" size="sm" icon="shopping-cart" hint-size="auto,34px">В кошик</x-import>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)">Картка деталі</p>
+        <div style="border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);display:flex;align-items:center">
+          <span style="position:relative;display:inline-flex">
+            <span class="ds-price ds-price--lg">12 480 <span class="ds-price__cur">₴</span></span>
+            <dc-import name="Бейдж кешбеку" variant="a" percent="{{ p2 }}" bonus="{{ b250 }}" pinned="{{ true }}" style="position:absolute;top:-8px;right:-24px" hint-size="20px,20px"></dc-import>
+          </span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)">Кошик</p>
+        <div style="border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+          <span style="font-size:var(--text-sm);color:var(--text-muted)">Разом за 3 позиції</span>
+          <span style="position:relative;display:inline-flex">
+            <span class="ds-price ds-price--md">1 342 <span class="ds-price__cur">₴</span></span>
+            <dc-import name="Бейдж кешбеку" variant="a" percent="{{ p5 }}" bonus="{{ b67 }}" tip="Повернемо 67 ₴ бонусами — ви зможете їх витратити на наступне замовлення" style="position:absolute;top:-13px;right:-17px" hint-size="20px,20px"></dc-import>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 1b ══════════════════════════════════════════════ -->
+    <div id="1b" style="width:470px;display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;display:flex;align-items:center;gap:8px">
+          <span style="display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:3px;background:var(--ink-800);color:var(--white);font-family:var(--font-mono);font-size:11px;font-weight:600">1b</span>
+          <span style="font-family:var(--font-display);font-size:17px;font-weight:600;letter-spacing:.01em;text-transform:uppercase;color:var(--text-strong)">Червоне коло</span>
+        </p>
+        <p style="margin:0;font-size:13px;line-height:1.45;color:var(--text-muted);text-wrap:pretty">Найпомітніший варіант. Ціна того, щоб його побачили — другий червоний акцент у рядку, поруч із кнопкою.</p>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)">Список деталей</p>
+        <ul class="ds-rows" style="border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
+          <li class="ds-row">
+            <div style="display:flex;gap:var(--space-4);align-items:flex-start">
+              <span style="flex:none">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PartThumb" alt="Фільтр масляний" size="{{ n76 }}" hint-size="76px,76px"></x-import>
+              </span>
+              <div style="min-width:0;flex:1">
+                <p class="ds-row__meta" style="margin:0">
+                  <span style="font-weight:600;color:var(--text-body)">MANN-FILTER</span>
+                  <span class="ds-article">W 712/95</span>
+                </p>
+                <a href="#1b" class="ds-row__title" style="margin-top:4px">Фільтр масляний</a>
+                <div style="margin-top:8px">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="4 вер, пт" relative="завтра" hint-size="auto,20px"></x-import>
+                </div>
+              </div>
+              <div style="flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:var(--space-2)">
+                <span style="position:relative;display:inline-flex">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="486" size="md" hint-size="auto,24px"></x-import>
+                  <dc-import name="Бейдж кешбеку" variant="b" percent="{{ p7 }}" bonus="{{ b34 }}" style="position:absolute;top:-13px;right:-17px" hint-size="20px,20px"></dc-import>
+                </span>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="primary" size="sm" icon="shopping-cart" hint-size="auto,34px">Купити</x-import>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)">Пропозиції</p>
+        <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px">
+          <li class="ds-offer ds-offer--primary" style="gap:var(--space-3)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="3 вер, чт" relative="сьогодні" hint-size="auto,20px"></x-import>
+            <span class="ds-stock ds-stock--in">більше 10 шт</span>
+            <span style="margin-left:auto;display:flex;align-items:center;gap:var(--space-4)">
+              <span style="position:relative;display:inline-flex">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="486" size="md" hint-size="auto,24px"></x-import>
+                <dc-import name="Бейдж кешбеку" variant="b" percent="{{ p7 }}" bonus="{{ b34 }}" style="position:absolute;top:-13px;right:-17px" hint-size="20px,20px"></dc-import>
+              </span>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="primary" size="sm" icon="shopping-cart" hint-size="auto,34px">В кошик</x-import>
+            </span>
+          </li>
+          <li class="ds-offer" style="gap:var(--space-3)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="5 вер, сб" hint-size="auto,20px"></x-import>
+            <span class="ds-stock ds-stock--in">4 шт</span>
+            <span style="margin-left:auto;display:flex;align-items:center;gap:var(--space-4)">
+              <span style="position:relative;display:inline-flex">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="452" size="md" hint-size="auto,24px"></x-import>
+                <dc-import name="Бейдж кешбеку" variant="b" percent="{{ p7 }}" bonus="{{ b32 }}" style="position:absolute;top:-13px;right:-17px" hint-size="20px,20px"></dc-import>
+              </span>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="primary" size="sm" icon="shopping-cart" hint-size="auto,34px">В кошик</x-import>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)">Картка деталі</p>
+        <div style="border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);display:flex;align-items:center">
+          <span style="position:relative;display:inline-flex">
+            <span class="ds-price ds-price--lg">12 480 <span class="ds-price__cur">₴</span></span>
+            <dc-import name="Бейдж кешбеку" variant="b" percent="{{ p2 }}" bonus="{{ b250 }}" pinned="{{ true }}" style="position:absolute;top:-8px;right:-24px" hint-size="20px,20px"></dc-import>
+          </span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)">Кошик</p>
+        <div style="border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+          <span style="font-size:var(--text-sm);color:var(--text-muted)">Разом за 3 позиції</span>
+          <span style="position:relative;display:inline-flex">
+            <span class="ds-price ds-price--md">1 342 <span class="ds-price__cur">₴</span></span>
+            <dc-import name="Бейдж кешбеку" variant="b" percent="{{ p5 }}" bonus="{{ b67 }}" tip="Повернемо 67 ₴ бонусами — ви зможете їх витратити на наступне замовлення" style="position:absolute;top:-13px;right:-17px" hint-size="20px,20px"></dc-import>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 1c ══════════════════════════════════════════════ -->
+    <div id="1c" style="width:470px;display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;display:flex;align-items:center;gap:8px">
+          <span style="display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:3px;background:var(--ink-800);color:var(--white);font-family:var(--font-mono);font-size:11px;font-weight:600">1c</span>
+          <span style="font-family:var(--font-display);font-size:17px;font-weight:600;letter-spacing:.01em;text-transform:uppercase;color:var(--text-strong)">Контурний, без тла</span>
+        </p>
+        <p style="margin:0;font-size:13px;line-height:1.45;color:var(--text-muted);text-wrap:pretty">Найтихіший: сірий штрих без плашки, темніє на ховер. У довгому списку не перетворюється на ряд плям.</p>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)">Список деталей</p>
+        <ul class="ds-rows" style="border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
+          <li class="ds-row">
+            <div style="display:flex;gap:var(--space-4);align-items:flex-start">
+              <span style="flex:none">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PartThumb" alt="Фільтр масляний" size="{{ n76 }}" hint-size="76px,76px"></x-import>
+              </span>
+              <div style="min-width:0;flex:1">
+                <p class="ds-row__meta" style="margin:0">
+                  <span style="font-weight:600;color:var(--text-body)">MANN-FILTER</span>
+                  <span class="ds-article">W 712/95</span>
+                </p>
+                <a href="#1c" class="ds-row__title" style="margin-top:4px">Фільтр масляний</a>
+                <div style="margin-top:8px">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="4 вер, пт" relative="завтра" hint-size="auto,20px"></x-import>
+                </div>
+              </div>
+              <div style="flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:var(--space-2)">
+                <span style="position:relative;display:inline-flex">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="486" size="md" hint-size="auto,24px"></x-import>
+                  <dc-import name="Бейдж кешбеку" variant="c" percent="{{ p7 }}" bonus="{{ b34 }}" style="position:absolute;top:-12px;right:-16px" hint-size="18px,18px"></dc-import>
+                </span>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="primary" size="sm" icon="shopping-cart" hint-size="auto,34px">Купити</x-import>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)">Пропозиції</p>
+        <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px">
+          <li class="ds-offer ds-offer--primary" style="gap:var(--space-3)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="3 вер, чт" relative="сьогодні" hint-size="auto,20px"></x-import>
+            <span class="ds-stock ds-stock--in">більше 10 шт</span>
+            <span style="margin-left:auto;display:flex;align-items:center;gap:var(--space-4)">
+              <span style="position:relative;display:inline-flex">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="486" size="md" hint-size="auto,24px"></x-import>
+                <dc-import name="Бейдж кешбеку" variant="c" percent="{{ p7 }}" bonus="{{ b34 }}" style="position:absolute;top:-12px;right:-16px" hint-size="18px,18px"></dc-import>
+              </span>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="primary" size="sm" icon="shopping-cart" hint-size="auto,34px">В кошик</x-import>
+            </span>
+          </li>
+          <li class="ds-offer" style="gap:var(--space-3)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="5 вер, сб" hint-size="auto,20px"></x-import>
+            <span class="ds-stock ds-stock--in">4 шт</span>
+            <span style="margin-left:auto;display:flex;align-items:center;gap:var(--space-4)">
+              <span style="position:relative;display:inline-flex">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="452" size="md" hint-size="auto,24px"></x-import>
+                <dc-import name="Бейдж кешбеку" variant="c" percent="{{ p7 }}" bonus="{{ b32 }}" style="position:absolute;top:-12px;right:-16px" hint-size="18px,18px"></dc-import>
+              </span>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="primary" size="sm" icon="shopping-cart" hint-size="auto,34px">В кошик</x-import>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)">Картка деталі</p>
+        <div style="border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);display:flex;align-items:center">
+          <span style="position:relative;display:inline-flex">
+            <span class="ds-price ds-price--lg">12 480 <span class="ds-price__cur">₴</span></span>
+            <dc-import name="Бейдж кешбеку" variant="c" percent="{{ p2 }}" bonus="{{ b250 }}" pinned="{{ true }}" style="position:absolute;top:-7px;right:-22px" hint-size="18px,18px"></dc-import>
+          </span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)">Кошик</p>
+        <div style="border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+          <span style="font-size:var(--text-sm);color:var(--text-muted)">Разом за 3 позиції</span>
+          <span style="position:relative;display:inline-flex">
+            <span class="ds-price ds-price--md">1 342 <span class="ds-price__cur">₴</span></span>
+            <dc-import name="Бейдж кешбеку" variant="c" percent="{{ p5 }}" bonus="{{ b67 }}" tip="Повернемо 67 ₴ бонусами — ви зможете їх витратити на наступне замовлення" style="position:absolute;top:-12px;right:-16px" hint-size="18px,18px"></dc-import>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 1d ══════════════════════════════════════════════ -->
+    <div id="1d" style="width:470px;display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;display:flex;align-items:center;gap:8px">
+          <span style="display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:3px;background:var(--ink-800);color:var(--white);font-family:var(--font-mono);font-size:11px;font-weight:600">1d</span>
+          <span style="font-family:var(--font-display);font-size:17px;font-weight:600;letter-spacing:.01em;text-transform:uppercase;color:var(--text-strong)">Монети в білому колі</span>
+        </p>
+        <p style="margin:0;font-size:13px;line-height:1.45;color:var(--text-muted);text-wrap:pretty">Єдиний, що говорить про гроші, а не про відсоток: монети червоним на білій плашці з волосяною лінією.</p>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)">Список деталей</p>
+        <ul class="ds-rows" style="border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
+          <li class="ds-row">
+            <div style="display:flex;gap:var(--space-4);align-items:flex-start">
+              <span style="flex:none">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PartThumb" alt="Фільтр масляний" size="{{ n76 }}" hint-size="76px,76px"></x-import>
+              </span>
+              <div style="min-width:0;flex:1">
+                <p class="ds-row__meta" style="margin:0">
+                  <span style="font-weight:600;color:var(--text-body)">MANN-FILTER</span>
+                  <span class="ds-article">W 712/95</span>
+                </p>
+                <a href="#1d" class="ds-row__title" style="margin-top:4px">Фільтр масляний</a>
+                <div style="margin-top:8px">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="4 вер, пт" relative="завтра" hint-size="auto,20px"></x-import>
+                </div>
+              </div>
+              <div style="flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:var(--space-2)">
+                <span style="position:relative;display:inline-flex">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="486" size="md" hint-size="auto,24px"></x-import>
+                  <dc-import name="Бейдж кешбеку" variant="d" percent="{{ p7 }}" bonus="{{ b34 }}" style="position:absolute;top:-14px;right:-18px" hint-size="22px,22px"></dc-import>
+                </span>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="primary" size="sm" icon="shopping-cart" hint-size="auto,34px">Купити</x-import>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)">Пропозиції</p>
+        <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px">
+          <li class="ds-offer ds-offer--primary" style="gap:var(--space-3)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="3 вер, чт" relative="сьогодні" hint-size="auto,20px"></x-import>
+            <span class="ds-stock ds-stock--in">більше 10 шт</span>
+            <span style="margin-left:auto;display:flex;align-items:center;gap:var(--space-4)">
+              <span style="position:relative;display:inline-flex">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="486" size="md" hint-size="auto,24px"></x-import>
+                <dc-import name="Бейдж кешбеку" variant="d" percent="{{ p7 }}" bonus="{{ b34 }}" style="position:absolute;top:-14px;right:-18px" hint-size="22px,22px"></dc-import>
+              </span>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="primary" size="sm" icon="shopping-cart" hint-size="auto,34px">В кошик</x-import>
+            </span>
+          </li>
+          <li class="ds-offer" style="gap:var(--space-3)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="5 вер, сб" hint-size="auto,20px"></x-import>
+            <span class="ds-stock ds-stock--in">4 шт</span>
+            <span style="margin-left:auto;display:flex;align-items:center;gap:var(--space-4)">
+              <span style="position:relative;display:inline-flex">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="452" size="md" hint-size="auto,24px"></x-import>
+                <dc-import name="Бейдж кешбеку" variant="d" percent="{{ p7 }}" bonus="{{ b32 }}" style="position:absolute;top:-14px;right:-18px" hint-size="22px,22px"></dc-import>
+              </span>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="primary" size="sm" icon="shopping-cart" hint-size="auto,34px">В кошик</x-import>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)">Картка деталі</p>
+        <div style="border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);display:flex;align-items:center">
+          <span style="position:relative;display:inline-flex">
+            <span class="ds-price ds-price--lg">12 480 <span class="ds-price__cur">₴</span></span>
+            <dc-import name="Бейдж кешбеку" variant="d" percent="{{ p2 }}" bonus="{{ b250 }}" pinned="{{ true }}" style="position:absolute;top:-9px;right:-26px" hint-size="22px,22px"></dc-import>
+          </span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <p style="margin:0;font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)">Кошик</p>
+        <div style="border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+          <span style="font-size:var(--text-sm);color:var(--text-muted)">Разом за 3 позиції</span>
+          <span style="position:relative;display:inline-flex">
+            <span class="ds-price ds-price--md">1 342 <span class="ds-price__cur">₴</span></span>
+            <dc-import name="Бейдж кешбеку" variant="d" percent="{{ p5 }}" bonus="{{ b67 }}" tip="Повернемо 67 ₴ бонусами — ви зможете їх витратити на наступне замовлення" style="position:absolute;top:-14px;right:-18px" hint-size="22px,22px"></dc-import>
+          </span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    return { n76: 76, p2: 2, p5: 5, p7: 7, b32: 32, b34: 34, b67: 67, b250: 250 };
+  }
+}
+</script>
+</body>
+</html>

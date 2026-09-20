@@ -21,6 +21,7 @@
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
 <script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=14"></script>
 <script src="cart-store.js?v=2"></script>
+<script src="cashback-hint.js"></script>
 <style>
   /* Степер й «Інші склади» за розміром кнопки «В кошик» (105×34) — на всіх ширинах. */
   .ds-row .ds-addcart .ds-qty { width: 105px; height: 34px; }
@@ -115,12 +116,17 @@
     transition: var(--transition-colors);
   }
   [data-garage] a:hover { border-color: var(--ink-300); background: var(--surface-sunken); color: var(--text-strong); text-decoration: none; }
+  [data-garage] a svg { margin-right: 6px; color: var(--text-faint); }
 
   /* Лічильник «N деталей» — завжди один рядок, на будь-якій ширині */
   .ds-section-title__count { white-space: nowrap; }
 
   /* Бренд і мітка «Оригінал» в один рядок, назва деталі, під нею артикул */
   [data-list="parts"] .ds-row__meta { flex-wrap: wrap; row-gap: 2px; }
+
+  /* Значок кешбеку висить над правим кутом ціни. Колонка ціни й кнопки вирівняна
+     вправо, тому її правий край — це правий край ціни: значок прив'язуємо до неї. */
+  [data-list="parts"] .ds-row > div > div:last-child { position: relative; }
 
 
 
@@ -149,6 +155,9 @@
     }
     /* Пілюля лишається своєї висоти — просто по центру тієї ж смуги */
     [data-list="parts"] .ds-row > div > div:last-child > .ds-minqty { margin-top: 6px; }
+    /* Значок кешбеку: на телефоні ціна не стоїть у правому верхньому куті рядка,
+       тому значок повертається у потік — одразу після ціни, перед кнопкою. */
+    [data-list="parts"] [data-cashback] { position: static !important; order: 3; align-self: center; margin-left: -4px; }
     .ds-row { padding-inline: var(--space-3) !important; }
     .ds-pager { flex-wrap: wrap; }
     [data-carphoto] { width: 112px !important; height: 74px !important; }
@@ -172,7 +181,7 @@
 
 <div class="ds-page">
 
-  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteHeader" active="catalog" cart-count="{{ cartCount }}" hint-size="100%,150px"></x-import>
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteHeader" active="catalog" cashback-percent="10" cart-count="{{ cartCount }}" hint-size="100%,150px"></x-import>
 
   <main class="ds-container ds-main">
 
@@ -197,10 +206,12 @@
               <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="book-open" size="15" hint-size="15px,15px"></x-import>
               Оригінальні каталоги
             </a>
-            <a href="#">
-              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="repeat" size="15" hint-size="15px,15px"></x-import>
-              Обрати іншу машину
-            </a>
+            <sc-if value="{{ hasOtherCars }}" hint-placeholder-val="{{ true }}">
+              <a href="#">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="repeat" size="15" hint-size="15px,15px"></x-import>
+                Обрати іншу машину
+              </a>
+            </sc-if>
           </p>
         </div>
       </section>
@@ -241,6 +252,15 @@
         <sc-for list="{{ otherCars }}" as="car" hint-placeholder-count="2">
           <a href="#">{{ car.name }}</a>
         </sc-for>
+      </p>
+    </sc-if>
+
+    <sc-if value="{{ garageEmpty }}" hint-placeholder-val="{{ false }}">
+      <p data-garage style="margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)">
+        <a href="#">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="car-front" size="15" hint-size="15px,15px"></x-import>
+          Додати іншу машину
+        </a>
       </p>
     </sc-if>
 
@@ -298,7 +318,17 @@
           <sc-if value="{{ consumablesOpen }}" hint-placeholder-val="{{ false }}">
             <ul class="ds-rows" data-list="parts" style="list-style:none;margin:var(--space-3) 0 0;padding:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
               <sc-for list="{{ consumables }}" as="row" hint-placeholder-count="3">
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" oem="{{ row.oem }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" ship-date="{{ row.shipDate }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogsCount }}" faster-offers="{{ row.fasterOffers }}" faster-date="{{ row.fasterDate }}" faster-price="{{ row.fasterPrice }}" min-qty="{{ row.minQty }}" line-id="{{ row.lineId }}" max-qty="{{ row.maxQty }}" offers-href="{{ offersHref }}" href="#" hint-size="100%,150px"></x-import>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" oem="{{ row.oem }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" ship-date="{{ row.shipDate }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogsCount }}" faster-offers="{{ row.fasterOffers }}" faster-date="{{ row.fasterDate }}" faster-price="{{ row.fasterPrice }}" min-qty="{{ row.minQty }}" line-id="{{ row.lineId }}" max-qty="{{ row.maxQty }}" offers-href="{{ offersHref }}" href="#" hint-size="100%,150px">
+                  <span data-cashback style="position:absolute;top:-12px;right:-14px">
+                    <dc-import name="Бейдж кешбеку" percent="{{ row.cbPercent }}" bonus="{{ row.cbBonus }}" hint-size="18px,18px"></dc-import>
+                  </span>
+                  <sc-if value="{{ isStaff }}" hint-placeholder-val="{{ false }}">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="secondary" size="sm" as="a" href="{{ offersHref }}" icon="list" hint-size="auto,34px">Пропозиції</x-import>
+                  </sc-if>
+                  <sc-if value="{{ notStaff }}" hint-placeholder-val="{{ true }}">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.AddToCartButton" line-id="{{ row.lineId }}" min-qty="{{ row.minQty }}" max-qty="{{ row.maxQty }}" hint-size="134px,34px"></x-import>
+                  </sc-if>
+                </x-import>
               </sc-for>            </ul>
           </sc-if>
         </section>
@@ -382,7 +412,17 @@
                       <span style="font-size:var(--text-sm);color:var(--text-muted)">{{ outLabel }} — остання відома ціна</span>
                     </li>
                   </sc-if>
-                  <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" oem="{{ row.oem }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" ship-date="{{ row.shipDate }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogsCount }}" faster-offers="{{ row.fasterOffers }}" faster-date="{{ row.fasterDate }}" faster-price="{{ row.fasterPrice }}" min-qty="{{ row.minQty }}" line-id="{{ row.lineId }}" max-qty="{{ row.maxQty }}" offers-href="{{ offersHref }}" href="#" hint-size="100%,150px"></x-import>
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" oem="{{ row.oem }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" ship-date="{{ row.shipDate }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogsCount }}" faster-offers="{{ row.fasterOffers }}" faster-date="{{ row.fasterDate }}" faster-price="{{ row.fasterPrice }}" min-qty="{{ row.minQty }}" line-id="{{ row.lineId }}" max-qty="{{ row.maxQty }}" offers-href="{{ offersHref }}" href="#" hint-size="100%,150px">
+                  <span data-cashback style="position:absolute;top:-12px;right:-14px">
+                    <dc-import name="Бейдж кешбеку" percent="{{ row.cbPercent }}" bonus="{{ row.cbBonus }}" hint-size="18px,18px"></dc-import>
+                  </span>
+                  <sc-if value="{{ isStaff }}" hint-placeholder-val="{{ false }}">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="secondary" size="sm" as="a" href="{{ offersHref }}" icon="list" hint-size="auto,34px">Пропозиції</x-import>
+                  </sc-if>
+                  <sc-if value="{{ notStaff }}" hint-placeholder-val="{{ true }}">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.AddToCartButton" line-id="{{ row.lineId }}" min-qty="{{ row.minQty }}" max-qty="{{ row.maxQty }}" hint-size="134px,34px"></x-import>
+                  </sc-if>
+                </x-import>
                 </sc-for>
               </ul>
               <sc-if value="{{ pagerMore }}" hint-placeholder-val="{{ true }}">
@@ -707,6 +747,11 @@ const SORTS = [
 
 const OTHER_CARS = [{ name: 'Skoda Octavia II 1.9 TDI' }, { name: 'Renault Duster 1.5 dCi' }]
 
+/* Драбина кешбеку: 1–10% від ціни позиції, чим дорожче — тим менший відсоток. */
+const CASHBACK = (price) =>
+  price >= 10000 ? 1 : price >= 4000 ? 2 : price >= 1500 ? 3 : price >= 700 ? 5 : price >= 300 ? 7 : 10
+const CASHBACK_BONUS = (price) => Math.round((price * CASHBACK(price)) / 100)
+
 const UNCATEGORISED = 12
 const CONSUMABLES_TOTAL = 1676
 
@@ -900,7 +945,10 @@ class Component extends DCLogic {
       fasterPrice: part.faster ? part.faster.price : null,
       /* Рядок кошика й стеля за залишком — ті самі, що в картці деталі й пошуку. */
       lineId: part.brand + ' ' + part.article,
-      maxQty: part.qty
+      maxQty: part.qty,
+      /* Кешбек: 1–10% залежно від ціни, чим дорожча деталь — тим менший відсоток. */
+      cbPercent: CASHBACK(part.price),
+      cbBonus: CASHBACK_BONUS(part.price)
     })
 
     /* Кожен лічильник — це список з усіма іншими фільтрами, але без цього:
@@ -981,6 +1029,8 @@ class Component extends DCLogic {
     return {
       cartCount: s.cart + (window.DriveCart ? window.DriveCart.units() : s.cartUnits),
       offersHref,
+      isStaff: this.props.staffView === true,
+      notStaff: this.props.staffView !== true,
       isVehicle,
       isNode,
       crumbs: isVehicle
@@ -998,7 +1048,8 @@ class Component extends DCLogic {
           ],
       /* Перемикач із однією позицією — не перемикач: коли інших машин немає, смуга не малюється. */
       otherCars: OTHER_CARS,
-      hasOtherCars: (this.props.otherCarsInGarage ?? true) && OTHER_CARS.length > 0,
+      hasOtherCars: isVehicle && (this.props.otherCarsInGarage ?? true) && OTHER_CARS.length > 0,
+      garageEmpty: isVehicle && !((this.props.otherCarsInGarage ?? true) && OTHER_CARS.length > 0),
 
       treeQuery: s.treeQuery,
       onTreeQuery: (e) => this.setState({ treeQuery: e.target.value }),

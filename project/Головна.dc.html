@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
 <script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=13"></script>
+<script src="cashback-hint.js"></script>
 <style>
   @keyframes drive-skel { 0%, 100% { opacity: 1 } 50% { opacity: .45 } }
   [data-garage-grid] { grid-auto-rows: 1fr; }
@@ -44,7 +45,7 @@
 
 <div class="ds-page">
 
-  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteHeader" active="home" cart-count="{{ cartCount }}" hint-size="100%,150px"></x-import>
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteHeader" active="home" cashback-percent="10" cart-count="{{ cartCount }}" hint-size="100%,150px"></x-import>
 
   <main class="ds-container ds-main ds-main--wide">
 
