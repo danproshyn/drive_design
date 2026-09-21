@@ -72,21 +72,32 @@ class Component extends DCLogic {
     }
     const pr = price ? price.getBoundingClientRect() : r;
 
-    /* Нижня межа, за якою підказку обріже: найближчий предок з overflow, інакше вікно. */
+    /* Межі, за якими підказку обріже: найближчий предок з overflow, інакше вікно.
+       Список деталей має overflow:hidden, тому обрізає і знизу, і з боків. */
     let limit = window.innerHeight;
+    let minX = 8;
+    let maxX = window.innerWidth - 8;
     let node2 = el.parentElement;
     while (node2 && node2 !== document.body) {
-      const o = getComputedStyle(node2).overflow + getComputedStyle(node2).overflowY;
+      const cs = getComputedStyle(node2);
+      const o = cs.overflow + cs.overflowX + cs.overflowY;
       if (o.includes('hidden') || o.includes('auto') || o.includes('scroll')) {
-        limit = Math.min(limit, node2.getBoundingClientRect().bottom);
+        const cr = node2.getBoundingClientRect();
+        limit = Math.min(limit, cr.bottom);
+        minX = Math.max(minX, cr.left + 4);
+        maxX = Math.min(maxX, cr.right - 4);
         break;
       }
       node2 = node2.parentElement;
     }
 
-    const box = {};
-    if (r.right - 236 < 8) box.left = -4;
-    else box.right = -4;
+    /* Ширина підказки: 230 px, але не ширше за видиму смугу. */
+    const w = Math.min(230, maxX - minX);
+    /* Прив'язка вправо від значка; якщо ліворуч не влазить — притискаємо до лівої
+       межі видимої смуги, а не вікна, інакше край підказки ховається під списком. */
+    const box = r.right + 4 - w >= minX
+      ? { right: Math.round(r.right + 4 > maxX ? r.right - maxX : -4), maxWidth: w }
+      : { left: Math.round(minX - r.left), maxWidth: w };
     /* Місця під ціною бракує — підказка йде вгору від значка, ціна лишається видимою. */
     if (pr.bottom + 74 > limit) box.bottom = 'calc(100% + 6px)';
     else box.top = 'calc(100% + ' + Math.max(6, Math.round(pr.bottom - r.bottom) + 6) + 'px)';
@@ -107,10 +118,10 @@ class Component extends DCLogic {
       showTip: this.state.hover || !!this.props.pinned,
       tipStyle: {
         position: 'absolute',
-        ...(this.state.tipBox || { top: 'calc(100% + 6px)', right: -4 }),
         zIndex: 60,
         width: 'max-content',
         maxWidth: 230,
+        ...(this.state.tipBox || { top: 'calc(100% + 6px)', right: -4 }),
         padding: '7px 10px',
         borderRadius: 6,
         background: 'var(--ink-800)',

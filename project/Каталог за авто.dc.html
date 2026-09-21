@@ -140,12 +140,17 @@
     [data-list="parts"] .ds-row > div > div:last-child {
       flex-direction: row !important; align-items: center !important;
       width: 100%; justify-content: flex-end; gap: var(--space-3);
+      /* 6 px згори — місце для значка кешбеку над кутом ціни. Рядок від цього
+         не вищає: смуга ціни й так відбита від назви проміжком. */
+      margin-top: 6px;
     }
     [data-list="parts"] .ds-row > div > div:last-child > .ds-minqty { order: 1; }
     [data-list="parts"] .ds-row > div > div:last-child > .ds-price { order: 2; }
-    /* «В кошик» і «Пропозиції» — той самий слот після ціни */
-    [data-list="parts"] .ds-row > div > div:last-child > .ds-addcart,
-    [data-list="parts"] .ds-row > div > div:last-child > .ds-btn { order: 3; min-width: 105px; margin-left: 4px; }
+    /* «В кошик» і «Пропозиції» — той самий слот після ціни, крайні справа.
+       Кнопку монтує обгортка display:contents, тому селектор нащадка, не дитини:
+       інакше вона лишається order 0 і стає першою в рядку. */
+    [data-list="parts"] .ds-row > div > div:last-child .ds-addcart,
+    [data-list="parts"] .ds-row > div > div:last-child .ds-btn { order: 4; min-width: 105px; margin-left: 4px; }
     /* Степер за розміром кнопки «В кошик» — у базових правилах вище */
     /* Ціна, «від N шт» і кнопка — по центру верхньої смуги 34 px: «Інші склади»
        під степером додає висоту, але нічого не зсуває. */
@@ -155,9 +160,16 @@
     }
     /* Пілюля лишається своєї висоти — просто по центру тієї ж смуги */
     [data-list="parts"] .ds-row > div > div:last-child > .ds-minqty { margin-top: 6px; }
-    /* Значок кешбеку: на телефоні ціна не стоїть у правому верхньому куті рядка,
-       тому значок повертається у потік — одразу після ціни, перед кнопкою. */
-    [data-list="parts"] [data-cashback] { position: static !important; order: 3; align-self: center; margin-left: -4px; }
+    /* Значок кешбеку і на телефоні висить над правим кутом ціни, не займаючи місця:
+       обгортка нульової ширини (від'ємні поля гасять зайвий gap), значок у ній — absolute. */
+    [data-list="parts"] [data-cashback] {
+      position: relative !important; top: 0 !important; right: 0 !important;
+      order: 3; align-self: flex-start; width: 0; margin: 0 -6px;
+    }
+    /* Точно як на великих екранах: значок на 14 px вище верху тексту ціни й на 14 px
+       правіше її правого краю. На телефоні текст ціни відцентрований у смузі 34 px
+       (+1,7 px від її верху), тому зсув −17,4 px. */
+    [data-list="parts"] [data-cashback] > * { position: absolute; top: -12.2px; left: -6px; }
     .ds-row { padding-inline: var(--space-3) !important; }
     .ds-pager { flex-wrap: wrap; }
     [data-carphoto] { width: 112px !important; height: 74px !important; }
