@@ -261,13 +261,8 @@
                             <x-import component-from-global-scope="DesignSystem_d7c4f4.Badge" tone="oem" hint-size="auto,20px">Оригінал</x-import>
                           </sc-if>
                         </span>
-                        <a href="#" class="ds-row__title" style="font-size:var(--text-sm)">{{ row.name }}</a>
+                        <a href="#" class="ds-row__title" title="{{ row.name }}" style="font-size:var(--text-sm);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden">{{ row.name }}</a>
                         <span class="ds-article">{{ row.article }}</span>
-                        <p style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 0">
-                          <sc-if value="{{ row.kind }}" hint-placeholder-val="{{ true }}">
-                            <x-import component-from-global-scope="DesignSystem_d7c4f4.Badge" tone="analog" hint-size="auto,20px">{{ row.kindLabel }}</x-import>
-                          </sc-if>
-                        </p>
                       </div>
                     </div>
 
