@@ -124,7 +124,7 @@
   [data-dtable] tr[data-row]:hover { background: var(--surface-sunken); }
   [data-dtable] tr[data-row]:hover td:first-child { box-shadow: inset 3px 0 0 var(--red-500); }
   [data-dtable] tr[data-row][data-sel="true"] { background: var(--surface-sunken); }
-  [data-dtable] tr[data-row][data-sel="true"] td:first-child { box-shadow: inset 3px 0 0 var(--ink-800); }
+  [data-dtable] tr[data-row][data-sel="true"] td:first-child { box-shadow: inset 3px 0 0 var(--stock-in); }
   /* Значок примітки — сам не несе кольору, лишається сірим до наведення */
   [data-notebtn] {
     display: inline-grid; place-items: center; width: 20px; height: 20px; vertical-align: -3px;
@@ -138,6 +138,9 @@
     font-size: var(--text-xs); line-height: var(--leading-normal); overflow-wrap: anywhere; pointer-events: none;
     box-shadow: var(--shadow-md);
   }
+  [data-notetip] dl { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; }
+  [data-notetip] dt { margin: 0; color: rgb(255 255 255 / .62); white-space: nowrap; }
+  [data-notetip] dd { margin: 0; font-weight: 500; }
   [data-posbtn] { border: 0; background: none; padding: 0; font: inherit; font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-muted); cursor: pointer; }
   [data-posbtn]:hover { color: var(--text-strong); }
   [data-oem] { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 500; letter-spacing: var(--tracking-mono); text-decoration: none; }
@@ -169,11 +172,12 @@
   [data-diagram-inner] { position: absolute; inset: 0; transform-origin: 50% 50%; }
   [data-diagram-note] { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 8px; color: var(--ink-300); pointer-events: none; }
   [data-hot] {
-    position: absolute; padding: 0; border: 1.5px solid var(--ink-300); border-radius: 3px;
+    position: absolute; padding: 0; border: 0; border-radius: 3px;
+    box-shadow: 0 0 0 1.5px var(--ink-300);
     background: rgb(255 255 255 / .28); cursor: pointer; transition: var(--transition-colors);
   }
-  [data-hot]:hover { border-color: var(--red-500); background: rgb(232 27 33 / .1); }
-  [data-hot][data-sel="true"] { border-color: var(--ink-800); border-width: 2px; background: rgb(36 33 29 / .07); }
+  [data-hot]:hover, [data-hot][data-hover="true"] { box-shadow: 0 0 0 1.5px var(--red-500); background: rgb(232 27 33 / .1); }
+  [data-hot][data-sel="true"] { box-shadow: 0 0 0 2px var(--stock-in); background: rgb(21 127 62 / .08); }
 
   /* Сторінка вузла: схема й перелік деталей поруч від 900 px, нижче — одне під одним.
      Схему читають із ПК, тому від 1360 px контейнер цієї сторінки ширший за решту сайту
@@ -497,11 +501,16 @@
                               <th scope="col">№</th>
                               <th scope="col">Назва</th>
                               <th scope="col">OE-номер</th>
-                              <th scope="col">Специфікація</th>
+                              
                             </tr>
                           </thead>
                           <tbody>
                             <sc-for list="{{ unit.rows }}" as="row" hint-placeholder-count="4">
+                              <sc-if value="{{ row.restStart }}" hint-placeholder-val="{{ false }}">
+                                <tr>
+                                  <td colspan="3" style="padding:var(--space-3) var(--space-3) var(--space-2);border-top:1px solid var(--line);background:var(--surface-sunken);font-size:var(--text-3xs);font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)">Інші частини вузла</td>
+                                </tr>
+                              </sc-if>
                               <tr>
                                 <td data-col="pos">
                                   <sc-if value="{{ row.showCode }}" hint-placeholder-val="{{ true }}">
@@ -537,7 +546,7 @@
                                     </span>
                                   </sc-if>
                                 </td>
-                                <td data-col="spec">{{ row.spec }}</td>
+                                
                               </tr>
                             </sc-for>
                           </tbody>
@@ -545,7 +554,7 @@
                       </div>
 
                       <sc-if value="{{ unit.hasRest }}" hint-placeholder-val="{{ true }}">
-                        <p style="margin:0"><button type="button" class="ds-btn ds-btn--link" style="font-size:var(--text-sm)" onClick="{{ unit.showRest }}">{{ unit.restLabel }}</button></p>
+                        <p style="margin:0"><button type="button" class="ds-btn ds-btn--link" style="font-size:var(--text-sm)" onClick="{{ unit.toggleRest }}">{{ unit.restLabel }}</button></p>
                       </sc-if>
                       </div>
                     </div>
@@ -600,7 +609,7 @@
                     <em style="font-family:var(--font-sans);font-size:var(--text-3xs);font-style:normal;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint)">Схема виробника</em>
                   </div>
                   <sc-for list="{{ hotspots }}" as="hot" hint-placeholder-count="5">
-                    <button data-hot data-sel="{{ hot.sel }}" style="{{ hot.style }}" aria-label="{{ hot.label }}" onClick="{{ hot.pick }}"></button>
+                    <button data-hot data-sel="{{ hot.sel }}" data-hover="{{ hot.hover }}" style="{{ hot.style }}" aria-label="{{ hot.label }}" onClick="{{ hot.pick }}"></button>
                   </sc-for>
                 </div>
               </div>
@@ -628,7 +637,7 @@
                       <th scope="col">№</th>
                       <th scope="col">Назва</th>
                       <th scope="col">OE-номер</th>
-                      <th scope="col">Специфікація</th>
+                      
                     </tr>
                   </thead>
                   <tbody>
@@ -668,7 +677,7 @@
                             </span>
                           </sc-if>
                         </td>
-                        <td data-col="spec">{{ row.spec }}</td>
+                        
                       </tr>
                     </sc-for>
                   </tbody>
@@ -685,7 +694,14 @@
   <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteFooter" hint-size="100%,260px"></x-import>
 
   <sc-if value="{{ noteOpen }}" hint-placeholder-val="{{ false }}">
-    <div data-notetip role="tooltip" style="left:{{ noteLeft }};top:{{ noteTop }}">{{ noteText }}</div>
+    <div data-notetip role="tooltip" style="left:{{ noteLeft }};top:{{ noteTop }}">
+      <dl>
+        <sc-for list="{{ noteFields }}" as="f" hint-placeholder-count="2">
+          <dt>{{ f.k }}</dt>
+          <dd>{{ f.v }}</dd>
+        </sc-for>
+      </dl>
+    </div>
   </sc-if>
 </div>
 
@@ -828,6 +844,16 @@ const UNIT_A = [
   { code: '13', name: 'Комплект смазки для направляющих', oem: 'G052150A2', spec: '10 г', note: '' },
   { code: '', name: 'Комплект не является запчастью, имеется в позиции:', oem: '', spec: '', note: 'Прим.: 2' },
 ]
+
+/* Додаткові постачальникові поля позиції — показуємо у підказці значка «i». */
+const EXTRA = {
+  N90813202: { range: '01.1996 - 12.2007', size: '10', form: 'SELF LOCKING', remarks: 'ALL' },
+  N90813203: { range: '01.1996 - 12.2007', size: '10', form: 'SELF LOCKING', remarks: 'ALL' },
+  N10648301: { range: '06.2012 - 12.2020', remarks: 'ALL' },
+  '5Q0615301F': { range: '06.2012 - 12.2020' },
+  '5Q0615301H': { range: '06.2012 - 12.2020' },
+  N91125501: { range: '01.2013 - 12.2020', size: '8', form: 'SELF LOCKING' },
+}
 
 const UNIT_B = [
   { code: '1', name: 'Тормозной диск', oem: '5Q0615601D', spec: 'Ø 272 X 10', note: '' },
@@ -1114,7 +1140,7 @@ class Component extends DCLogic {
   /* Примітка постачальника буває на пів рядка кодів двигунів, тому в таблиці стоїть
      значок, а текст показуємо поруч із ним. Підказка з position:fixed, бо перелік
      деталей — контейнер зі скролом, і абсолютна її обрізала б по краю. */
-  noteOn = (text) => (event) => {
+  noteOn = (fields) => (event) => {
     if (event.type === 'focus') this.noteFocused = true
     const r = event.currentTarget.getBoundingClientRect()
     /* Підказку тримаємо у вікні: на телефоні значок часто стоїть біля правого краю
@@ -1122,7 +1148,7 @@ class Component extends DCLogic {
     const vw = window.innerWidth
     const half = Math.min(300, vw - 16) / 2
     const left = Math.round(Math.min(Math.max(r.left + r.width / 2, 8 + half), vw - 8 - half))
-    this.setState({ note: { text, left, top: Math.round(r.bottom + 8) } })
+    this.setState({ note: { fields, left, top: Math.round(r.bottom + 8) } })
   }
 
   /* Мишка й клавіатура тримають підказку незалежно: відведення курсору не гасить те,
@@ -1137,6 +1163,15 @@ class Component extends DCLogic {
     return details.map((detail, index) => {
       const previous = details[index - 1]
       const hasOem = detail.oem !== ''
+      const extra = EXTRA[detail.oem] || {}
+      const info = [
+        ['range', extra.range],
+        ['Размер', extra.size],
+        ['Форма', extra.form],
+        ['Спецификация', detail.spec],
+        ['Прим.', detail.note.replace(/^Прим\.:\s*/, '').replace(/[;,]*;+/g, '; ').replace(/[;,\s]+$/, '')],
+        ['remarks', extra.remarks],
+      ].filter(p => p[1]).map(p => ({ k: p[0], v: p[1] }))
       const row = {
         code: detail.code,
         showCode: detail.code !== '' && (index === 0 || (previous && previous.code !== detail.code)),
@@ -1151,9 +1186,9 @@ class Component extends DCLogic {
         copyIcon: this.state.copied === detail.oem ? 'check' : 'copy',
         copyLabel: this.state.copied === detail.oem ? 'Скопійовано' : 'Скопіювати номер ' + detail.oem,
         copy: this.copy(detail.oem),
-        hasNote: detail.note !== '',
-        noteLabel: detail.note,
-        noteOn: this.noteOn(detail.note),
+        hasNote: info.length > 0,
+        noteLabel: info.map(f => f.k + ': ' + f.v).join('; '),
+        noteOn: this.noteOn(info),
         noteOff: this.noteOff,
       }
 
@@ -1245,10 +1280,10 @@ class Component extends DCLogic {
       const restCount = unit.details.length - 2
       return {
         name: unit.name,
-        rows: this.rows(shown, marks, false),
-        hasRest: !open && restCount > 0,
-        restLabel: 'Показати інші частини вузла (' + restCount + ')',
-        showRest: () => this.setState((prev) => ({ rest: Object.assign({}, prev.rest, { [unit.key]: true }) })),
+        rows: this.rows(shown, marks, false).map((r, i) => Object.assign(r, { restStart: open && i === 2 })),
+        hasRest: restCount > 0,
+        restLabel: open ? 'Згорнути інші частини вузла' : 'Показати інші частини вузла (' + restCount + ')',
+        toggleRest: () => this.setState((prev) => ({ rest: Object.assign({}, prev.rest, { [unit.key]: !open }) })),
       }
     })
 
@@ -1268,7 +1303,7 @@ class Component extends DCLogic {
     return {
       centeredNotice,
       noteOpen: !!s.note,
-      noteText: s.note ? s.note.text : '',
+      noteFields: s.note ? s.note.fields : [],
       noteLeft: s.note ? s.note.left + 'px' : '0px',
       noteTop: s.note ? s.note.top + 'px' : '0px',
       cartCount: 2,
@@ -1346,7 +1381,8 @@ class Component extends DCLogic {
       hotspots: HOTS.map((hot) => ({
         code: hot.code,
         label: 'Позиція ' + hot.code + ' на схемі',
-        sel: s.sel === hot.code ? 'true' : s.hover === hot.code ? 'true' : 'false',
+        sel: s.sel === hot.code ? 'true' : 'false',
+        hover: s.hover === hot.code ? 'true' : 'false',
         style: 'left:' + hot.x + '%;top:' + hot.y + '%;width:' + hot.w + '%;height:' + hot.h + '%',
         pick: this.selectCode(hot.code),
       })),
