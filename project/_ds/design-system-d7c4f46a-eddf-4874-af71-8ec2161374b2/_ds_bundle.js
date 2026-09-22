@@ -3531,7 +3531,7 @@ function HeaderMenu({ items, phones, cashbackPercent, onNavigate }) {
           }, h('span', { className: 'ds-phonemenu__mark' }, h(OperatorGlyph, { name: p.glyph, size: 17 })), p.number))),
           cashbackPercent
             ? h('div', { className: 'ds-headermenu__promo' },
-                'Отримуйте до ', h('strong', null, cashbackPercent + '%'), ' кешбеку на будь-яке замовлення')
+                'Отримуйте до ', h('strong', null, cashbackPercent + '%'), ' кешбеку на всі товари')
             : null)
       : null);
 }
@@ -3582,7 +3582,7 @@ function SiteHeader({
         cashbackPercent
           ? h('span', { className: 'ds-utilitybar__promo' },
               h(__ds_scope.Icon, { name: 'badge-percent', size: 13 }),
-              'Отримуйте до ', h('strong', null, cashbackPercent + '%'), ' кешбеку на будь-яке замовлення')
+              'Отримуйте до ', h('strong', null, cashbackPercent + '%'), ' кешбеку на всі товари')
           : null,
         h(PhoneMenu, { phones }))),
     h('div', {
