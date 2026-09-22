@@ -170,7 +170,7 @@
           <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" hint-size="100%,56px">Цей артикул є в кількох виробників — оберіть потрібного.</x-import>
         </sc-if>
         <sc-if value="{{ noticeCross }}" hint-placeholder-val="{{ false }}">
-          <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="accent" hint-size="100%,56px">За цим артикулом нічого не знайдено — показуємо аналоги: заміни від постачальників (кроси) і збіги за оригінальним (OE) номером.</x-import>
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="accent" hint-size="100%,56px">За цим артикулом нічого не знайдено — показуємо аналоги.</x-import>
         </sc-if>
         <sc-if value="{{ noticeFuzzy }}" hint-placeholder-val="{{ false }}">
           <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="warning" hint-size="100%,56px">Точного збігу немає. Показуємо схожі артикули.</x-import>
@@ -201,7 +201,7 @@
           <div data-toolbar style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--space-3) var(--space-4)">
           <sc-if value="{{ showKindFilter }}" hint-placeholder-val="{{ false }}">
             <div style="flex:1 1 auto;min-width:0;display:grid;gap:var(--space-3)">
-              <div data-kind-chips style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)" data-comment-anchor="aceb17f502-div">
+              <div data-kind-chips style="display:none;flex-wrap:wrap;align-items:center;gap:var(--space-2)" data-comment-anchor="aceb17f502-div">
                 <span class="t-eyebrow" style="margin-right:var(--space-2)">Вид</span>
                 <x-import component-from-global-scope="DesignSystem_d7c4f4.Chip" as="button" active="{{ kindAll }}" onClick="{{ setKindAll }}" hint-size="auto,34px">Усі</x-import>
                 <x-import component-from-global-scope="DesignSystem_d7c4f4.Chip" as="button" active="{{ kindCross }}" count="{{ countCross }}" onClick="{{ setKindCross }}" hint-size="auto,34px">Аналог (кроси)</x-import>
