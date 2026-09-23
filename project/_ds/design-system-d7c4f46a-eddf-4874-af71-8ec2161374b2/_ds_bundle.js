@@ -1112,11 +1112,11 @@ function SearchField({
   }, /*#__PURE__*/React.createElement(__ds_scope.Icon, {
     name: "x",
     size: 15
-  })) : null, suggests), /*#__PURE__*/React.createElement(__ds_scope.Button, {
+  })) : null), /*#__PURE__*/React.createElement(__ds_scope.Button, {
     variant: "dark",
     size: hero ? 'lg' : 'md',
     onClick: onSubmit
-  }, submitLabel), error ? /*#__PURE__*/React.createElement("p", {
+  }, submitLabel), suggests, error ? /*#__PURE__*/React.createElement("p", {
     className: "ds-field__error",
     role: "alert",
     style: {

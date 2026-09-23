@@ -119,7 +119,23 @@
             <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="17" hint-size="17px,17px"></x-import>
           </button>
           <div data-tree-panel data-open="{{ treeOpenAttr }}" style="margin-top:var(--space-3)">
-            <x-import component-from-global-scope="DesignSystem_d7c4f4.CategoryTree" nodes="{{ allNodes }}" open-code="engine-oil" hint-size="100%,360px"></x-import>
+            <div class="ds-treefield" data-treefield style="margin-bottom:var(--space-3)">
+              <span class="ds-treefield__icon" data-treeicon>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="search" size="16" hint-size="16px,16px"></x-import>
+              </span>
+              <input class="ds-input" data-treesearch type="search" aria-label="Пошук у категоріях" placeholder="Шукати в категоріях" value="{{ treeQuery }}" onChange="{{ onTreeQuery }}">
+              <sc-if value="{{ treeHasQuery }}" hint-placeholder-val="{{ false }}">
+                <button type="button" class="ds-treefield__clear" aria-label="Очистити" onClick="{{ onTreeClear }}">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="x" size="15" hint-size="15px,15px"></x-import>
+                </button>
+              </sc-if>
+            </div>
+            <sc-if value="{{ treeHasNodes }}" hint-placeholder-val="{{ true }}">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.CategoryTree" nodes="{{ treeNodes }}" open-code="engine-oil" expand-all="{{ treeSearching }}" hint-size="100%,360px"></x-import>
+            </sc-if>
+            <sc-if value="{{ treeEmpty }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Нічого не знайдено серед універсальних категорій.</p>
+            </sc-if>
           </div>
         </aside>
 
@@ -311,6 +327,8 @@ class Component extends DCLogic {
       totalLabel: thousands(total) + ' ' + plural(total, 'позиція', 'позиції', 'позицій'),
       treeQuery: s.treeQuery,
       onTreeQuery: (e) => this.setState({ treeQuery: e.target.value }),
+      treeHasQuery: s.treeQuery.length > 0,
+      onTreeClear: () => this.setState({ treeQuery: '' }),
       treeSearching,
       treeNodes,
       treeHasNodes: treeNodes.length > 0,
