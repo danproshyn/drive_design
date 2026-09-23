@@ -152,7 +152,7 @@
                   <span style="font-weight:600;color:var(--text-body)">{{ line.brand }}</span>
                 </p>
                 <a href="Картка деталі.dc.html" class="ds-row__title" style="max-width:44ch">{{ line.name }}</a>
-                <p style="margin:0"><span class="ds-article">{{ line.article }}</span></p>
+                <p style="margin:0;display:flex;align-items:center;gap:4px"><span class="ds-article">{{ line.article }}</span><sc-if value="{{ staffCopy }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ line.copyArticle }}" title="{{ line.copyArticleLabel }}" aria-label="{{ line.copyArticleLabel }}" style="position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:0;border-radius:var(--radius-sm);background:none;color:var(--text-muted);cursor:pointer;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);color:var(--text-strong)" style-before="content:'';position:absolute;inset:-10px"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ line.copyArticleIcon }}" size="14" hint-size="14px,14px"></x-import></button></sc-if></p>
                 <div data-meta>
                   <span style="display:inline-flex;align-items:center;min-height:22px">
                     <x-import component-from-global-scope="DesignSystem_d7c4f4.ShipDate" date="{{ line.shipDate }}" relative="{{ line.shipRelative }}" cutoff="{{ line.shipCutoff }}" hint-size="auto,34px"></x-import>
@@ -253,7 +253,7 @@
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:980},&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Заповнений&quot;,&quot;Порожній&quot;,&quot;Завантаження&quot;],&quot;default&quot;:&quot;Заповнений&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;saveFailed&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:980},&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Заповнений&quot;,&quot;Порожній&quot;,&quot;Завантаження&quot;],&quot;default&quot;:&quot;Заповнений&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;saveFailed&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;staffView&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;}}">
 /*
  * Кошик. Правила кількості — з lib/cart.ts: крок дорівнює min_qty, значення нижче мінімуму
  * піднімається, некратне округлюється ВГОРУ, понад запас — обрізається до найбільшої кратної
@@ -377,6 +377,24 @@ class Component extends DCLogic {
     if (event.key === 'Enter') event.currentTarget.blur()
   }
 
+  /* Копіювання артикула — лише у вигляді продавця. */
+  copyArticle = (key, value) => (event) => {
+    if (event) { event.preventDefault(); event.stopPropagation() }
+    if (navigator.clipboard) navigator.clipboard.writeText(value).catch(() => {})
+    this.setState({ copiedArticle: key })
+    clearTimeout(this.articleTimer)
+    this.articleTimer = setTimeout(() => this.setState({ copiedArticle: null }), 1600)
+  }
+
+  articleCopyVals = (key, value) => {
+    const done = this.state.copiedArticle === key
+    return {
+      copyArticle: this.copyArticle(key, value),
+      copyArticleIcon: done ? 'check' : 'copy',
+      copyArticleLabel: done ? 'Скопійовано' : 'Скопіювати артикул ' + value
+    }
+  }
+
   remove = (line) => () =>
     this.setState((s) => ({ lines: s.lines.filter((row) => row.id !== line.id) }))
 
@@ -398,6 +416,7 @@ class Component extends DCLogic {
         key: line.id,
         brand: line.brand,
         article: line.article,
+        ...this.articleCopyVals(line.id, line.article),
         name: line.name,
         thumbSize: 88,
         strokeWidth: 2.25,
@@ -430,6 +449,7 @@ class Component extends DCLogic {
 
     return {
       cartCount: filled ? lines.length : 0,
+      staffCopy: this.props.staffView ?? false,
       hasLines: filled,
       isEmpty: view === 'Порожній' || (view === 'Заповнений' && lines.length === 0),
       isLoading: view === 'Завантаження',

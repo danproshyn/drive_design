@@ -90,6 +90,9 @@
   }
   [data-specs] dd { margin: 0; font-size: var(--text-sm); font-weight: 500; color: var(--text-strong); }
   [data-specs] dd.ds-article { font-weight: 400; }
+  [data-copy-article] { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; margin-left: 4px; padding: 0; border: 0; border-radius: var(--radius-sm); background: none; color: var(--text-muted); cursor: pointer; vertical-align: middle; transition: var(--transition-colors); }
+  [data-copy-article]::before { content: ''; position: absolute; inset: -10px; }
+  [data-copy-article]:hover { background: var(--surface-sunken); color: var(--text-strong); }
 
 
   /* Той самий перелік у шапці вузла — один рядок, місця тут мало */
@@ -315,7 +318,12 @@
         </sc-if>
       </section>
 
-      <sc-if value="{{ showConsumables }}" hint-placeholder-val="{{ true }}">
+      <p style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2);margin:0;padding-top:var(--space-5);border-top:1px solid var(--line);font-size:var(--text-sm);color:var(--text-muted)">
+        Оливи, рідини, лампи й щітки підходять на більшість авто — вони в розділі
+        <a href="Універсальні товари.dc.html">Універсальні товари</a>
+      </p>
+
+      <sc-if value="{{ showConsumables }}" hint-placeholder-val="{{ false }}">
         <section style="padding-top:var(--space-5);border-top:1px solid var(--line)">
           <button onClick="{{ toggleConsumables }}" style="display:flex;width:100%;align-items:baseline;justify-content:space-between;gap:var(--space-4);min-height:44px;padding:0;border:0;background:none;font:inherit;text-align:left;cursor:pointer">
             <span style="font-size:var(--text-md);font-weight:600;color:var(--text-strong)">
@@ -583,7 +591,7 @@
 </div>
 
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1180},&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;vehicle&quot;,&quot;category&quot;,&quot;empty&quot;],&quot;default&quot;:&quot;category&quot;,&quot;tsType&quot;:&quot;'vehicle' | 'category' | 'empty'&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;otherCarsInGarage&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;showFacets&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;showConsumables&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;staffView&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1180},&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;vehicle&quot;,&quot;category&quot;,&quot;empty&quot;],&quot;default&quot;:&quot;category&quot;,&quot;tsType&quot;:&quot;'vehicle' | 'category' | 'empty'&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;otherCarsInGarage&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;showFacets&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;showConsumables&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;staffView&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Стан екрана&quot;}}">
 /*
  * Каталог за авто. Другий дизайн списку (PartCard): одна деталь — одна найкраща ціна,
  * без кількості, кожне вторинне посилання веде в картку деталі, а не розкриває щось на місці.
@@ -903,7 +911,27 @@ class Component extends DCLogic {
     sync()
   }
 
+  /* Копіювання артикула — лише у вигляді продавця. PartCard малює артикул сам,
+     тому кнопку передаємо разом із номером. */
+  copyArticle = (key, value) => (event) => {
+    if (event) { event.preventDefault(); event.stopPropagation() }
+    if (navigator.clipboard) navigator.clipboard.writeText(value).catch(() => {})
+    this.setState({ copiedArticle: key })
+    clearTimeout(this.articleTimer)
+    this.articleTimer = setTimeout(() => this.setState({ copiedArticle: null }), 1600)
+  }
+
+  articleNode = (key, value) => {
+    const Icon = window.DesignSystem_d7c4f4 && window.DesignSystem_d7c4f4.Icon
+    const done = this.state.copiedArticle === key
+    const label = done ? 'Скопійовано' : 'Скопіювати артикул ' + value
+    return React.createElement(React.Fragment, null, value,
+      React.createElement('button', { type: 'button', 'data-copy-article': '', onClick: this.copyArticle(key, value), title: label, 'aria-label': label },
+        Icon ? React.createElement(Icon, { name: done ? 'check' : 'copy', size: 14 }) : null))
+  }
+
   componentWillUnmount() {
+    clearTimeout(this.articleTimer)
     clearTimeout(this.cartRetry)
     if (this.unsubCart) this.unsubCart()
   }
@@ -921,7 +949,7 @@ class Component extends DCLogic {
     const s = this.state
     const view = this.props.state ?? 'category'
     const showFacets = this.props.showFacets ?? true
-    const showConsumables = this.props.showConsumables ?? true
+    const showConsumables = this.props.showConsumables ?? false
     /* Вигляд продавця: у списку деталей замість «В кошик» — перехід до всіх пропозицій. */
     const offersHref = this.props.staffView === true ? 'Картка деталі.dc.html' : ''
     const isVehicle = view === 'vehicle'
@@ -952,6 +980,7 @@ class Component extends DCLogic {
 
     const draw = (part) => ({
       ...part,
+      article: this.props.staffView === true ? this.articleNode(part.id, part.article) : part.article,
       inStock: part.qty > 0,
       /* PartCard сам показує пілюлю «від N шт», коли партія більша за одну. */
       minQty: part.minQty ?? 1,

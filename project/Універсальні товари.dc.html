@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/colors.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/space.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/motion.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/layout.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/base.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=15"></script>
+<script src="cart-store.js?v=2"></script>
+<style>
+  a { color: var(--text-action); }
+  a:hover { color: var(--text-action-hover); }
+  .ds-row .ds-addcart .ds-qty { width: 105px; height: 34px; }
+  .ds-row .ds-addcart .ds-qty button { width: 30px; }
+  .ds-section-title__count { white-space: nowrap; }
+  [data-groups] { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(272px, 1fr)); }
+  [data-layout] { grid-template-columns: minmax(0, 1fr); }
+  [data-tree-panel][data-open="false"] { display: none; }
+  [data-facet-panel][data-open="false"] { display: none; }
+  [data-facet-panel][data-open="true"] { position: fixed; inset: 0; z-index: 80; background: var(--surface-overlay); }
+  [data-facet-panel][data-open="true"] > div {
+    position: absolute; inset-block: 0; right: 0; width: min(360px, 100%);
+    overflow-y: auto; border: 0; border-left: 1px solid var(--line); border-radius: 0;
+    box-shadow: var(--shadow-lg); padding: var(--space-4) var(--space-4) var(--space-8);
+  }
+  @media (min-width: 900px) {
+    [data-layout] { grid-template-columns: 272px minmax(0, 1fr); }
+    [data-tree-toggle] { display: none !important; }
+    [data-tree-panel][data-open="false"] { display: block; }
+    [data-tree-panel] { margin-top: 0 !important; }
+  }
+  @media (min-width: 1120px) {
+    [data-layout] { grid-template-columns: 272px minmax(0, 1fr) 248px; }
+    [data-facets-toggle] { display: none !important; }
+    [data-facet-panel] { position: static !important; background: none !important; }
+    [data-facet-panel][data-open="false"] { display: block; }
+    [data-facet-panel] > div {
+      position: static !important; width: auto !important; overflow: visible !important;
+      border: 1px solid var(--line) !important; border-radius: var(--radius-lg) !important;
+      box-shadow: none !important; padding: var(--space-4) !important;
+    }
+    [data-sheet-close] { display: none !important; }
+  }
+  @media (max-width: 639px) {
+    [data-list="parts"] .ds-row > div:first-child { flex-wrap: wrap; }
+    [data-list="parts"] .ds-row .ds-thumb { width: 76px !important; height: 76px !important; }
+    [data-list="parts"] .ds-row > div > div:last-child {
+      flex-direction: row !important; align-items: center !important;
+      width: 100%; justify-content: flex-end; gap: var(--space-3);
+    }
+    .ds-row { padding-inline: var(--space-3) !important; }
+    [data-toolbar] { flex-direction: column; align-items: flex-start !important; }
+    [data-toolbar] > * { margin-left: 0 !important; }
+    [data-toolbar] > [data-facets-toggle] { order: -1; }
+    [data-toolbar] .ds-sortfield__menu { right: auto; left: 0; }
+  }
+</style>
+</helmet>
+
+<div class="ds-page">
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteHeader" active="universal" cashback-percent="10" cart-count="{{ cartCount }}" hint-size="100%,150px"></x-import>
+
+  <main class="ds-container ds-main">
+    <x-import component-from-global-scope="DesignSystem_d7c4f4.Breadcrumbs" items="{{ crumbs }}" hint-size="100%,24px"></x-import>
+
+    <sc-if value="{{ isLanding }}" hint-placeholder-val="{{ true }}">
+      <section style="display:grid;gap:var(--space-4)">
+        <h1 class="ds-section-title" style="margin:0">Універсальні товари <span class="ds-section-title__count">{{ totalLabel }}</span></h1>
+        <p style="margin:0;max-width:64ch;font-size:var(--text-sm);color:var(--text-muted)">Підходять на більшість авто, тому машину тут обирати не треба. Запчастини під конкретне авто — у <a href="Каталог за авто.dc.html">каталозі за авто</a>.</p>
+
+        <div style="max-width:420px">
+          <div class="ds-treefield" data-treefield>
+            <span class="ds-treefield__icon">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="search" size="16" hint-size="16px,16px"></x-import>
+            </span>
+            <input class="ds-input" type="search" aria-label="Пошук у категоріях" placeholder="Шукати в категоріях" value="{{ treeQuery }}" onChange="{{ onTreeQuery }}">
+          </div>
+        </div>
+
+        <sc-if value="{{ treeHasNodes }}" hint-placeholder-val="{{ true }}">
+          <div data-groups>
+            <sc-for list="{{ treeNodes }}" as="group" hint-placeholder-count="8">
+              <section style="padding:var(--space-4);border:1px solid var(--line);border-radius:var(--radius-lg)">
+                <p style="display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3);margin:0 0 var(--space-2);padding:0 var(--space-2);font-family:var(--font-display);text-transform:uppercase;font-size:var(--text-md);letter-spacing:.01em;color:var(--text-strong)">
+                  {{ group.name }}
+                  <span class="ds-tree__count">{{ group.count }}</span>
+                </p>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.CategoryTree" nodes="{{ group.children }}" expand-all="{{ treeSearching }}" hint-size="100%,120px"></x-import>
+              </section>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ treeEmpty }}" hint-placeholder-val="{{ false }}">
+          <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Такої категорії серед універсальних товарів немає. Спробуйте пошук за артикулом у шапці.</p>
+        </sc-if>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isCategory }}" hint-placeholder-val="{{ false }}">
+      <div data-layout style="display:grid;gap:var(--space-6);align-items:start">
+
+        <aside style="min-width:0">
+          <button data-tree-toggle onClick="{{ toggleTree }}" style="display:flex;width:100%;align-items:center;justify-content:space-between;gap:var(--space-3);min-height:44px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:var(--text-sm);font-weight:600;color:var(--text-strong);cursor:pointer" style-hover="background:var(--surface-sunken)">
+            <span>Категорії <span style="font-weight:400;color:var(--text-muted)">Олива моторна</span></span>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="17" hint-size="17px,17px"></x-import>
+          </button>
+          <div data-tree-panel data-open="{{ treeOpenAttr }}" style="margin-top:var(--space-3)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.CategoryTree" nodes="{{ allNodes }}" open-code="engine-oil" hint-size="100%,360px"></x-import>
+          </div>
+        </aside>
+
+        <div style="min-width:0;display:grid;gap:var(--space-4)">
+          <h1 class="ds-section-title" style="margin:0">Олива моторна <span class="ds-section-title__count">{{ countLabel }}</span></h1>
+
+          <div data-toolbar style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)">
+            <div class="ds-sortfield" style="margin-left:auto">
+              <button type="button" class="ds-sortfield__trigger" aria-haspopup="listbox" aria-expanded="{{ sortOpenAttr }}" onClick="{{ toggleSort }}">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-down" size="15" hint-size="15px,15px"></x-import>
+                <span>{{ sortLabel }}</span>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="15" hint-size="15px,15px"></x-import>
+              </button>
+              <sc-if value="{{ sortOpen }}" hint-placeholder-val="{{ false }}">
+                <ul class="ds-sortfield__menu" role="listbox">
+                  <sc-for list="{{ sortOptions }}" as="opt" hint-placeholder-count="3">
+                    <li role="option" aria-selected="{{ opt.selectedAttr }}" data-selected="{{ opt.selectedAttr }}" onClick="{{ opt.pick }}">{{ opt.label }}</li>
+                  </sc-for>
+                </ul>
+              </sc-if>
+            </div>
+            <button data-facets-toggle onClick="{{ toggleFacets }}" style="display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:var(--text-sm);font-weight:600;color:var(--text-strong);cursor:pointer" style-hover="background:var(--surface-sunken);border-color:var(--ink-300)">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="sliders-horizontal" size="17" hint-size="17px,17px"></x-import>
+              Фільтри
+              <span style="color:var(--text-muted);font-weight:400">{{ activeFilterLabel }}</span>
+            </button>
+          </div>
+
+          <sc-if value="{{ hasRows }}" hint-placeholder-val="{{ true }}">
+            <ul class="ds-rows" data-list="parts" style="list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
+              <sc-for list="{{ rows }}" as="row" hint-placeholder-count="6">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" ship-date="{{ row.shipDate }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogs }}" line-id="{{ row.lineId }}" max-qty="{{ row.qty }}" href="#" hint-size="100%,150px">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.AddToCartButton" line-id="{{ row.lineId }}" min-qty="{{ 1 }}" max-qty="{{ row.qty }}" hint-size="134px,34px"></x-import>
+                </x-import>
+              </sc-for>
+            </ul>
+          </sc-if>
+          <sc-if value="{{ noRows }}" hint-placeholder-val="{{ false }}">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="filter" title="Під вибрані фільтри товарів немає" action="{{ clearAction }}" hint-size="100%,200px">Зніміть частину умов і список повернеться.</x-import>
+          </sc-if>
+        </div>
+
+        <aside data-facet-panel data-open="{{ facetsOpenAttr }}" onClick="{{ closeSheetOnScrim }}" style="min-width:0">
+          <div style="padding:var(--space-4);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface)">
+            <div style="display:flex;align-items:center;gap:var(--space-3)">
+              <p class="t-eyebrow" style="margin:0">Фільтри</p>
+              <sc-if value="{{ hasFilters }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ clearFilters }}" style="margin-left:auto;border:0;background:none;padding:0;font:inherit;font-size:var(--text-xs);color:var(--text-muted);text-decoration:underline;text-underline-offset:2px;cursor:pointer">Скинути</button>
+              </sc-if>
+              <span data-sheet-close style="margin-left:auto" onClick="{{ toggleFacets }}">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="x" label="Закрити фільтри" size="md" tone="plain" hint-size="44px,44px"></x-import>
+              </span>
+            </div>
+
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="Наявність" hint-size="100%,60px">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="Тільки в наявності" count="{{ countInStock }}" checked="{{ inStockOnly }}" onChange="{{ toggleInStock }}" hint-size="100%,28px"></x-import>
+            </x-import>
+
+            <sc-for list="{{ facets }}" as="f" hint-placeholder-count="4">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.FacetGroup" title="{{ f.title }}" hint-size="100%,140px">
+                <sc-for list="{{ f.values }}" as="v" hint-placeholder-count="3">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Checkbox" label="{{ v.label }}" count="{{ v.count }}" checked="{{ v.checked }}" disabled="{{ v.dead }}" onChange="{{ v.toggle }}" hint-size="100%,28px"></x-import>
+                </sc-for>
+              </x-import>
+            </sc-for>
+
+            <div data-sheet-close style="margin-top:var(--space-5)" onClick="{{ toggleFacets }}">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="dark" size="lg" block="{{ true }}" hint-size="100%,48px">Показати результати</x-import>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </sc-if>
+  </main>
+
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteFooter" hint-size="100%,260px"></x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;landing&quot;,&quot;category&quot;],&quot;default&quot;:&quot;landing&quot;,&quot;tsType&quot;:&quot;'landing' | 'category'&quot;,&quot;section&quot;:&quot;Стан екрана&quot;}}">
+const leaf = (code, name, count) => ({ code, name, count, href: 'Універсальні товари.dc.html' })
+
+const TREE = [
+  { code: 'oils', name: 'Оливи й мастила', count: 412, children: [leaf('engine-oil', 'Олива моторна', 286), leaf('gear-oil', 'Олива трансмісійна', 94), leaf('grease', 'Мастила', 32)] },
+  { code: 'fluids', name: 'Технічні рідини', count: 186, children: [leaf('coolant', 'Антифриз', 78), leaf('brake-fluid', 'Гальмівна рідина', 41), leaf('washer', 'Омивач скла', 67)] },
+  { code: 'lamps', name: 'Лампи', count: 164, children: [leaf('halogen', 'Галогенні', 96), leaf('xenon', 'Ксенонові', 38), leaf('led', 'Світлодіодні', 30)] },
+  { code: 'wipers', name: 'Щітки склоочисника', count: 97, children: [leaf('frame', 'Каркасні', 41), leaf('frameless', 'Безкаркасні', 44), leaf('rear', 'Задні', 12)] },
+  { code: 'batteries', name: 'Акумулятори', count: 58, children: [leaf('agm', 'AGM і EFB', 19), leaf('lead', 'Кислотні', 39)] },
+  { code: 'chem', name: 'Автохімія й догляд', count: 238, children: [leaf('additives', 'Присадки', 64), leaf('cleaners', 'Очищувачі', 102), leaf('body-care', 'Догляд за кузовом', 72)] },
+  { code: 'acc', name: 'Аксесуари', count: 201, children: [leaf('first-aid', 'Аптечки й вогнегасники', 38), leaf('mats', 'Килимки', 163)] },
+  { code: 'tools', name: 'Інструмент', count: 121, children: [leaf('keys', 'Ключі й головки', 54), leaf('jacks', 'Домкрати', 21), leaf('tow', 'Буксирувальні троси', 46)] }
+]
+
+const OILS = [
+  { id: 1, brand: 'CASTROL', article: '15669E', name: 'Олива моторна EDGE 5W-30 LL, 5 л', price: 2140, qty: 8, day: 0, cutoff: '21:00', analogs: 6, v: '5W-30', l: '5 л', t: 'Синтетична' },
+  { id: 2, brand: 'MOTUL', article: '107017', name: 'Олива моторна 8100 X-clean 5W-30, 5 л', price: 1980, qty: 5, day: 0, cutoff: '18:00', analogs: 4, v: '5W-30', l: '5 л', t: 'Синтетична' },
+  { id: 3, brand: 'SHELL', article: '550046268', name: 'Олива моторна Helix HX8 5W-40, 4 л', price: 1320, qty: 6, day: 1, analogs: 5, v: '5W-40', l: '4 л', t: 'Синтетична' },
+  { id: 4, brand: 'LIQUI MOLY', article: '8029', name: 'Олива моторна Top Tec 4200 5W-30, 5 л', price: 2310, qty: 4, day: 1, analogs: 3, v: '5W-30', l: '5 л', t: 'Синтетична' },
+  { id: 5, brand: 'MOBIL', article: '152105', name: 'Олива моторна Super 2000 X1 10W-40, 4 л', price: 980, qty: 10, day: 0, cutoff: '21:00', analogs: 7, v: '10W-40', l: '4 л', t: 'Напівсинтетична' },
+  { id: 6, brand: 'TOTAL', article: '213768', name: 'Олива моторна Quartz 9000 5W-40, 1 л', price: 395, qty: 12, day: 0, cutoff: '18:00', analogs: 5, v: '5W-40', l: '1 л', t: 'Синтетична' },
+  { id: 7, brand: 'ELF', article: '194878', name: 'Олива моторна Evolution 700 STI 10W-40, 5 л', price: 1150, qty: 3, day: 3, date: '26 вер, сб', analogs: 2, v: '10W-40', l: '5 л', t: 'Напівсинтетична' },
+  { id: 8, brand: 'LUKOIL', article: '19190', name: 'Олива моторна Стандарт 15W-40, 4 л', price: 640, qty: 0, analogs: 1, v: '15W-40', l: '4 л', t: 'Мінеральна' }
+]
+
+const FACETS = [
+  { key: 'v', title: 'Вʼязкість' },
+  { key: 't', title: 'Тип' },
+  { key: 'l', title: 'Обʼєм' },
+  { key: 'brand', title: 'Бренд' }
+]
+
+const SORTS = [
+  { id: 'popularity', label: 'За популярністю' },
+  { id: 'price_asc', label: 'Спочатку дешевші' },
+  { id: 'price_desc', label: 'Спочатку дорожчі' }
+]
+
+function plural(n, one, few, many) {
+  const a = n % 10, b = n % 100
+  if (a === 1 && b !== 11) return one
+  if (a >= 2 && a <= 4 && (b < 12 || b > 14)) return few
+  return many
+}
+const thousands = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+
+function induced(nodes, q) {
+  return nodes.flatMap((node) => {
+    const children = induced(node.children || [], q)
+    const hit = node.name.toLowerCase().includes(q)
+    if (!hit && children.length === 0) return []
+    return [{ ...node, children: hit ? node.children || [] : children }]
+  })
+}
+
+class Component extends DCLogic {
+  state = { sel: {}, inStockOnly: false, sort: 'popularity', sortOpen: false, treeOpen: false, facetsOpen: false, treeQuery: '', cartUnits: 0 }
+
+  componentDidMount() { this.bindCart() }
+  componentWillUnmount() { clearTimeout(this.cartRetry); if (this.unsub) this.unsub() }
+  bindCart = () => {
+    if (!window.DriveCart) { this.cartRetry = setTimeout(this.bindCart, 60); return }
+    const sync = () => this.setState({ cartUnits: window.DriveCart.units() })
+    this.unsub = window.DriveCart.subscribe(sync)
+    sync()
+  }
+
+  toggle = (key, value) => () => this.setState((s) => {
+    const cur = s.sel[key] || []
+    return { sel: { ...s.sel, [key]: cur.includes(value) ? cur.filter((x) => x !== value) : [...cur, value] } }
+  })
+  clear = () => this.setState({ sel: {}, inStockOnly: false })
+
+  pass(p, sel, inStock, skip) {
+    if (inStock && p.qty === 0) return false
+    return FACETS.every((f) => f.key === skip || !(sel[f.key] || []).length || sel[f.key].includes(p[f.key]))
+  }
+
+  renderVals() {
+    const s = this.state
+    const isCategory = (this.props.state ?? 'landing') === 'category'
+    const q = s.treeQuery.trim().toLowerCase()
+    const treeSearching = q.length >= 2
+    const treeNodes = treeSearching ? induced(TREE, q) : TREE
+    const total = TREE.reduce((n, g) => n + g.count, 0)
+
+    const kept = OILS.filter((p) => this.pass(p, s.sel, s.inStockOnly))
+    const cmp = s.sort === 'price_asc' ? (a, b) => a.price - b.price : s.sort === 'price_desc' ? (a, b) => b.price - a.price : () => 0
+    const ordered = [...kept].sort((a, b) => (a.qty > 0 ? 0 : 1) - (b.qty > 0 ? 0 : 1) || cmp(a, b))
+
+    const facets = FACETS.map((f) => {
+      const vals = [...new Set(OILS.map((p) => p[f.key]))]
+      return {
+        title: f.title,
+        values: vals.map((v) => {
+          const count = OILS.filter((p) => p[f.key] === v && this.pass(p, s.sel, s.inStockOnly, f.key)).length
+          const checked = (s.sel[f.key] || []).includes(v)
+          return { label: v, count, checked, dead: count === 0 && !checked, toggle: this.toggle(f.key, v) }
+        })
+      }
+    })
+    const filterCount = Object.values(s.sel).reduce((n, a) => n + a.length, 0) + (s.inStockOnly ? 1 : 0)
+
+    return {
+      cartCount: 2 + s.cartUnits,
+      isLanding: !isCategory,
+      isCategory,
+      crumbs: isCategory
+        ? [{ label: 'Головна', href: 'Головна.dc.html' }, { label: 'Універсальні товари', href: 'Універсальні товари.dc.html' }, { label: 'Оливи й мастила', href: '#' }, { label: 'Олива моторна' }]
+        : [{ label: 'Головна', href: 'Головна.dc.html' }, { label: 'Універсальні товари' }],
+      totalLabel: thousands(total) + ' ' + plural(total, 'позиція', 'позиції', 'позицій'),
+      treeQuery: s.treeQuery,
+      onTreeQuery: (e) => this.setState({ treeQuery: e.target.value }),
+      treeSearching,
+      treeNodes,
+      treeHasNodes: treeNodes.length > 0,
+      treeEmpty: treeNodes.length === 0,
+      allNodes: TREE,
+      treeOpenAttr: s.treeOpen ? 'true' : 'false',
+      toggleTree: () => this.setState((p) => ({ treeOpen: !p.treeOpen })),
+
+      countLabel: ordered.length + ' ' + plural(ordered.length, 'позиція', 'позиції', 'позицій'),
+      rows: ordered.map((p) => ({
+        ...p,
+        inStock: p.qty > 0,
+        shipRelative: p.day === 0 ? 'today' : p.day === 1 ? 'tomorrow' : 'later',
+        shipDate: p.date ?? '',
+        cutoff: p.cutoff ?? '',
+        lineId: p.brand + ' ' + p.article
+      })),
+      hasRows: ordered.length > 0,
+      noRows: ordered.length === 0,
+
+      sortOpen: s.sortOpen,
+      sortOpenAttr: s.sortOpen ? 'true' : 'false',
+      toggleSort: () => this.setState((p) => ({ sortOpen: !p.sortOpen })),
+      sortLabel: SORTS.find((o) => o.id === s.sort).label,
+      sortOptions: SORTS.map((o) => ({ label: o.label, selectedAttr: s.sort === o.id ? 'true' : 'false', pick: () => this.setState({ sort: o.id, sortOpen: false }) })),
+
+      facets,
+      facetsOpenAttr: s.facetsOpen ? 'true' : 'false',
+      toggleFacets: () => this.setState((p) => ({ facetsOpen: !p.facetsOpen })),
+      closeSheetOnScrim: (e) => { if (e.target === e.currentTarget) this.setState({ facetsOpen: false }) },
+      activeFilterLabel: filterCount > 0 ? String(filterCount) : '',
+      hasFilters: filterCount > 0,
+      clearFilters: this.clear,
+      inStockOnly: s.inStockOnly,
+      toggleInStock: () => this.setState((p) => ({ inStockOnly: !p.inStockOnly })),
+      countInStock: OILS.filter((p) => p.qty > 0 && this.pass(p, s.sel, false)).length,
+      clearAction: React.createElement(window.DesignSystem_d7c4f4.Button, { variant: 'secondary', onClick: this.clear }, 'Скинути фільтри')
+    }
+  }
+}
+</script>
+</body>
+</html>

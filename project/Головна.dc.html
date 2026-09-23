@@ -726,13 +726,14 @@ class Component extends DCLogic {
 
   filterDefs(items) {
     const { step } = this.state
-    if (step === 0) {
+    if (step <= 1) {
       const seen = []
       items.forEach((n) => {
         const ch = /[0-9]/.test(n[0]) ? '0-9' : n[0].toUpperCase()
         if (seen.indexOf(ch) === -1) seen.push(ch)
       })
       const rank = (c) => (c === '0-9' ? 0 : /[A-Z]/.test(c) ? 1 : 2)
+      if (step === 1 && seen.length < 2) return []
       return seen.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b, 'uk'))
     }
     if (step === 2) return ['2020-ті', '2010-ті', '2000-ні', '1990-ті']
@@ -741,7 +742,7 @@ class Component extends DCLogic {
 
   matches(item, filter) {
     const { step } = this.state
-    if (step === 0) {
+    if (step <= 1) {
       const ch = /[0-9]/.test(item[0]) ? '0-9' : item[0].toUpperCase()
       return ch === filter
     }

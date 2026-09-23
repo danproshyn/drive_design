@@ -136,7 +136,7 @@
           <h1 class="ds-section-title" style="margin:0">Комплект ГРМ з водяним насосом</h1>
           <p class="ds-row__meta" style="margin:0">
             <span style="font-weight:600;color:var(--text-body)">BOSCH</span>
-            <span class="ds-article">1 987 946 573</span>
+            <span style="display:inline-flex;align-items:center;gap:4px"><span class="ds-article">1 987 946 573</span><sc-if value="{{ staffCopy }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ headCopy.copyArticle }}" title="{{ headCopy.copyArticleLabel }}" aria-label="{{ headCopy.copyArticleLabel }}" style="position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:0;border-radius:var(--radius-sm);background:none;color:var(--text-muted);cursor:pointer;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);color:var(--text-strong)" style-before="content:'';position:absolute;inset:-10px"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ headCopy.copyArticleIcon }}" size="14" hint-size="14px,14px"></x-import></button></sc-if></span>
           </p>
         </div>
         <x-import component-from-global-scope="DesignSystem_d7c4f4.TabStrip" tabs="{{ partTabs }}" active="analogs" hint-size="100%,44px"></x-import>
@@ -262,7 +262,7 @@
                           </sc-if>
                         </span>
                         <a href="#" class="ds-row__title" title="{{ row.name }}" style="font-size:var(--text-sm);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden">{{ row.name }}</a>
-                        <span class="ds-article">{{ row.article }}</span>
+                        <span style="display:flex;align-items:center;gap:4px;min-width:0"><span class="ds-article">{{ row.article }}</span><sc-if value="{{ staffCopy }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ row.copyArticle }}" title="{{ row.copyArticleLabel }}" aria-label="{{ row.copyArticleLabel }}" style="position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:0;border-radius:var(--radius-sm);background:none;color:var(--text-muted);cursor:pointer;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);color:var(--text-strong)" style-before="content:'';position:absolute;inset:-10px"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ row.copyArticleIcon }}" size="14" hint-size="14px,14px"></x-import></button></sc-if></span>
                       </div>
                     </div>
 
@@ -713,7 +713,26 @@ class Component extends DCLogic {
     sync()
   }
 
+  /* Копіювання артикула — лише у вигляді продавця. */
+  copyArticle = (key, value) => (event) => {
+    if (event) { event.preventDefault(); event.stopPropagation() }
+    if (navigator.clipboard) navigator.clipboard.writeText(value).catch(() => {})
+    this.setState({ copiedArticle: key })
+    clearTimeout(this.articleTimer)
+    this.articleTimer = setTimeout(() => this.setState({ copiedArticle: null }), 1600)
+  }
+
+  articleCopyVals = (key, value) => {
+    const done = this.state.copiedArticle === key
+    return {
+      copyArticle: this.copyArticle(key, value),
+      copyArticleIcon: done ? 'check' : 'copy',
+      copyArticleLabel: done ? 'Скопійовано' : 'Скопіювати артикул ' + value
+    }
+  }
+
   componentWillUnmount() {
+    clearTimeout(this.articleTimer)
     clearTimeout(this.cartRetry)
     if (this.unsubCart) this.unsubCart()
   }
@@ -785,6 +804,7 @@ class Component extends DCLogic {
 
       return {
         ...row,
+        ...this.articleCopyVals(row.id, row.article),
         /* Нечіткий збіг — це все ще пошук за номером, тому вид аналога тут не показуємо. */
         kind: view === 'fuzzy' && !isAnalogs ? null : row.kind,
         kindLabel: KIND_LABEL[row.kind],
@@ -910,6 +930,8 @@ class Component extends DCLogic {
       thumbSize: 64,
       staffAttr: staffView ? 'true' : 'false',
       staffCart: staffView,
+      staffCopy: staffView,
+      headCopy: this.articleCopyVals('head', '1 987 946 573'),
       isAnalogs,
       isSearch: !isAnalogs && !isNoQuery && !isTooLong,
       isNoQuery: !isAnalogs && isNoQuery,

@@ -3303,6 +3303,7 @@ const SHOP = {
   pages: {
     home: 'Головна.dc.html',
     catalog: 'Каталог за авто.dc.html',
+    universal: 'Універсальні товари.dc.html',
     oem: 'Оригінальні каталоги.dc.html',
     account: 'Вхід.dc.html',
     cart: 'Кошик.dc.html',
@@ -3574,6 +3575,7 @@ function SiteHeader({
   }, []);
   const nav = [
     { key: 'catalog', label: 'Каталог за авто' },
+    { key: 'universal', label: 'Універсальні товари' },
     { key: 'oem', label: 'Оригінальні каталоги' },
   ];
   return h('header', { ref: headerRef, className: ['ds-header', className].filter(Boolean).join(' ') },
