@@ -87,7 +87,7 @@
             <span class="ds-treefield__icon">
               <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="search" size="16" hint-size="16px,16px"></x-import>
             </span>
-            <input class="ds-input" type="search" aria-label="Пошук у категоріях" placeholder="Шукати в категоріях" value="{{ treeQuery }}" onChange="{{ onTreeQuery }}">
+            <input class="ds-input" type="search" aria-label="Пошук у категоріях" placeholder="Шукати товар" value="{{ treeQuery }}" onChange="{{ onTreeQuery }}">
           </div>
         </div>
 
@@ -105,7 +105,7 @@
           </div>
         </sc-if>
         <sc-if value="{{ treeEmpty }}" hint-placeholder-val="{{ false }}">
-          <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Такої категорії серед універсальних товарів немає. Спробуйте пошук за артикулом у шапці.</p>
+          <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Такого товару серед універсальних немає.</p>
         </sc-if>
       </section>
     </sc-if>
@@ -123,7 +123,7 @@
               <span class="ds-treefield__icon" data-treeicon>
                 <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="search" size="16" hint-size="16px,16px"></x-import>
               </span>
-              <input class="ds-input" data-treesearch type="search" aria-label="Пошук у категоріях" placeholder="Шукати в категоріях" value="{{ treeQuery }}" onChange="{{ onTreeQuery }}">
+              <input class="ds-input" data-treesearch type="search" aria-label="Пошук у категоріях" placeholder="Шукати товар" value="{{ treeQuery }}" onChange="{{ onTreeQuery }}">
               <sc-if value="{{ treeHasQuery }}" hint-placeholder-val="{{ false }}">
                 <button type="button" class="ds-treefield__clear" aria-label="Очистити" onClick="{{ onTreeClear }}">
                   <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="x" size="15" hint-size="15px,15px"></x-import>
@@ -134,7 +134,7 @@
               <x-import component-from-global-scope="DesignSystem_d7c4f4.CategoryTree" nodes="{{ treeNodes }}" open-code="engine-oil" expand-all="{{ treeSearching }}" hint-size="100%,360px"></x-import>
             </sc-if>
             <sc-if value="{{ treeEmpty }}" hint-placeholder-val="{{ false }}">
-              <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Нічого не знайдено серед універсальних категорій.</p>
+              <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Такого товару серед універсальних немає.</p>
             </sc-if>
           </div>
         </aside>
