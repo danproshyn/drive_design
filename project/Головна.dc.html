@@ -39,6 +39,8 @@
     [data-garage-grid] > .sc-host-x, [data-garage-grid] > .sc-host-x > li { height: auto; }
     [data-garage-grid] .ds-garage__vin { margin-top: 0; }
     [data-garage-grid] .ds-garage__body:not(:has(.ds-garage__vin)) .ds-garage__actions { margin-top: 0; }
+    [data-or] { flex: 1 1 100% !important; flex-direction: row !important; height: auto !important; gap: var(--space-3) !important; }
+    [data-or-line] { width: auto !important; height: 1px; }
   }
 </style>
 </helmet>
@@ -64,10 +66,10 @@
           </div>
         </div>
 
-        <div style="flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;height:44px;justify-content:center">
-          <span style="width:1px;flex:1;background:var(--line)"></span>
+        <div data-or style="flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;height:44px;justify-content:center">
+          <span data-or-line style="width:1px;flex:1;background:var(--line)"></span>
           <span class="t-eyebrow">або</span>
-          <span style="width:1px;flex:1;background:var(--line)"></span>
+          <span data-or-line style="width:1px;flex:1;background:var(--line)"></span>
         </div>
 
         <label class="ds-field" style="position:relative;flex:1 1 260px;min-width:220px">

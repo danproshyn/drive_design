@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
-<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=14"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=18"></script>
 <script src="cart-store.js?v=2"></script>
 <script src="cashback-hint.js"></script>
 <style>
@@ -67,7 +67,7 @@
     [data-cta-copy] { min-width: 0 !important; flex-basis: 100% !important; }
     /* Сортування й «Фільтри» — двома рядками, по лівому краю, кожна кнопка своєї ширини.
        «Фільтри» вище: вони змінюють склад списку, сортування лише впорядковує відібране. */
-    [data-toolbar-actions] { margin-left: 0 !important; flex-direction: column !important; align-items: flex-start !important; }
+    [data-toolbar-actions] { margin-left: 0 !important; flex: 1 1 100% !important; flex-direction: column !important; align-items: flex-start !important; }
     [data-facets-toggle] { flex: 0 0 auto !important; justify-content: flex-start !important; order: -1; }
   }
   /* Ширина колонки пропозицій тут не залежить від ширини екрана: від неї віднімається
@@ -134,9 +134,9 @@
       <div style="display:grid;gap:var(--space-4)">
         <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--space-3)">
           <h1 class="ds-section-title" style="margin:0">Комплект ГРМ з водяним насосом</h1>
-          <p class="ds-row__meta" style="margin:0">
-            <span style="font-weight:600;color:var(--text-body)">BOSCH</span>
-            <span style="display:inline-flex;align-items:center;gap:4px"><span class="ds-article">1 987 946 573</span><sc-if value="{{ staffCopy }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ headCopy.copyArticle }}" title="{{ headCopy.copyArticleLabel }}" aria-label="{{ headCopy.copyArticleLabel }}" style="position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:0;border-radius:var(--radius-sm);background:none;color:var(--text-muted);cursor:pointer;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);color:var(--text-strong)" style-before="content:'';position:absolute;inset:-10px"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ headCopy.copyArticleIcon }}" size="14" hint-size="14px,14px"></x-import></button></sc-if></span>
+          <p class="ds-row__meta" style="margin:0;min-width:0">
+            <span title="BOSCH AUTOMOTIVE AFTERMARKET" style="font-weight:600;color:var(--text-body);min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">BOSCH AUTOMOTIVE AFTERMARKET</span>
+            <span style="display:inline-flex;align-items:center;gap:4px;min-width:0"><span class="ds-article" title="1 987 946 573" style="min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">1 987 946 573</span><sc-if value="{{ staffCopy }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ headCopy.copyArticle }}" title="{{ headCopy.copyArticleLabel }}" aria-label="{{ headCopy.copyArticleLabel }}" style="position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:0;border-radius:var(--radius-sm);background:none;color:var(--text-muted);cursor:pointer;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);color:var(--text-strong)" style-before="content:'';position:absolute;inset:-10px"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ headCopy.copyArticleIcon }}" size="14" hint-size="14px,14px"></x-import></button></sc-if></span>
           </p>
         </div>
         <x-import component-from-global-scope="DesignSystem_d7c4f4.TabStrip" tabs="{{ partTabs }}" active="analogs" hint-size="100%,44px"></x-import>
@@ -255,14 +255,14 @@
                         <x-import component-from-global-scope="DesignSystem_d7c4f4.PartThumb" size="{{ thumbSize }}" hint-size="64px,64px"></x-import>
                       </a>
                       <div style="min-width:0;display:grid;gap:2px;align-content:start">
-                        <span class="ds-row__meta" style="gap:6px">
-                          <span style="font-weight:600;color:var(--text-body)">{{ row.brand }}</span>
+                        <span class="ds-row__meta" style="gap:4px 6px;min-width:0;flex-wrap:wrap">
+                          <span title="{{ row.brand }}" style="font-weight:600;color:var(--text-body);min-width:0;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">{{ row.brand }}</span>
                           <sc-if value="{{ row.isOem }}" hint-placeholder-val="{{ true }}">
                             <x-import component-from-global-scope="DesignSystem_d7c4f4.Badge" tone="oem" hint-size="auto,20px">Оригінал</x-import>
                           </sc-if>
                         </span>
                         <a href="#" class="ds-row__title" title="{{ row.name }}" style="font-size:var(--text-sm);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden">{{ row.name }}</a>
-                        <span style="display:flex;align-items:center;gap:4px;min-width:0"><span class="ds-article">{{ row.article }}</span><sc-if value="{{ staffCopy }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ row.copyArticle }}" title="{{ row.copyArticleLabel }}" aria-label="{{ row.copyArticleLabel }}" style="position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:0;border-radius:var(--radius-sm);background:none;color:var(--text-muted);cursor:pointer;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);color:var(--text-strong)" style-before="content:'';position:absolute;inset:-10px"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ row.copyArticleIcon }}" size="14" hint-size="14px,14px"></x-import></button></sc-if></span>
+                        <span style="display:flex;align-items:center;gap:4px;min-width:0"><span class="ds-article" title="{{ row.article }}" style="min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">{{ row.article }}</span><sc-if value="{{ staffCopy }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ row.copyArticle }}" title="{{ row.copyArticleLabel }}" aria-label="{{ row.copyArticleLabel }}" style="position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:0;border-radius:var(--radius-sm);background:none;color:var(--text-muted);cursor:pointer;transition:var(--transition-colors)" style-hover="background:var(--surface-sunken);color:var(--text-strong)" style-before="content:'';position:absolute;inset:-10px"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ row.copyArticleIcon }}" size="14" hint-size="14px,14px"></x-import></button></sc-if></span>
                       </div>
                     </div>
 
@@ -497,7 +497,7 @@ const EXACT = [
     ]
   },
   {
-    id: 'automega', brand: 'AUTOMEGA', article: '1 987 946 573', name: 'Комплект ГРМ з водяним насосом', isOem: false, kind: null, inStock: true,
+    id: 'automega', brand: 'AUTOMEGA PREMIUM QUALITY PARTS', article: '1 987 946 573', name: 'Комплект ГРМ з водяним насосом, ременем, натяжним і обвідним роликами, болтами кріплення та прокладкою помпи', isOem: false, kind: null, inStock: true,
     offers: [
       { key: 'a1', price: 18640, qty: 10, qtyCapped: true, day: 1 },
       { key: 'a2', price: 19120, qty: 5, day: 0, cutoff: '18:00' }
@@ -507,7 +507,7 @@ const EXACT = [
 
 const ANALOG = [
   {
-    id: 'ina', brand: 'INA', article: '530 0201 32', name: 'Комплект ГРМ з водяним насосом', isOem: true, kind: 'oe', inStock: true,
+    id: 'ina', brand: 'INA SCHAEFFLER AUTOMOTIVE AFTERMARKET', article: '530 0201 32-WP-KIT-EU', name: 'Комплект ГРМ з водяним насосом Hyundai Accent / Getz / Kia Rio 1.4–1.6 (05-), посилений ремінь, оригінальні ролики', isOem: true, kind: 'oe', inStock: true,
     offers: [
       { key: 'm1', price: 10480, qty: 10, qtyCapped: true, day: 0, cutoff: '21:00' },
       { key: 'm2', price: 10920, qty: 7, day: 0 },
@@ -517,7 +517,7 @@ const ANALOG = [
     ]
   },
   {
-    id: 'skf', brand: 'SKF', article: 'VKMC 01250', name: 'Комплект ГРМ з водяним насосом', isOem: false, kind: 'cross', inStock: true,
+    id: 'skf', brand: 'SKF VEHICLE AFTERMARKET SERVICES', article: 'VKMC 01250-2-REINFORCED', name: 'Комплект ГРМ з водяним насосом', isOem: false, kind: 'cross', inStock: true,
     offers: [
       { key: 'f1', price: 19340, qty: 6, day: 1 },
       { key: 'f2', price: 19880, qty: 10, qtyCapped: true, day: 0, cutoff: '18:00' },

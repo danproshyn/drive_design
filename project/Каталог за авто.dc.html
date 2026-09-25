@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
-<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=14"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=18"></script>
 <script src="cart-store.js?v=2"></script>
 <script src="cashback-hint.js"></script>
 <style>
@@ -733,11 +733,11 @@ const TREE = [
 
 /* day — днів до відправки: 0 сьогодні, 1 завтра, далі — дата. qty 0 — ціна остання відома. */
 const PARTS = [
-  { id: 1, brand: 'BOSCH', article: '0 986 452 041', name: 'Фільтр масляний', price: 284, oem: true, analogs: 12, qty: 10, day: 0, cutoff: '21:00', attrs: { height: '79', diameter: '76' } },
+  { id: 1, brand: 'BOSCH AUTOMOTIVE AFTERMARKET', article: '0 986 452 041-10-SET-EU', name: 'Фільтр масляний з перепускним клапаном і ущільнювальним кільцем, для двигунів G4FA / G4FC 1.4–1.6 MPI', price: 284, oem: true, analogs: 12, qty: 10, day: 0, cutoff: '21:00', attrs: { height: '79', diameter: '76' } },
   { id: 2, brand: 'MANN-FILTER', article: 'HU 816 x', name: 'Фільтр масляний', price: 1264, oem: false, analogs: 9, qty: 6, minQty: 4, day: 0, cutoff: '18:00', attrs: { height: '79', diameter: '76' } },
-  { id: 3, brand: 'MAHLE', article: 'OX 361D', name: 'Фільтр масляний', price: 231, oem: false, analogs: 8, qty: 2, day: 3, date: '4 вер, пт', faster: { date: 'завтра', price: 268 }, attrs: { height: '86', diameter: '76' } },
+  { id: 3, brand: 'MAHLE', article: 'OX 361D', name: 'Фільтр масляний картриджний Hyundai Accent / i30 / Kia Ceed / Rio (06-) 1.4–1.6 CVVT з прокладкою', price: 231, oem: false, analogs: 8, qty: 2, day: 3, date: '4 вер, пт', faster: { date: 'завтра', price: 268 }, attrs: { height: '86', diameter: '76' } },
   { id: 4, brand: 'FEBI BILSTEIN', article: '32100', name: 'Фільтр масляний', price: 161, oem: false, analogs: 3, qty: 0, attrs: { height: '86', diameter: '65' } },
-  { id: 5, brand: 'HENGST FILTER', article: 'E13H01 D100', name: 'Фільтр масляний', price: 219, oem: false, analogs: 7, qty: 4, day: 1, faster: { date: 'сьогодні', price: 245 }, attrs: { height: '86', diameter: '76' } },
+  { id: 5, brand: 'HENGST FILTRATION SYSTEMS GMBH', article: 'E13H01 D100-2-KIT-EU', name: 'Фільтр масляний', price: 219, oem: false, analogs: 7, qty: 4, day: 1, faster: { date: 'сьогодні', price: 245 }, attrs: { height: '86', diameter: '76' } },
   { id: 6, brand: 'FILTRON', article: 'OE 667/2', name: 'Фільтр масляний', price: 178, oem: false, analogs: 11, qty: 10, day: 0, cutoff: '21:00', attrs: { height: '79', diameter: '76' } },
   { id: 7, brand: 'WIX FILTERS', article: 'WL7509', name: 'Фільтр масляний', price: 168, oem: false, analogs: 6, qty: 3, minQty: 2, day: 1, attrs: { height: '95', diameter: '65' } },
   { id: 8, brand: 'UFI', article: '25.062.00', name: 'Фільтр масляний', price: 246, oem: false, analogs: 5, qty: 5, day: 1, attrs: { height: '86', diameter: '76' } },
@@ -752,8 +752,8 @@ const PARTS = [
 
 /* Смуга «підходить на більшість авто»: дерево цих деталей не рахує. */
 const CONSUMABLES = [
-  { id: 101, brand: 'MOTUL', article: '8100 X-CESS 5W40 5L', name: 'Олива моторна синтетична, 5 л', price: 1840, oem: false, analogs: 4, qty: 10, day: 0, cutoff: '21:00' },
-  { id: 102, brand: 'ATE', article: '03.9901-6402.2', name: 'Рідина гальмівна DOT 4, 1 л', price: 298, oem: false, analogs: 6, qty: 8, day: 0, cutoff: '18:00' },
+  { id: 101, brand: 'MOTUL TECHNOSYNTHESE PROFESSIONAL', article: '8100 X-CESS 5W40 5L', name: 'Олива моторна синтетична, 5 л', price: 1840, oem: true, analogs: 4, qty: 10, day: 0, cutoff: '21:00' },
+  { id: 102, brand: 'ATE', article: '03.9901-6402.2', name: 'Рідина гальмівна SL.6 DOT 4 Class 6, низьков’язка, для систем ABS / ESP, 1 л', price: 298, oem: false, analogs: 6, qty: 8, day: 0, cutoff: '18:00' },
   { id: 103, brand: 'FEBI BILSTEIN', article: '22270', name: 'Антифриз концентрат G12, 1,5 л', price: 412, oem: false, analogs: 3, qty: 5, day: 1 }
 ]
 

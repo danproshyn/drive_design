@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
-<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=15"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=18"></script>
 <script src="cart-store.js?v=2"></script>
 <style>
   a { color: var(--text-action); }
@@ -65,6 +65,7 @@
     .ds-row { padding-inline: var(--space-3) !important; }
     [data-toolbar] { flex-direction: column; align-items: flex-start !important; }
     [data-toolbar] > * { margin-left: 0 !important; }
+    [data-toolbar] > [data-treefield] { order: -2; flex: none !important; max-width: none !important; width: 100%; }
     [data-toolbar] > [data-facets-toggle] { order: -1; }
     [data-toolbar] .ds-sortfield__menu { right: auto; left: 0; }
   }
@@ -178,7 +179,7 @@
           <sc-if value="{{ hasRows }}" hint-placeholder-val="{{ true }}">
             <ul class="ds-rows" data-list="parts" style="list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
               <sc-for list="{{ rows }}" as="row" hint-placeholder-count="6">
-                <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" ship-date="{{ row.shipDate }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogs }}" line-id="{{ row.lineId }}" max-qty="{{ row.qty }}" href="#" hint-size="100%,150px">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" oem="{{ row.oem }}" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" ship-date="{{ row.shipDate }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogs }}" line-id="{{ row.lineId }}" max-qty="{{ row.qty }}" href="#" hint-size="100%,150px">
                   <x-import component-from-global-scope="DesignSystem_d7c4f4.AddToCartButton" line-id="{{ row.lineId }}" min-qty="{{ 1 }}" max-qty="{{ row.qty }}" hint-size="134px,34px"></x-import>
                 </x-import>
               </sc-for>
@@ -242,11 +243,11 @@ const TREE = [
 const OILS = [
   { id: 1, brand: 'CASTROL', article: '15669E', name: 'Олива моторна EDGE 5W-30 LL, 5 л', price: 2140, qty: 8, day: 0, cutoff: '21:00', analogs: 6, v: '5W-30', l: '5 л', t: 'Синтетична' },
   { id: 2, brand: 'MOTUL', article: '107017', name: 'Олива моторна 8100 X-clean 5W-30, 5 л', price: 1980, qty: 5, day: 0, cutoff: '18:00', analogs: 4, v: '5W-30', l: '5 л', t: 'Синтетична' },
-  { id: 3, brand: 'SHELL', article: '550046268', name: 'Олива моторна Helix HX8 5W-40, 4 л', price: 1320, qty: 6, day: 1, analogs: 5, v: '5W-40', l: '4 л', t: 'Синтетична' },
-  { id: 4, brand: 'LIQUI MOLY', article: '8029', name: 'Олива моторна Top Tec 4200 5W-30, 5 л', price: 2310, qty: 4, day: 1, analogs: 3, v: '5W-30', l: '5 л', t: 'Синтетична' },
+  { id: 3, brand: 'SHELL', article: '550046268', name: 'Олива моторна синтетична Helix HX8 ECT C3 5W-40, API SN, ACEA C3, для бензинових і дизельних двигунів, 4 л', price: 1320, qty: 6, day: 1, analogs: 5, v: '5W-40', l: '4 л', t: 'Синтетична' },
+  { id: 4, brand: 'LIQUI MOLY PROFESSIONAL LINE', article: '8029-TOPTEC-4200-5L-EU', oem: true, name: 'Олива моторна синтетична Top Tec 4200 5W-30 Longlife III, VW 504.00 / 507.00, MB 229.51, 5 л', price: 2310, qty: 4, day: 1, analogs: 3, v: '5W-30', l: '5 л', t: 'Синтетична' },
   { id: 5, brand: 'MOBIL', article: '152105', name: 'Олива моторна Super 2000 X1 10W-40, 4 л', price: 980, qty: 10, day: 0, cutoff: '21:00', analogs: 7, v: '10W-40', l: '4 л', t: 'Напівсинтетична' },
   { id: 6, brand: 'TOTAL', article: '213768', name: 'Олива моторна Quartz 9000 5W-40, 1 л', price: 395, qty: 12, day: 0, cutoff: '18:00', analogs: 5, v: '5W-40', l: '1 л', t: 'Синтетична' },
-  { id: 7, brand: 'ELF', article: '194878', name: 'Олива моторна Evolution 700 STI 10W-40, 5 л', price: 1150, qty: 3, day: 3, date: '26 вер, сб', analogs: 2, v: '10W-40', l: '5 л', t: 'Напівсинтетична' },
+  { id: 7, brand: 'ELF LUBRICANTS TOTALENERGIES', article: '194878-EVO700-STI-5L', name: 'Олива моторна Evolution 700 STI 10W-40, 5 л', price: 1150, qty: 3, day: 3, date: '26 вер, сб', analogs: 2, v: '10W-40', l: '5 л', t: 'Напівсинтетична' },
   { id: 8, brand: 'LUKOIL', article: '19190', name: 'Олива моторна Стандарт 15W-40, 4 л', price: 640, qty: 0, analogs: 1, v: '15W-40', l: '4 л', t: 'Мінеральна' }
 ]
 

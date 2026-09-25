@@ -777,28 +777,45 @@ function PartCard({
   }, /*#__PURE__*/React.createElement("p", {
     className: "ds-row__meta",
     style: {
-      margin: 0
+      margin: 0,
+      flexWrap: 'wrap',
+      rowGap: 4
     }
   }, /*#__PURE__*/React.createElement("span", {
+    title: brand,
     style: {
+      maxWidth: '100%',
       fontWeight: 600,
-      color: 'var(--text-body)'
+      color: 'var(--text-body)',
+      minWidth: 0,
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis'
     }
   }, brand), oem ? /*#__PURE__*/React.createElement(__ds_scope.Badge, {
     tone: "oem"
   }, "\u041E\u0440\u0438\u0433\u0456\u043D\u0430\u043B") : null), /*#__PURE__*/React.createElement("a", {
     href: href,
-    className: "ds-row__title",
+    className: "ds-row__title ds-clamp-name",
+    title: name,
     style: {
       marginTop: 4
     }
   }, name), /*#__PURE__*/React.createElement("p", {
     className: "ds-row__meta",
     style: {
-      margin: '3px 0 0'
+      margin: '3px 0 0',
+      minWidth: 0
     }
   }, /*#__PURE__*/React.createElement("span", {
-    className: "ds-article"
+    className: "ds-article",
+    title: article,
+    style: {
+      minWidth: 0,
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis'
+    }
   }, article)), /*#__PURE__*/React.createElement("div", {
     style: {
       display: 'flex',
