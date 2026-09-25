@@ -143,6 +143,17 @@
           <h1 class="ds-section-title" style="margin:0">Олива моторна <span class="ds-section-title__count">{{ countLabel }}</span></h1>
 
           <div data-toolbar style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)">
+            <div class="ds-treefield" data-treefield style="flex:1 1 240px;max-width:360px;width:100%">
+              <span class="ds-treefield__icon">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="search" size="16" hint-size="16px,16px"></x-import>
+              </span>
+              <input class="ds-input" type="search" aria-label="Пошук у списку" placeholder="Шукати у списку" value="{{ listQuery }}" onChange="{{ onListQuery }}">
+              <sc-if value="{{ listHasQuery }}" hint-placeholder-val="{{ false }}">
+                <button type="button" class="ds-treefield__clear" aria-label="Очистити" onClick="{{ onListClear }}">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="x" size="15" hint-size="15px,15px"></x-import>
+                </button>
+              </sc-if>
+            </div>
             <div class="ds-sortfield" style="margin-left:auto">
               <button type="button" class="ds-sortfield__trigger" aria-haspopup="listbox" aria-expanded="{{ sortOpenAttr }}" onClick="{{ toggleSort }}">
                 <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-down" size="15" hint-size="15px,15px"></x-import>
@@ -285,7 +296,7 @@ class Component extends DCLogic {
     const cur = s.sel[key] || []
     return { sel: { ...s.sel, [key]: cur.includes(value) ? cur.filter((x) => x !== value) : [...cur, value] } }
   })
-  clear = () => this.setState({ sel: {}, inStockOnly: false })
+  clear = () => this.setState({ sel: {}, inStockOnly: false, listQuery: '' })
 
   pass(p, sel, inStock, skip) {
     if (inStock && p.qty === 0) return false
@@ -300,7 +311,8 @@ class Component extends DCLogic {
     const treeNodes = treeSearching ? induced(TREE, q) : TREE
     const total = TREE.reduce((n, g) => n + g.count, 0)
 
-    const kept = OILS.filter((p) => this.pass(p, s.sel, s.inStockOnly))
+    const lq = (s.listQuery || '').trim().toLowerCase()
+    const kept = OILS.filter((p) => this.pass(p, s.sel, s.inStockOnly) && (!lq || (p.brand + ' ' + p.article + ' ' + p.name).toLowerCase().includes(lq)))
     const cmp = s.sort === 'price_asc' ? (a, b) => a.price - b.price : s.sort === 'price_desc' ? (a, b) => b.price - a.price : () => 0
     const ordered = [...kept].sort((a, b) => (a.qty > 0 ? 0 : 1) - (b.qty > 0 ? 0 : 1) || cmp(a, b))
 
@@ -328,6 +340,10 @@ class Component extends DCLogic {
       treeQuery: s.treeQuery,
       onTreeQuery: (e) => this.setState({ treeQuery: e.target.value }),
       treeHasQuery: s.treeQuery.length > 0,
+      listQuery: s.listQuery || '',
+      listHasQuery: !!s.listQuery,
+      onListQuery: (e) => this.setState({ listQuery: e.target.value }),
+      onListClear: () => this.setState({ listQuery: '' }),
       onTreeClear: () => this.setState({ treeQuery: '' }),
       treeSearching,
       treeNodes,
