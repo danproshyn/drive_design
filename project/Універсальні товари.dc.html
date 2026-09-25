@@ -336,7 +336,7 @@ class Component extends DCLogic {
       crumbs: isCategory
         ? [{ label: 'Головна', href: 'Головна.dc.html' }, { label: 'Універсальні товари', href: 'Універсальні товари.dc.html' }, { label: 'Оливи й мастила', href: '#' }, { label: 'Олива моторна' }]
         : [{ label: 'Головна', href: 'Головна.dc.html' }, { label: 'Універсальні товари' }],
-      totalLabel: thousands(total) + ' ' + plural(total, 'позиція', 'позиції', 'позицій'),
+      totalLabel: thousands(total) + ' ' + plural(total, 'товар', 'товари', 'товарів'),
       treeQuery: s.treeQuery,
       onTreeQuery: (e) => this.setState({ treeQuery: e.target.value }),
       treeHasQuery: s.treeQuery.length > 0,
@@ -353,7 +353,7 @@ class Component extends DCLogic {
       treeOpenAttr: s.treeOpen ? 'true' : 'false',
       toggleTree: () => this.setState((p) => ({ treeOpen: !p.treeOpen })),
 
-      countLabel: ordered.length + ' ' + plural(ordered.length, 'позиція', 'позиції', 'позицій'),
+      countLabel: ordered.length + ' ' + plural(ordered.length, 'товар', 'товари', 'товарів'),
       rows: ordered.map((p) => ({
         ...p,
         inStock: p.qty > 0,
