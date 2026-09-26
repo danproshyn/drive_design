@@ -214,7 +214,8 @@
   @media (min-width: 900px) { [data-info] dl { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
   [data-info] dt { margin: 0 0 2px; font-size: var(--text-3xs); font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); }
-  [data-info] dd { margin: 0; font-size: var(--text-sm); color: var(--text-strong); }
+  [data-info] dd { margin: 0; font-size: var(--text-sm); color: var(--text-strong); overflow: hidden; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+  [data-info] dd[data-open="true"] { display: block; -webkit-line-clamp: none; }
   [data-info] dd[data-mono="true"] { font-family: var(--font-mono); letter-spacing: var(--tracking-mono); }
 
   /* Історія запитів — під формою на екрані входу. Рядок поводиться як рядок каталогу:
@@ -396,11 +397,14 @@
             <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="16" hint-size="16px,16px"></x-import>
             Інформація про автомобіль
           </summary>
-          <dl>
+          <dl ref="{{ attrsRef }}">
             <sc-for list="{{ attributes }}" as="attr" hint-placeholder-count="8">
-              <div>
+              <div style="min-width:0">
                 <dt>{{ attr.name }}</dt>
-                <dd data-mono="{{ attr.mono }}">{{ attr.value }}</dd>
+                <dd data-mono="{{ attr.mono }}" data-open="{{ attr.open }}" data-idx="{{ $index }}" title="{{ attr.value }}">{{ attr.value }}</dd>
+                <sc-if value="{{ attr.canToggle }}" hint-placeholder-val="{{ false }}">
+                  <button type="button" class="ds-btn ds-btn--link" style="font-size:var(--text-xs);margin-top:2px" onClick="{{ attr.toggle }}">{{ attr.toggleLabel }}</button>
+                </sc-if>
               </div>
             </sc-for>
           </dl>
@@ -890,14 +894,14 @@ const ATTRS = [
   ['КПП', 'MQ200-6F', true],
 
   ['Колір кузова', 'LD7X DEEP BLACK PEARL EFFECT', false],
-  ['Колір салону', 'TW TITANSCHWARZ', false],
+  ['Колір салону', 'TW TITANSCHWARZ / ТКАНИНА «MERLIN» З ВСТАВКАМИ ШТУЧНОЇ ШКІРИ, ОББИВКА СТЕЛІ СВІТЛО-СІРА, КИЛИМКИ ЧОРНІ', false],
   ['Ринок', 'EUROPA', false],
 
   ['Дата випуску', '12.03.2017', false],
   ['Випущено', '10.2016', false],
   ['Період виробництва', '2016 — 2020', false],
 
-  ['Опції', 'Пакет зимовий; фаркоп знімний', false],
+  ['Опції', 'Пакет зимовий; фаркоп знімний; підігрів передніх сидінь; підігрів лобового скла; клімат-контроль двозонний; круїз-контроль адаптивний; датчики паркування передні й задні; камера заднього виду; світлодіодні фари; легкосплавні диски R17; тоновані задні стекла; навігаційна система Discover Media', false],
 ]
 
 /* Історія запитів до оригінальних каталогів — держномер, VIN, назва машини, коли.
@@ -922,6 +926,25 @@ const HISTORY = [
 const ABSENT = ['5Q0615301H', 'N90813203', '5Q0615479']
 
 class Component extends DCLogic {
+  attrsRef = React.createRef();
+  measureAttrs = () => {
+    const dl = this.attrsRef.current;
+    if (!dl) return;
+    const next = {};
+    dl.querySelectorAll('dd[data-idx]').forEach(dd => {
+      if (dd.dataset.open !== 'true' && dd.scrollHeight > dd.clientHeight + 1) next[dd.dataset.idx] = true;
+    });
+    const prev = this.state.attrOverflow || {};
+    const same = Object.keys(next).length === Object.keys(prev).length && Object.keys(next).every(k => prev[k]);
+    if (!same) this.setState({ attrOverflow: next });
+  };
+  observeAttrs() {
+    const dl = this.attrsRef.current;
+    if (dl === this._obsEl) return;
+    this._ro && this._ro.disconnect();
+    this._obsEl = dl;
+    if (dl) { this._ro = new ResizeObserver(() => this.measureAttrs()); this._ro.observe(dl); }
+  }
   state = {
     tab: 'quick',
     /* Звуження — своє на кожному табі: голка українською нічого не знайде в дереві виробника. */
@@ -1074,6 +1097,7 @@ class Component extends DCLogic {
   /* Колесо мишки треба слухати неспішно (passive: false), інакше сторінка прокручується
      разом зі схемою — тому це власний слухач, а не onWheel. */
   componentDidMount() {
+    this.observeAttrs()
     this.bindWheel()
     /* Підказка прив'язана до місця на екрані, а не до рядка, тому будь-яка прокрутка її
        гасить. Capture — щоб ловити й прокрутку самого переліку деталей, не лише сторінки.
@@ -1088,6 +1112,7 @@ class Component extends DCLogic {
     this.setState({ note: null })
   }
   componentDidUpdate(prevProps) {
+    this.observeAttrs()
     this.bindWheel()
     /* Переключення стану зверху скасовує перехід з історії. */
     if (prevProps.state !== this.props.state && this.state.nav) this.setState({ nav: null })
@@ -1131,6 +1156,7 @@ class Component extends DCLogic {
   }
 
   componentWillUnmount() {
+    this._ro && this._ro.disconnect()
     window.removeEventListener('scroll', this.dropNote, { capture: true })
     window.removeEventListener('resize', this.dropNote)
     clearTimeout(this.copyTimer)
@@ -1339,9 +1365,19 @@ class Component extends DCLogic {
       noAttributes: !ATTRS.some(([, v]) => v != null && String(v).trim() !== ''),
       /* Поля без значення відпадають: прочерк у половині клітинок читається як зламаний
          блок, а не як факт про машину. Якщо не лишилося жодного — блоку немає взагалі. */
+      attrsRef: this.attrsRef,
       attributes: ATTRS
         .filter(([, value]) => value != null && String(value).trim() !== '')
-        .map(([name, value, mono]) => ({ name, value, mono: mono ? 'true' : 'false' })),
+        .map(([name, value, mono], i) => {
+          const open = !!(this.state.attrOpen || {})[i];
+          return {
+            name, value, mono: mono ? 'true' : 'false',
+            open: open ? 'true' : 'false',
+            canToggle: open || !!(this.state.attrOverflow || {})[i],
+            toggleLabel: open ? 'Сховати' : 'Показати все',
+            toggle: () => this.setState(s => ({ attrOpen: { ...(s.attrOpen || {}), [i]: !open } })),
+          };
+        }),
 
       tabs: [
         { key: 'quick', label: 'Швидкі групи' },
