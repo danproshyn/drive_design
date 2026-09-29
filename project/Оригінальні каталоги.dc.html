@@ -119,6 +119,7 @@
   [data-dtable] td { padding: 10px var(--space-3); border-top: 1px solid var(--line-subtle); vertical-align: top; }
   [data-dtable] tbody tr:first-child td { border-top: 0; }
   [data-dtable] [data-col="pos"] { width: 44px; font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-muted); }
+  [data-dtable] [data-col="qty"] { width: 56px; text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
   [data-dtable] [data-col="spec"] { color: var(--text-muted); white-space: nowrap; }
   [data-dtable] tr[data-row] { transition: var(--transition-colors); }
   [data-dtable] tr[data-row]:hover { background: var(--surface-sunken); }
@@ -505,14 +506,14 @@
                               <th scope="col">№</th>
                               <th scope="col">Назва</th>
                               <th scope="col">OE-номер</th>
-                              
+                              <th scope="col" data-col="qty">К-ть</th>
                             </tr>
                           </thead>
                           <tbody>
                             <sc-for list="{{ unit.rows }}" as="row" hint-placeholder-count="4">
                               <sc-if value="{{ row.restStart }}" hint-placeholder-val="{{ false }}">
                                 <tr>
-                                  <td colspan="3" style="padding:var(--space-3) var(--space-3) var(--space-2);border-top:1px solid var(--line);background:var(--surface-sunken);font-size:var(--text-3xs);font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)">Інші частини вузла</td>
+                                  <td colspan="4" style="padding:var(--space-3) var(--space-3) var(--space-2);border-top:1px solid var(--line);background:var(--surface-sunken);font-size:var(--text-3xs);font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)">Інші частини вузла</td>
                                 </tr>
                               </sc-if>
                               <tr>
@@ -541,16 +542,16 @@
                                     </span>
                                   </sc-if>
                                   <sc-if value="{{ row.absent }}" hint-placeholder-val="{{ false }}">
-                                    <span style="display:block;font-size:var(--text-3xs);color:var(--stock-out)">немає в наявності</span>
+                                    <span style="display:block;font-size:var(--text-3xs);color:var(--stock-out)">немає на сайті</span>
                                   </sc-if>
                                   <sc-if value="{{ row.held }}" hint-placeholder-val="{{ false }}">
                                     <span style="display:inline-flex;align-items:center;gap:5px;font-size:var(--text-3xs);font-weight:500;color:var(--stock-in)">
                                       <span style="width:6px;height:6px;border-radius:var(--radius-full);background:var(--stock-in)"></span>
-                                      є в наявності
+                                      є на сайті
                                     </span>
                                   </sc-if>
                                 </td>
-                                
+                                <td data-col="qty">{{ row.qty }}</td>
                               </tr>
                             </sc-for>
                           </tbody>
@@ -641,7 +642,7 @@
                       <th scope="col">№</th>
                       <th scope="col">Назва</th>
                       <th scope="col">OE-номер</th>
-                      
+                      <th scope="col" data-col="qty">К-ть</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -672,16 +673,16 @@
                             </span>
                           </sc-if>
                           <sc-if value="{{ row.absent }}" hint-placeholder-val="{{ false }}">
-                            <span style="display:block;font-size:var(--text-3xs);color:var(--stock-out)">немає в наявності</span>
+                            <span style="display:block;font-size:var(--text-3xs);color:var(--stock-out)">немає на сайті</span>
                           </sc-if>
                           <sc-if value="{{ row.held }}" hint-placeholder-val="{{ false }}">
                             <span style="display:inline-flex;align-items:center;gap:5px;font-size:var(--text-3xs);font-weight:500;color:var(--stock-in)">
                               <span style="width:6px;height:6px;border-radius:var(--radius-full);background:var(--stock-in)"></span>
-                              є в наявності
+                              є на сайті
                             </span>
                           </sc-if>
                         </td>
-                        
+                        <td data-col="qty">{{ row.qty }}</td>
                       </tr>
                     </sc-for>
                   </tbody>
@@ -1206,6 +1207,7 @@ class Component extends DCLogic {
         note: detail.note,
         spec: detail.spec,
         oem: detail.oem,
+        qty: hasOem ? (detail.qty ?? (/^Винт|^Болт/.test(detail.name) ? '2' : '1')) : '',
         hasOem,
         absent: hasOem && marks !== 'none' && ABSENT.indexOf(detail.oem) !== -1,
         held: hasOem && marks === 'available' && ABSENT.indexOf(detail.oem) === -1,
