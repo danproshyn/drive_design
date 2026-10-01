@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/colors.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/space.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/motion.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/layout.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/base.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=18"></script>
+<script src="cashback-hint.js"></script>
+<style>
+  /* Форма й підсумок. Підсумок липкий і праворуч від 1120 px — як у кошику; нижче він під формою. */
+  [data-co] { display: grid; gap: var(--space-10) var(--space-12); grid-template-columns: minmax(0, 1fr); align-items: start; }
+  @media (min-width: 1120px) {
+    [data-co] { grid-template-columns: minmax(0, 1fr) 340px; }
+    [data-summary] { position: sticky; top: calc(var(--header-total) + var(--space-4)); }
+  }
+  @media (min-width: 640px) and (max-width: 1119px) {
+    [data-summary] { width: 100%; max-width: 360px; margin-left: auto; }
+  }
+  /* Кроки: номер, заголовок, тіло з відступом під заголовок. */
+  [data-sec] { padding-top: var(--space-6); border-top: 1px solid var(--line); }
+  [data-sec-head] { display: flex; align-items: center; gap: var(--space-4); min-height: 32px; }
+  [data-sec][data-locked="true"] [data-sec-head] h2 { color: var(--text-faint); }
+  [data-sec-body] { margin-top: var(--space-5); }
+  @media (min-width: 640px) { [data-sec-body] { padding-left: 44px; } }
+  [data-step] {
+    flex: none; display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; box-sizing: border-box; border-radius: var(--radius-full);
+    border: 1.5px solid var(--ink-800); color: var(--ink-800);
+    font-family: var(--font-display); font-size: 15px; font-weight: 600; line-height: 1;
+    transition: var(--transition-colors);
+  }
+  [data-step][data-state="done"] { background: var(--ink-800); color: var(--white); }
+  [data-step][data-state="locked"] { border-color: var(--line); color: var(--text-faint); }
+  [data-grid3], [data-grid2] { display: grid; gap: var(--space-4); grid-template-columns: minmax(0, 1fr); align-items: start; }
+  @media (min-width: 640px) {
+    [data-grid3] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    [data-grid2] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  /* Спосіб доставки — три плитки; на телефоні — стовпчик. */
+  [data-methods] { display: grid; gap: var(--space-2); grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 560px) { [data-methods] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  [data-tile] {
+    display: flex; align-items: center; gap: var(--space-3); min-height: 60px; padding: 10px 14px;
+    border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface);
+    font: inherit; text-align: left; color: var(--text-body); cursor: pointer; transition: var(--transition-colors);
+  }
+  [data-tile]:hover { border-color: var(--ink-300); background: var(--surface-sunken); }
+  [data-tile]:active { transform: translateY(1px); }
+  [data-tile][data-on="true"] { border-color: var(--ink-800); box-shadow: inset 0 0 0 1px var(--ink-800); background: var(--surface); }
+  [data-tile][data-on="true"] [data-tile-icon] { color: var(--text-strong); }
+  [data-tile]:focus-visible { outline: 2px solid var(--red-500); outline-offset: 2px; }
+  /* Вибір зі списку — як у таблиці деталей і дереві вузлів: рядки білі, вибраний — заглиблений
+     фон із чорною лінією зліва, наведення — заглиблений фон із червоною. */
+  [data-choices] { display: grid; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); overflow: hidden; }
+  [data-choice] {
+    display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 4px var(--space-3); align-items: start;
+    padding: 14px var(--space-4); cursor: pointer; transition: var(--transition-colors);
+  }
+  [data-choice] + [data-choice] { border-top: 1px solid var(--line); }
+  [data-choice]:hover { background: var(--surface-sunken); box-shadow: inset 3px 0 0 var(--red-500); }
+  [data-choice][data-on="true"] { background: var(--surface-sunken); box-shadow: inset 3px 0 0 var(--ink-800); }
+  [data-choice][data-off="true"] { cursor: not-allowed; opacity: .55; box-shadow: none; }
+  [data-choice] input[type="radio"] {
+    appearance: none; width: 18px; height: 18px; margin: 1px 0 0; border: 1px solid var(--ink-300);
+    border-radius: var(--radius-full); background: var(--surface); cursor: inherit; transition: var(--transition-colors);
+  }
+  [data-choice] input[type="radio"]:checked { background: var(--ink-800); border-color: var(--ink-800); box-shadow: inset 0 0 0 4px var(--surface); }
+  [data-choice] input[type="radio"]:focus-visible { outline: 2px solid var(--red-500); outline-offset: 2px; }
+  /* Місто й точка видачі. */
+  [data-combo] input[data-settled="true"] { border-color: var(--ink-800); font-weight: 500; color: var(--text-strong); }
+  [data-pop] {
+    position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 4px); margin: 0; padding: 4px 0; list-style: none;
+    max-height: 296px; overflow: auto; background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius-md); box-shadow: var(--shadow-lg);
+  }
+  [data-opt] {
+    display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3);
+    min-height: 44px; box-sizing: border-box; padding: 10px 14px; cursor: pointer; transition: var(--transition-colors);
+  }
+  [data-opt]:hover { background: var(--surface-sunken); box-shadow: inset 3px 0 0 var(--red-500); }
+  [data-recon] > li + li { border-top: 1px solid var(--line); }
+  /* Зміна в звірці: назва поля, старе значення перекреслене, нове — жирне. */
+  [data-diff] {
+    display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px var(--space-5); align-items: baseline;
+    margin: 0; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); background: var(--surface-sunken);
+  }
+  [data-now] { font-weight: 600; color: var(--text-strong); }
+  [data-now][data-tone="out"] { color: var(--stock-out); }
+  [data-dim="true"] { opacity: .5; }
+</style>
+</helmet>
+
+<div class="ds-page">
+
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteHeader" active="" signed-in="{{ signedIn }}" cashback-percent="10" cart-count="{{ cartCount }}" hint-size="100%,150px"></x-import>
+
+  <main class="ds-container ds-main">
+
+    <div style="display:grid;gap:var(--space-1)">
+      <a href="Кошик.dc.html" style="display:inline-flex;align-items:center;gap:6px;width:max-content;min-height:32px;font-size:var(--text-sm);color:var(--text-muted);text-decoration:none;transition:var(--transition-colors)" style-hover="color:var(--text-strong)">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-left" size="15" hint-size="15px,15px"></x-import>
+        <span>Кошик</span>
+      </a>
+      <h1 class="ds-section-title" style="margin:0">Оформлення</h1>
+    </div>
+
+    <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:640px">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="shopping-cart" title="Кошик порожній" action="{{ backAction }}" hint-size="100%,220px">Додайте деталі, і повертайтесь сюди.</x-import>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isBelow }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:640px">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="shopping-cart" title="Мінімальна сума замовлення — 500 ₴" action="{{ backAction }}" hint-size="100%,220px">Додайте позицій ще на 216 ₴, і оформлення відкриється.</x-import>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isForm }}" hint-placeholder-val="{{ true }}">
+      <div data-co>
+
+        <div style="display:grid;gap:var(--space-10);min-width:0">
+
+          <sc-if value="{{ showRecon }}" hint-placeholder-val="{{ false }}">
+            <section data-sec id="co-recon" data-screen-label="Звірка">
+              <div data-sec-head>
+                <span data-step data-state="current">1</span>
+                <h2 class="t-display-xs" style="margin:0">Звірка</h2>
+              </div>
+              <div data-sec-body style="display:grid;gap:var(--space-4)">
+                <p style="margin:0;color:var(--text-body);text-wrap:pretty">Поки ви обирали, каталог оновився. Перевірте зміни й підтвердьте.</p>
+
+                <ul data-recon style="margin:0;padding:0;list-style:none;border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden">
+                  <sc-for list="{{ reconRows }}" as="row" hint-placeholder-count="3">
+                    <li style="display:grid;gap:var(--space-3);padding:var(--space-4)">
+                      <div style="display:grid;gap:3px;min-width:0">
+                        <span style="font-size:var(--text-2xs);font-weight:600;color:var(--text-body)">{{ row.brand }}</span>
+                        <span style="font-weight:600;color:var(--text-strong);text-wrap:pretty">{{ row.name }}</span>
+                        <span class="ds-article" style="justify-self:start">{{ row.article }}</span>
+                      </div>
+
+                      <sc-if value="{{ row.status }}" hint-placeholder-val="{{ false }}">
+                        <p style="display:flex;align-items:center;gap:8px;margin:0;font-size:var(--text-sm);font-weight:600;color:var(--stock-out)">
+                          <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="package-x" size="16" hint-size="16px,16px"></x-import>
+                          <span>{{ row.status }}</span>
+                        </p>
+                      </sc-if>
+
+                      <sc-if value="{{ row.hasChanges }}" hint-placeholder-val="{{ true }}">
+                        <dl data-diff>
+                          <sc-for list="{{ row.changes }}" as="ch" hint-placeholder-count="1">
+                            <dt class="t-eyebrow" style="margin:0">{{ ch.label }}</dt>
+                            <dd style="display:flex;flex-wrap:wrap;align-items:center;gap:2px var(--space-2);margin:0;font-size:var(--text-sm);font-variant-numeric:tabular-nums">
+                              <s style="color:var(--text-faint);text-decoration-thickness:1px">{{ ch.was }}</s>
+                              <span style="display:inline-flex;color:var(--text-faint)">
+                                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-right" size="14" hint-size="14px,14px"></x-import>
+                              </span>
+                              <span data-now data-tone="{{ ch.tone }}">{{ ch.now }}</span>
+                              <sc-if value="{{ ch.delta }}" hint-placeholder-val="{{ false }}">
+                                <span style="font-size:var(--text-2xs);color:var(--text-muted)">{{ ch.delta }}</span>
+                              </sc-if>
+                            </dd>
+                          </sc-for>
+                        </dl>
+                      </sc-if>
+
+                      <sc-if value="{{ row.note }}" hint-placeholder-val="{{ false }}">
+                        <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">{{ row.note }}</p>
+                      </sc-if>
+
+                      <sc-if value="{{ row.gone }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:grid;gap:var(--space-3);padding:var(--space-4);border:1px solid var(--line);border-radius:var(--radius-md)">
+                          <span class="t-eyebrow">Можна замінити на іншу пропозицію</span>
+                          <dl style="display:grid;grid-template-columns:repeat(3,max-content);column-gap:clamp(14px,5vw,32px);margin:0">
+                            <div style="display:grid;gap:2px">
+                              <dt style="font-size:var(--text-2xs);color:var(--text-muted)">Ціна за шт</dt>
+                              <dd style="margin:0">
+                                <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ row.replPrice }}" size="sm" hint-size="auto,22px"></x-import>
+                              </dd>
+                            </div>
+                            <div style="display:grid;gap:2px">
+                              <dt style="font-size:var(--text-2xs);color:var(--text-muted)">Відправка</dt>
+                              <dd style="margin:0;font-weight:600;color:var(--text-strong);white-space:nowrap">{{ row.replDate }}</dd>
+                            </div>
+                            <div style="display:grid;gap:2px">
+                              <dt style="font-size:var(--text-2xs);color:var(--text-muted)">Кількість</dt>
+                              <dd style="margin:0;font-weight:600;color:var(--text-strong);white-space:nowrap">{{ row.replQty }}</dd>
+                            </div>
+                          </dl>
+                          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-5)">
+                            <button type="button" class="ds-btn ds-btn--md ds-btn--secondary" onClick="{{ row.replace }}">Замінити</button>
+                            <button type="button" class="ds-btn ds-btn--link" style="min-height:44px;font-size:var(--text-sm)" onClick="{{ row.remove }}">Прибрати</button>
+                          </div>
+                          <a href="{{ row.linkHref }}" style="display:inline-flex;align-items:center;gap:6px;width:max-content;min-height:32px;margin-top:calc(-1 * var(--space-2));font-size:var(--text-sm);font-weight:500">
+                            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-right" size="15" hint-size="15px,15px"></x-import>
+                            <span>{{ row.linkText }}</span>
+                          </a>
+                        </div>
+                      </sc-if>
+
+                      <sc-if value="{{ row.showActions }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-5)">
+                          <sc-if value="{{ row.unavailable }}" hint-placeholder-val="{{ false }}">
+                            <button type="button" class="ds-btn ds-btn--md ds-btn--secondary" onClick="{{ row.remove }}">Прибрати</button>
+                          </sc-if>
+                          <a href="{{ row.linkHref }}" style="display:inline-flex;align-items:center;gap:6px;width:max-content;min-height:44px;font-size:var(--text-sm);font-weight:500">
+                            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-right" size="15" hint-size="15px,15px"></x-import>
+                            <span>{{ row.linkText }}</span>
+                          </a>
+                        </div>
+                      </sc-if>
+
+                      <sc-if value="{{ row.replaced }}" hint-placeholder-val="{{ false }}">
+                        <p style="display:flex;align-items:center;gap:8px;margin:0;font-size:var(--text-sm);color:var(--text-body)">
+                          <span style="display:inline-flex;color:var(--stock-in)">
+                            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="circle-check" size="15" hint-size="15px,15px"></x-import>
+                          </span>
+                          <span>Замінено на іншу пропозицію</span>
+                        </p>
+                      </sc-if>
+
+                      <sc-if value="{{ row.removed }}" hint-placeholder-val="{{ false }}">
+                        <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Прибрано із замовлення</p>
+                      </sc-if>
+                    </li>
+                  </sc-for>
+                </ul>
+
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3) var(--space-4)">
+                  <button type="button" class="ds-btn ds-btn--md ds-btn--dark" disabled="{{ confirmDisabled }}" onClick="{{ onConfirm }}">Підтверджую</button>
+                  <sc-if value="{{ confirmDisabled }}" hint-placeholder-val="{{ true }}">
+                    <span style="font-size:var(--text-sm);color:var(--text-muted)">Спершу приберіть або замініть позиції, яких уже немає.</span>
+                  </sc-if>
+                </div>
+              </div>
+            </section>
+          </sc-if>
+
+          <section data-sec id="co-recipient" data-screen-label="Отримувач">
+            <div data-sec-head>
+              <span data-step data-state="{{ s1.state }}">
+                <sc-if value="{{ s1.done }}" hint-placeholder-val="{{ false }}">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="check" size="15" stroke-width="2.75" hint-size="15px,15px"></x-import>
+                </sc-if>
+                <sc-if value="{{ s1.notDone }}" hint-placeholder-val="{{ true }}">{{ s1.num }}</sc-if>
+              </span>
+              <h2 class="t-display-xs" style="margin:0">Отримувач</h2>
+            </div>
+
+            <div data-sec-body>
+              <sc-if value="{{ isGuest }}" hint-placeholder-val="{{ false }}">
+                <p style="display:flex;flex-wrap:wrap;align-items:center;gap:4px var(--space-3);margin:0 0 var(--space-5);padding:var(--space-2) var(--space-4);min-height:44px;box-sizing:border-box;border:1px solid var(--line);border-radius:var(--radius-md);font-size:var(--text-sm);color:var(--text-body)">
+                  <span>Є кабінет? Увійдіть — підставимо ваші дані й збережені адреси.</span>
+                  <a href="Вхід.dc.html" class="ds-btn ds-btn--link" style="font-size:var(--text-sm)">Увійти</a>
+                </p>
+              </sc-if>
+
+              <sc-if value="{{ showProfileCard }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-3) var(--space-4);padding:var(--space-3) var(--space-3) var(--space-3) var(--space-5);border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface-sunken)">
+                  <div style="display:grid;gap:4px;min-width:0">
+                    <span style="font-weight:600;color:var(--text-strong)">{{ profileName }}</span>
+                    <span style="display:flex;flex-wrap:wrap;gap:2px var(--space-4);font-size:var(--text-sm);color:var(--text-muted)">
+                      <span class="t-mono" style="color:var(--text-body)">{{ profilePhone }}</span>
+                      <span style="overflow-wrap:anywhere">{{ profileEmail }}</span>
+                    </span>
+                  </div>
+                  <button type="button" class="ds-btn ds-btn--sm ds-btn--secondary" style="min-height:44px" onClick="{{ onEditProfile }}">Змінити</button>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ showFields }}" hint-placeholder-val="{{ false }}">
+                <div style="display:grid;gap:var(--space-4)">
+                  <div data-grid3>
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.TextField" label="Прізвище" value="{{ rLast }}" on-change="{{ onLast }}" auto-complete="family-name" max-length="100" error="{{ errLast }}" hint-size="100%,70px"></x-import>
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.TextField" label="Імʼя" value="{{ rFirst }}" on-change="{{ onFirst }}" auto-complete="given-name" max-length="100" error="{{ errFirst }}" hint-size="100%,70px"></x-import>
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.TextField" label="По батькові" value="{{ rPatr }}" on-change="{{ onPatr }}" auto-complete="additional-name" max-length="100" hint="Необовʼязково" hint-size="100%,70px"></x-import>
+                  </div>
+                  <div data-grid2>
+                    <div>
+                      <x-import component-from-global-scope="DesignSystem_d7c4f4.PhoneField" label="Телефон" digits="{{ rPhone }}" on-digits="{{ onPhone }}" hint-size="100%,70px"></x-import>
+                      <sc-if value="{{ errPhone }}" hint-placeholder-val="{{ false }}">
+                        <p class="ds-field__error" role="alert">{{ errPhone }}</p>
+                      </sc-if>
+                    </div>
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.TextField" label="E-mail" type="email" auto-complete="email" max-length="254" value="{{ rEmail }}" on-change="{{ onEmail }}" hint="Для підтвердження й новин про замовлення" error="{{ errEmail }}" hint-size="100%,70px"></x-import>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </section>
+
+          <section data-sec id="co-delivery" data-locked="{{ s2.locked }}" data-screen-label="Доставка">
+            <div data-sec-head>
+              <span data-step data-state="{{ s2.state }}">
+                <sc-if value="{{ s2.done }}" hint-placeholder-val="{{ false }}">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="check" size="15" stroke-width="2.75" hint-size="15px,15px"></x-import>
+                </sc-if>
+                <sc-if value="{{ s2.notDone }}" hint-placeholder-val="{{ true }}">{{ s2.num }}</sc-if>
+              </span>
+              <h2 class="t-display-xs" style="margin:0">Доставка</h2>
+            </div>
+
+            <sc-if value="{{ s2.locked }}" hint-placeholder-val="{{ false }}">
+              <p data-sec-body class="t-caption" style="margin-top:var(--space-2)">Відкриється, щойно вкажете контакти</p>
+            </sc-if>
+
+            <sc-if value="{{ s2.open }}" hint-placeholder-val="{{ true }}">
+              <div data-sec-body style="display:grid;gap:var(--space-5)">
+
+                <div data-methods role="radiogroup" aria-label="Спосіб доставки">
+                  <sc-for list="{{ methods }}" as="m" hint-placeholder-count="3">
+                    <button type="button" role="radio" data-tile data-on="{{ m.on }}" aria-checked="{{ m.on }}" onClick="{{ m.pick }}">
+                      <span data-tile-icon style="flex:none;display:inline-flex;color:var(--text-muted)">
+                        <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ m.icon }}" size="20" hint-size="20px,20px"></x-import>
+                      </span>
+                      <span style="display:grid;gap:1px;min-width:0">
+                        <span style="font-size:var(--text-2xs);color:var(--text-muted)">{{ m.eyebrow }}</span>
+                        <span style="font-weight:600;color:var(--text-strong)">{{ m.label }}</span>
+                      </span>
+                    </button>
+                  </sc-for>
+                </div>
+
+                <sc-if value="{{ showSaved }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:grid;gap:var(--space-2)">
+                    <p class="t-eyebrow" style="margin:0">Збережені адреси</p>
+                    <div data-choices role="radiogroup" aria-label="Збережені адреси">
+                      <sc-for list="{{ saved }}" as="a" hint-placeholder-count="3">
+                        <label data-choice data-on="{{ a.on }}">
+                          <input type="radio" name="co-saved" checked="{{ a.on }}" onChange="{{ a.pick }}">
+                          <span style="display:grid;gap:3px;min-width:0">
+                            <span style="display:flex;flex-wrap:wrap;align-items:center;gap:4px var(--space-2)">
+                              <span style="font-weight:600;color:var(--text-strong)">{{ a.title }}</span>
+                              <sc-if value="{{ a.isDefault }}" hint-placeholder-val="{{ false }}">
+                                <span class="ds-badge ds-badge--neutral">Основна</span>
+                              </sc-if>
+                            </span>
+                            <span style="font-size:var(--text-sm);color:var(--text-body);text-wrap:pretty">{{ a.place }}</span>
+                            <span style="display:flex;flex-wrap:wrap;gap:2px var(--space-4);font-size:var(--text-sm);color:var(--text-muted)">
+                              <span>{{ a.name }}</span>
+                              <span class="t-mono">{{ a.phoneText }}</span>
+                            </span>
+                          </span>
+                        </label>
+                      </sc-for>
+                      <label data-choice data-on="{{ otherOn }}">
+                        <input type="radio" name="co-saved" checked="{{ otherOn }}" onChange="{{ pickOther }}">
+                        <span style="font-weight:600;color:var(--text-strong)">{{ otherLabel }}</span>
+                      </label>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ showPickers }}" hint-placeholder-val="{{ false }}">
+                  <div data-grid2>
+
+                    <div data-combo>
+                      <label class="ds-field__label" for="co-city">Місто</label>
+                      <div style="position:relative">
+                        <input id="co-city" class="{{ cityClass }}" data-settled="{{ citySettled }}" value="{{ cityValue }}" placeholder="Почніть вводити назву" autoComplete="off" role="combobox" aria-expanded="{{ cityOpen }}" onChange="{{ onCityInput }}" onFocus="{{ onCityFocus }}" onBlur="{{ onCityBlur }}">
+                        <sc-if value="{{ citySettled }}" hint-placeholder-val="{{ false }}">
+                          <button type="button" class="ds-clear" aria-label="Змінити місто" onClick="{{ clearCity }}">
+                            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="x" size="16" hint-size="16px,16px"></x-import>
+                          </button>
+                        </sc-if>
+                        <sc-if value="{{ cityOpen }}" hint-placeholder-val="{{ false }}">
+                          <ul data-pop role="listbox">
+                            <sc-for list="{{ cityOptions }}" as="c" hint-placeholder-count="0">
+                              <li data-opt role="option" onMouseDown="{{ c.pick }}">
+                                <span style="font-weight:500;color:var(--text-strong)">{{ c.name }}</span>
+                                <span style="font-size:var(--text-2xs);color:var(--text-muted);white-space:nowrap">{{ c.region }}</span>
+                              </li>
+                            </sc-for>
+                            <sc-if value="{{ cityMsg }}" hint-placeholder-val="{{ false }}">
+                              <li style="padding:10px 14px;font-size:var(--text-sm);color:var(--text-muted)">{{ cityMsg }}</li>
+                            </sc-if>
+                          </ul>
+                        </sc-if>
+                      </div>
+                      <sc-if value="{{ errCity }}" hint-placeholder-val="{{ false }}">
+                        <p class="ds-field__error" role="alert">{{ errCity }}</p>
+                      </sc-if>
+                    </div>
+
+                    <div data-combo>
+                      <label class="ds-field__label" for="co-point">{{ pointLabel }}</label>
+                      <div style="position:relative">
+                        <input id="co-point" class="{{ pointClass }}" data-settled="{{ pointSettled }}" value="{{ pointValue }}" placeholder="{{ pointPlaceholder }}" disabled="{{ pointDisabled }}" autoComplete="off" role="combobox" aria-expanded="{{ pointOpen }}" onChange="{{ onPointInput }}" onFocus="{{ onPointFocus }}" onBlur="{{ onPointBlur }}">
+                        <sc-if value="{{ pointSettled }}" hint-placeholder-val="{{ false }}">
+                          <button type="button" class="ds-clear" aria-label="Змінити точку видачі" onClick="{{ clearPoint }}">
+                            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="x" size="16" hint-size="16px,16px"></x-import>
+                          </button>
+                        </sc-if>
+                        <sc-if value="{{ pointOpen }}" hint-placeholder-val="{{ false }}">
+                          <ul data-pop role="listbox">
+                            <sc-for list="{{ pointOptions }}" as="p" hint-placeholder-count="0">
+                              <li data-opt role="option" onMouseDown="{{ p.pick }}">
+                                <span style="display:grid;gap:1px;min-width:0">
+                                  <span style="font-weight:500;color:var(--text-strong)">{{ p.title }}</span>
+                                  <span style="font-size:var(--text-sm);color:var(--text-muted)">{{ p.address }}</span>
+                                </span>
+                                <span style="flex:none;font-size:var(--text-2xs);color:var(--text-muted);white-space:nowrap">{{ p.weight }}</span>
+                              </li>
+                            </sc-for>
+                            <sc-if value="{{ pointMsg }}" hint-placeholder-val="{{ false }}">
+                              <li style="padding:10px 14px;font-size:var(--text-sm);color:var(--text-muted)">{{ pointMsg }}</li>
+                            </sc-if>
+                          </ul>
+                        </sc-if>
+                      </div>
+                      <sc-if value="{{ errPoint }}" hint-placeholder-val="{{ false }}">
+                        <p class="ds-field__error" role="alert">{{ errPoint }}</p>
+                      </sc-if>
+                    </div>
+
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ isNp }}" hint-placeholder-val="{{ true }}">
+                  <p style="display:flex;align-items:center;gap:8px;margin:0;font-size:var(--text-sm);color:var(--text-muted)">
+                    <span style="flex:none;display:inline-flex;color:var(--text-faint)">
+                      <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="truck" size="15" hint-size="15px,15px"></x-import>
+                    </span>
+                    <span>Доставка — за тарифами Нової Пошти, оплачує отримувач</span>
+                  </p>
+                </sc-if>
+
+                <sc-if value="{{ showDiffers }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:grid;gap:var(--space-3)">
+                    <label class="ds-check" style="min-height:44px;width:max-content;max-width:100%">
+                      <input type="checkbox" checked="{{ differs }}" onChange="{{ onDiffers }}">
+                      <span>Отримувач — інша людина</span>
+                    </label>
+                    <sc-if value="{{ differs }}" hint-placeholder-val="{{ false }}">
+                      <div data-grid2>
+                        <x-import component-from-global-scope="DesignSystem_d7c4f4.TextField" label="Імʼя отримувача" value="{{ rcName }}" on-change="{{ onRcName }}" max-length="200" error="{{ errRcName }}" hint-size="100%,70px"></x-import>
+                        <div>
+                          <x-import component-from-global-scope="DesignSystem_d7c4f4.PhoneField" label="Телефон отримувача" digits="{{ rcPhone }}" on-digits="{{ onRcPhone }}" hint-size="100%,70px"></x-import>
+                          <sc-if value="{{ errRcPhone }}" hint-placeholder-val="{{ false }}">
+                            <p class="ds-field__error" role="alert">{{ errRcPhone }}</p>
+                          </sc-if>
+                        </div>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ showSaveAddr }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:grid;gap:var(--space-3);margin-top:calc(-1 * var(--space-5))">
+                    <label class="ds-check" style="min-height:44px;width:max-content;max-width:100%">
+                      <input type="checkbox" checked="{{ saveAddr }}" onChange="{{ onSaveAddr }}">
+                      <span>Зберегти адресу в кабінеті</span>
+                    </label>
+                    <sc-if value="{{ saveAddr }}" hint-placeholder-val="{{ false }}">
+                      <div data-grid2>
+                        <x-import component-from-global-scope="DesignSystem_d7c4f4.TextField" label="Назва" value="{{ saveLabel }}" on-change="{{ onSaveLabel }}" max-length="80" hint="Наприклад, «Дім» або «Робота»" hint-size="100%,70px"></x-import>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ isPickup }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:grid;gap:var(--space-4);padding:var(--space-4) var(--space-5);border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface-sunken)">
+                    <div style="display:grid;gap:4px">
+                      <span class="t-eyebrow">Адреса</span>
+                      <span style="font-weight:600;color:var(--text-strong)"><span style="white-space:nowrap">м. Запоріжжя,</span> <span style="white-space:nowrap">вул. Гуляйпільська, 15</span></span>
+                    </div>
+                    <div style="display:grid;gap:4px">
+                      <span class="t-eyebrow">Графік</span>
+                      <div style="display:grid;grid-template-columns:max-content max-content;gap:2px var(--space-5);font-size:var(--text-sm);color:var(--text-body)">
+                        <span>пн–пт</span><span style="font-variant-numeric:tabular-nums">09:00–16:00</span>
+                        <span>сб</span><span style="font-variant-numeric:tabular-nums">09:00–14:00</span>
+                        <span>нд</span><span style="color:var(--text-muted)">вихідний</span>
+                      </div>
+                    </div>
+                    <a href="https://drive.zp.ua/go/map" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;width:max-content;min-height:32px;font-size:var(--text-sm);font-weight:500">
+                      <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="map-pin" size="15" hint-size="15px,15px"></x-import>
+                      <span>Показати на карті</span>
+                    </a>
+                  </div>
+                </sc-if>
+
+              </div>
+            </sc-if>
+          </section>
+
+          <section data-sec id="co-payment" data-locked="{{ s3.locked }}" data-screen-label="Оплата">
+            <div data-sec-head>
+              <span data-step data-state="{{ s3.state }}">{{ s3.num }}</span>
+              <h2 class="t-display-xs" style="margin:0">Оплата й підтвердження</h2>
+            </div>
+
+            <sc-if value="{{ s3.locked }}" hint-placeholder-val="{{ false }}">
+              <p data-sec-body class="t-caption" style="margin-top:var(--space-2)">Відкриється, щойно оберете доставку</p>
+            </sc-if>
+
+            <sc-if value="{{ s3.open }}" hint-placeholder-val="{{ true }}">
+              <div data-sec-body style="display:grid;gap:var(--space-6)">
+
+                <sc-if value="{{ isPickup }}" hint-placeholder-val="{{ false }}">
+                  <div data-choices>
+                    <div data-choice data-on="true" style="cursor:default;grid-template-columns:20px minmax(0,1fr);align-items:center">
+                      <span style="display:inline-flex;color:var(--text-strong)">
+                        <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="store" size="18" hint-size="18px,18px"></x-import>
+                      </span>
+                      <span style="font-weight:600;color:var(--text-strong)">Оплата в магазині при отриманні</span>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ isNp }}" hint-placeholder-val="{{ true }}">
+                  <div data-choices role="radiogroup" aria-label="Спосіб оплати">
+                    <sc-for list="{{ payOptions }}" as="o" hint-placeholder-count="3">
+                      <label data-choice data-on="{{ o.on }}" data-off="{{ o.disabled }}">
+                        <input type="radio" name="co-pay" checked="{{ o.on }}" disabled="{{ o.disabled }}" onChange="{{ o.pick }}">
+                        <span style="display:grid;gap:2px;min-width:0">
+                          <span style="font-weight:600;color:var(--text-strong)">{{ o.label }}</span>
+                          <sc-if value="{{ o.sub }}" hint-placeholder-val="{{ false }}">
+                            <span style="font-size:var(--text-sm);color:var(--text-muted)">{{ o.sub }}</span>
+                          </sc-if>
+                        </span>
+                      </label>
+                    </sc-for>
+                  </div>
+                </sc-if>
+
+                <div style="display:grid;gap:var(--space-5);padding-top:var(--space-5);border-top:1px solid var(--line)">
+
+                  <div style="display:grid;gap:6px;max-width:440px">
+                    <sc-if value="{{ promoIdle }}" hint-placeholder-val="{{ true }}">
+                      <label class="ds-field__label" for="co-promo" style="margin:0">Промокод</label>
+                      <div style="display:flex;gap:var(--space-2)">
+                        <input id="co-promo" class="{{ promoClass }}" value="{{ promoText }}" onChange="{{ onPromo }}" onKeyDown="{{ onPromoKey }}" autoComplete="off" maxLength="64" style="flex:1;min-width:0">
+                        <button type="button" class="ds-btn ds-btn--md ds-btn--secondary" disabled="{{ promoApplyDisabled }}" onClick="{{ applyPromo }}">{{ promoApplyLabel }}</button>
+                      </div>
+                      <sc-if value="{{ promoError }}" hint-placeholder-val="{{ false }}">
+                        <p class="ds-field__error" role="alert" style="margin:0">{{ promoError }}</p>
+                      </sc-if>
+                    </sc-if>
+                    <sc-if value="{{ promoApplied }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px var(--space-4);min-height:44px">
+                        <span style="display:inline-flex;align-items:center;gap:8px;color:var(--text-strong)">
+                          <span style="display:inline-flex;color:var(--stock-in)">
+                            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="circle-check" size="17" hint-size="17px,17px"></x-import>
+                          </span>
+                          <span>{{ promoAppliedText }}</span>
+                        </span>
+                        <button type="button" class="ds-btn ds-btn--link" style="font-size:var(--text-sm)" onClick="{{ removePromo }}">Прибрати код</button>
+                      </div>
+                    </sc-if>
+                  </div>
+
+                  <sc-if value="{{ bonusGuest }}" hint-placeholder-val="{{ false }}">
+                    <p style="display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:0;font-size:var(--text-sm);color:var(--text-muted)">
+                      <span style="display:inline-flex;color:var(--text-faint)">
+                        <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="badge-percent" size="15" hint-size="15px,15px"></x-import>
+                      </span>
+                      <a href="Вхід.dc.html" style="font-weight:500">Увійдіть, щоб платити бонусами</a>
+                    </p>
+                  </sc-if>
+
+                  <sc-if value="{{ bonusField }}" hint-placeholder-val="{{ true }}">
+                    <div style="max-width:440px">
+                      <x-import component-from-global-scope="DesignSystem_d7c4f4.TextField" label="Списати бонусів" input-mode="numeric" auto-complete="off" suffix="₴" value="{{ bonusText }}" on-change="{{ onBonus }}" hint="{{ bonusHint }}" error="{{ bonusError }}" hint-size="100%,70px"></x-import>
+                    </div>
+                  </sc-if>
+
+                  <sc-if value="{{ bonusCapped }}" hint-placeholder-val="{{ false }}">
+                    <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">{{ bonusCappedText }}</p>
+                  </sc-if>
+
+                  <sc-if value="{{ commentClosed }}" hint-placeholder-val="{{ true }}">
+                    <button type="button" class="ds-btn ds-btn--link" style="width:max-content;min-height:32px;gap:6px;font-size:var(--text-sm)" onClick="{{ openComment }}">
+                      <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="plus" size="15" hint-size="15px,15px"></x-import>
+                      <span>Додати коментар до замовлення</span>
+                    </button>
+                  </sc-if>
+                  <sc-if value="{{ commentOpen }}" hint-placeholder-val="{{ false }}">
+                    <label class="ds-field">
+                      <span class="ds-field__label">Коментар</span>
+                      <textarea class="ds-input" rows="3" maxLength="2000" value="{{ comment }}" onChange="{{ onComment }}" style="min-height:96px;padding:10px 12px;resize:vertical;font:inherit;line-height:1.5"></textarea>
+                    </label>
+                  </sc-if>
+
+                </div>
+              </div>
+            </sc-if>
+          </section>
+
+        </div>
+
+        <aside data-summary data-screen-label="Підсумок">
+          <div style="display:grid;gap:var(--space-4);padding:var(--space-5);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3)">
+              <span style="display:flex;align-items:baseline;gap:var(--space-2)">
+                <span class="t-display-xs" style="font-size:20px;color:var(--text-strong)">Замовлення</span>
+                <span style="font-size:var(--text-sm);color:var(--text-muted)">{{ countLabel }}</span>
+              </span>
+              <a href="Кошик.dc.html" style="font-size:var(--text-sm)">Змінити</a>
+            </div>
+
+            <ul style="display:grid;grid-template-columns:minmax(0,1fr) max-content;column-gap:var(--space-4);row-gap:var(--space-3);margin:0;padding:0 0 var(--space-4);list-style:none;border-bottom:1px solid var(--line)">
+              <sc-for list="{{ sumLines }}" as="l" hint-placeholder-count="3">
+                <li data-dim="{{ l.dim }}" style="grid-column:1 / -1;display:grid;grid-template-columns:subgrid;align-items:start">
+                  <span style="display:grid;gap:2px;min-width:0">
+                    <span style="font-size:var(--text-sm);color:var(--text-body);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ l.name }}</span>
+                    <span style="min-width:0;font-size:var(--text-2xs);font-weight:600;color:var(--text-muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis">{{ l.brand }}</span>
+                  </span>
+                  <span style="display:grid;gap:2px;justify-items:end">
+                    <span style="font-size:var(--text-sm);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--text-strong)">{{ l.totalText }}</span>
+                    <span style="font-size:var(--text-2xs);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--text-faint)">{{ l.qtyText }}</span>
+                  </span>
+                </li>
+              </sc-for>
+            </ul>
+
+            <sc-if value="{{ hasBreakdown }}" hint-placeholder-val="{{ false }}">
+              <dl style="display:grid;gap:6px;margin:0;font-size:var(--text-sm)">
+                <div style="display:flex;justify-content:space-between;gap:var(--space-3)">
+                  <dt style="color:var(--text-muted)">Товари</dt>
+                  <dd style="margin:0;font-variant-numeric:tabular-nums;color:var(--text-body)">{{ goodsText }}</dd>
+                </div>
+                <sc-if value="{{ hasDiscount }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;justify-content:space-between;gap:var(--space-3)">
+                    <dt style="color:var(--text-muted)">Знижка</dt>
+                    <dd style="margin:0;font-variant-numeric:tabular-nums;color:var(--text-body)">{{ discountText }}</dd>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ hasBonus }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;justify-content:space-between;gap:var(--space-3)">
+                    <dt style="color:var(--text-muted)">Оплата бонусами</dt>
+                    <dd style="margin:0;font-variant-numeric:tabular-nums;color:var(--text-body)">{{ bonusSpentText }}</dd>
+                  </div>
+                </sc-if>
+              </dl>
+            </sc-if>
+
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3)">
+              <span style="font-weight:500;color:var(--text-strong)">Разом</span>
+              <span style="position:relative;display:inline-flex">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ total }}" size="lg" hint-size="auto,32px"></x-import>
+                <span data-cashback style="position:absolute;top:-10px;right:-14px">
+                  <dc-import name="Бейдж кешбеку" percent="{{ cbPercent }}" bonus="{{ cbBonus }}" tip="{{ cbTip }}" hint-size="18px,18px"></dc-import>
+                </span>
+              </span>
+            </div>
+
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="dark" size="lg" block="{{ true }}" disabled="{{ submitDisabled }}" onClick="{{ onSubmit }}" hint-size="100%,52px">{{ submitLabel }}</x-import>
+
+            <sc-if value="{{ submitNote }}" hint-placeholder-val="{{ false }}">
+              <p role="alert" style="margin:0;font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">{{ submitNote }}</p>
+            </sc-if>
+          </div>
+        </aside>
+
+      </div>
+    </sc-if>
+
+  </main>
+
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteFooter" hint-size="100%,260px"></x-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1100},&quot;buyer&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Гість&quot;,&quot;Увійшов&quot;],&quot;default&quot;:&quot;Увійшов&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Покупець&quot;},&quot;savedAddresses&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Покупець&quot;},&quot;screen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Форма&quot;,&quot;Звірка&quot;,&quot;Нижче мінімуму&quot;,&quot;Порожній кошик&quot;],&quot;default&quot;:&quot;Форма&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;paymentsEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Налаштування магазину&quot;},&quot;ordersEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Налаштування магазину&quot;}}">
+/*
+ * /checkout. Три кроки розкриваються послідовно й лишаються редагованими (lib/checkout.ts,
+ * revealedThrough — «висока вода», а не функція поточного стану). Звірка — гілка на серверному
+ * `changed`, а не крок, який проходять. Доставка: три варіанти на екрані, два методи в замовленні.
+ * Для покупця з кабінетом — збережені адреси (customer_addresses: назва, місто, відділення,
+ * отримувач і телефон, одна основна) під «Нова Пошта: відділення».
+ */
+const fmt = (n) => new Intl.NumberFormat('uk-UA').format(n) + ' ₴'
+const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())
+const phoneText = (d) => '+38 (0' + d.slice(0, 2) + ') ' + d.slice(2, 5) + '-' + d.slice(5, 7) + '-' + d.slice(7, 9)
+const PLURAL = (n) => {
+  const a = n % 100, b = n % 10
+  if (a >= 11 && a <= 14) return 'позицій'
+  if (b === 1) return 'позиція'
+  if (b >= 2 && b <= 4) return 'позиції'
+  return 'позицій'
+}
+const CASHBACK = (p) => (p >= 10000 ? 1 : p >= 4000 ? 2 : p >= 1500 ? 3 : p >= 700 ? 5 : p >= 300 ? 7 : 10)
+const CASHBACK_BONUS = (p) => Math.round((p * CASHBACK(p)) / 100)
+
+const BONUS_BALANCE = 1250
+const BONUS_CAP = 0.2
+const ADVANCE = 300
+const PROMOS = {
+  DRIVE10: { percent: 10 },
+  ZIMA2025: { error: 'Термін дії коду минув' },
+  VESNA: { error: 'Цей код уже використано' }
+}
+
+const PROFILE = { last: 'Ковальчук', first: 'Андрій', patr: 'Петрович', phone: '671234567', email: 'a.kovalchuk@ukr.net' }
+const EMPTY = { last: '', first: '', patr: '', phone: '', email: '' }
+
+const ADDRESSES = [
+  { id: 1, type: 'warehouse', label: 'Дім', isDefault: true, city: 'Запоріжжя', point: 'Відділення №12: вул. Перемоги, 64', name: 'Ковальчук Андрій', phone: '671234567' },
+  { id: 2, type: 'warehouse', label: 'СТО', isDefault: false, city: 'Запоріжжя', point: 'Відділення №47: вул. Північнокільцева, 4', name: 'Мельник Сергій', phone: '503334455' },
+  { id: 3, type: 'warehouse', label: '', isDefault: false, city: 'Дніпро', point: 'Відділення №3: вул. Князя Ярослава Мудрого, 2', name: 'Ковальчук Олена', phone: '960001122' },
+  { id: 4, type: 'postomat', label: 'Біля дому', isDefault: false, city: 'Запоріжжя', point: 'Поштомат №5390: вул. Гуляйпільська, 20 (Сільпо)', name: 'Ковальчук Андрій', phone: '671234567' },
+  { id: 5, type: 'postomat', label: 'Робота', isDefault: false, city: 'Запоріжжя', point: 'Поштомат №5214: просп. Соборний, 147 (АТБ)', name: 'Ковальчук Андрій', phone: '671234567' }
+]
+const typeOf = (option) => (option === 'np_postomat' ? 'postomat' : option === 'np_warehouse' ? 'warehouse' : null)
+/* Основна адреса, якщо вона цього типу; інакше перша збережена цього типу; інакше — вводити вручну. */
+const savedFor = (option) => {
+  const list = ADDRESSES.filter((a) => a.type === typeOf(option))
+  const pick = list.find((a) => a.isDefault) || list[0]
+  return pick ? pick.id : 'other'
+}
+
+const CITIES = [
+  { ref: 'zp', name: 'Запоріжжя', region: 'Запорізька обл.' },
+  { ref: 'vil', name: 'Вільнянськ', region: 'Запорізька обл.' },
+  { ref: 'kyiv', name: 'Київ', region: 'м. Київ' },
+  { ref: 'dnipro', name: 'Дніпро', region: 'Дніпропетровська обл.' },
+  { ref: 'lviv', name: 'Львів', region: 'Львівська обл.' },
+  { ref: 'odesa', name: 'Одеса', region: 'Одеська обл.' },
+  { ref: 'kharkiv', name: 'Харків', region: 'Харківська обл.' },
+  { ref: 'zhytomyr', name: 'Житомир', region: 'Житомирська обл.' }
+]
+const P = (num, address, weight) => ({ num, address, weight })
+const POINTS = {
+  zp: {
+    warehouse: [P(1, 'просп. Соборний, 160', 30), P(12, 'вул. Перемоги, 64', 30), P(20, 'вул. Гоголя, 118', 30), P(33, 'вул. Гуляйпільська, 32', 30), P(47, 'вул. Північнокільцева, 4', 1100)],
+    postomat: [P(5214, 'просп. Соборний, 147 (АТБ)', 20), P(5390, 'вул. Гуляйпільська, 20 (Сільпо)', 20), P(7731, 'вул. Перемоги, 90', 20)]
+  },
+  vil: { warehouse: [P(1, 'вул. Бочарова, 9', 30)], postomat: [] },
+  kyiv: {
+    warehouse: [P(1, 'вул. Пирогівський шлях, 135', 30), P(5, 'вул. Федорова, 32', 30), P(27, 'просп. Миколи Бажана, 26', 30)],
+    postomat: [P(2081, 'вул. Хрещатик, 22', 20), P(3310, 'просп. Берестейський, 37', 20)]
+  },
+  dnipro: {
+    warehouse: [P(3, 'вул. Князя Ярослава Мудрого, 2', 30), P(7, 'просп. Дмитра Яворницького, 107', 30)],
+    postomat: [P(4122, 'вул. Січеславська Набережна, 15', 20)]
+  },
+  lviv: { warehouse: [P(1, 'вул. Городоцька, 355', 1100), P(9, 'вул. Шевченка, 60', 30)], postomat: [P(1150, 'вул. Під Дубом, 7Б', 20)] },
+  odesa: { warehouse: [P(2, 'вул. Базова, 16', 1100), P(11, 'вул. Генуезька, 24', 30)], postomat: [P(6016, 'просп. Шевченка, 4', 20)] },
+  kharkiv: { warehouse: [P(1, 'вул. Польова, 67', 1100), P(14, 'просп. Науки, 9', 30)], postomat: [] },
+  zhytomyr: { warehouse: [P(1, 'вул. Леха Качинського, 6', 30)], postomat: [P(3002, 'вул. Київська, 77', 20)] }
+}
+
+const LINES = [
+  { id: 'bosch', brand: 'BOSCH', article: '0 986 452 041', name: 'Фільтр масляний', price: 12840, qty: 2 },
+  { id: 'bando', brand: 'BANDO', article: '6PK2000', name: 'Ремень поликліновий Tucson (09-)/IX35/Sportage (G6BA-G) (6PK2000) (25212-37182) Bando', price: 486, qty: 8 },
+  { id: 'febi', brand: 'FEBI BILSTEIN GMBH & CO. KG', article: '34781-XL-REINFORCED-KIT', name: 'Натягувач ременя допоміжних агрегатів', price: 16200, qty: 3 }
+]
+
+/* Запас менший за потрібне: кількість обрізана до наявної (state: changed, qty). */
+const SHORT = { id: 'ngk', brand: 'NGK', article: 'BKR6E', name: 'Свічка запалювання', price: 145, qty: 2, wasQty: 4 }
+const MISSING = { id: 'mann', brand: 'MANN-FILTER', article: 'C 26 168', name: 'Фільтр повітряний', price: 612, qty: 1 }
+
+class Component extends DCLogic {
+  state = this.init(this.props || {})
+
+  flags(props) {
+    const p = props || this.props || {}
+    const signed = (p.buyer ?? 'Увійшов') === 'Увійшов'
+    return { signed, saved: signed && (p.savedAddresses ?? true) }
+  }
+
+  init(props) {
+    const { signed, saved } = this.flags(props)
+    const s = {
+      recipient: { ...(signed ? PROFILE : EMPTY) },
+      editProfile: false,
+      option: 'np_warehouse',
+      savedId: saved ? savedFor('np_warehouse') : 'other',
+      city: null, cityQuery: '', cityFocus: false,
+      point: null, pointQuery: '', pointFocus: false,
+      differs: false, rcName: '', rcPhone: '',
+      saveAddr: false, saveLabel: '',
+      payment: 'cod',
+      promoText: '', promo: null, promoError: '', promoChecking: false,
+      bonusText: '',
+      commentOpen: false, comment: '',
+      showErrors: false,
+      resolved: null, missingRemoved: false, confirmed: false,
+      placing: false,
+      reached: 0
+    }
+    s.reached = this.furthest(s, props)
+    return s
+  }
+
+  componentDidUpdate(prev) {
+    const p = this.props
+    if (prev.buyer !== p.buyer || prev.savedAddresses !== p.savedAddresses || prev.screen !== p.screen) {
+      this.setState(this.init(p))
+    }
+  }
+
+  componentWillUnmount() { clearTimeout(this.placeTimer); clearTimeout(this.promoTimer) }
+
+  recipientOk(s) {
+    const r = s.recipient
+    return r.last.trim() !== '' && r.first.trim() !== '' && r.phone.length === 9 && isEmail(r.email)
+  }
+  usingSaved(s, props) {
+    if (!this.flags(props).saved || s.savedId === 'other') return false
+    const a = ADDRESSES.find((x) => x.id === s.savedId)
+    return !!a && a.type === typeOf(s.option)
+  }
+  deliveryOk(s, props) {
+    if (s.option === 'pickup' || this.usingSaved(s, props)) return true
+    if (!s.city || !s.point) return false
+    return !s.differs || (s.rcName.trim() !== '' && s.rcPhone.length === 9)
+  }
+  furthest(s, props) { return !this.recipientOk(s) ? 0 : !this.deliveryOk(s, props) ? 1 : 2 }
+
+  /* Кожна зміна форми — сюди: «висока вода» відкритих кроків рахується в одному місці. */
+  upd = (patch) => this.setState((s) => {
+    const next = { ...s, ...(typeof patch === 'function' ? patch(s) : patch) }
+    next.reached = Math.max(s.reached, this.furthest(next, this.props))
+    return next
+  })
+
+  money(s, props) {
+    const p = props || this.props || {}
+    const recon = (p.screen ?? 'Форма') === 'Звірка'
+    const { signed } = this.flags(p)
+    const lines = LINES.map((l) => {
+      if (!recon) return { ...l }
+      if (l.id === 'bosch') return { ...l, price: 13290 }
+      if (l.id === 'febi') {
+        /* Заміна зберігає кількість покупця, якщо нова пропозиція її дозволяє (запас 5, кратно 1 → 3 шт).
+           Менший запас — обрізаємо до найбільшої кратної, як у кошику. */
+        if (s.resolved === 'replaced') return { ...l, price: 16900, qty: 3 }
+        if (s.resolved === 'removed') return null
+        return { ...l, gone: true }
+      }
+      return { ...l }
+    }).filter(Boolean)
+    /* Позиція, на яку не лишилось жодної пропозиції (state: unavailable) — тільки «Прибрати». */
+    if (recon) lines.splice(2, 0, { ...SHORT })
+    if (recon && !s.missingRemoved) lines.push({ ...MISSING, gone: true, unavailable: true })
+    const live = lines.filter((l) => !l.gone)
+    const goods = live.reduce((n, l) => n + l.price * l.qty, 0)
+    const discount = s.promo ? Math.min(goods, Math.ceil((goods * s.promo.percent) / 100)) : 0
+    /* Стеля — на промокод і бонуси разом: goods × cap − discount, не більше залишку. */
+    const bonusMax = signed ? Math.max(0, Math.min(BONUS_BALANCE, Math.floor(goods * BONUS_CAP) - discount)) : 0
+    const t = s.bonusText.trim()
+    let bonusKind = 'empty'
+    let bonusAmount = 0
+    if (t !== '') {
+      if (!/^\d+$/.test(t)) bonusKind = 'invalid'
+      else if (Number(t) === 0) bonusKind = 'empty'
+      else if (Number(t) > bonusMax) bonusKind = 'above'
+      else { bonusKind = 'ok'; bonusAmount = Number(t) }
+    }
+    return { lines, live, goods, discount, bonusMax, bonusKind, bonusAmount, total: goods - discount - bonusAmount }
+  }
+
+  scrollToId(id) {
+    requestAnimationFrame(() => {
+      const el = document.getElementById(id)
+      if (!el) return
+      const head = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-total'), 10) || 0
+      window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - head - 16)
+    })
+  }
+
+  setR = (key) => (e) => {
+    const v = e.target.value
+    this.upd((s) => ({ recipient: { ...s.recipient, [key]: v } }))
+  }
+  onLast = this.setR('last')
+  onFirst = this.setR('first')
+  onPatr = this.setR('patr')
+  onEmail = this.setR('email')
+  onPhone = (d) => this.upd((s) => ({ recipient: { ...s.recipient, phone: d } }))
+
+  pickMethod = (key) => () => this.upd((s) => (key === s.option ? {} : {
+    option: key,
+    /* Між відділенням і поштоматом місто лишається, точка — ні: ref поштомата не ref відділення. */
+    city: key === 'pickup' ? null : s.city,
+    cityQuery: key === 'pickup' ? '' : s.cityQuery,
+    point: null,
+    pointQuery: '',
+    savedId: key === 'pickup' ? s.savedId : savedFor(key)
+  }))
+  pickSaved = (id) => () => this.upd({ savedId: id })
+  pickOther = () => this.upd({ savedId: 'other' })
+
+  onCityInput = (e) => {
+    const v = e.target.value
+    this.upd({ cityQuery: v, city: null, point: null, pointQuery: '', cityFocus: true })
+  }
+  onCityFocus = () => this.setState({ cityFocus: true })
+  onCityBlur = () => this.setState({ cityFocus: false })
+  pickCity = (c) => (e) => {
+    e.preventDefault()
+    this.upd({ city: c, cityQuery: c.name, cityFocus: false, point: null, pointQuery: '' })
+  }
+  clearCity = () => {
+    this.upd({ city: null, cityQuery: '', point: null, pointQuery: '' })
+    requestAnimationFrame(() => { const el = document.getElementById('co-city'); if (el) el.focus() })
+  }
+
+  onPointInput = (e) => {
+    const v = e.target.value
+    this.upd({ pointQuery: v, point: null, pointFocus: true })
+  }
+  onPointFocus = () => this.setState({ pointFocus: true })
+  onPointBlur = () => this.setState({ pointFocus: false })
+  pickPoint = (pt) => (e) => {
+    e.preventDefault()
+    this.upd({ point: pt, pointQuery: pt.label, pointFocus: false })
+  }
+  clearPoint = () => {
+    this.upd({ point: null, pointQuery: '' })
+    requestAnimationFrame(() => { const el = document.getElementById('co-point'); if (el) el.focus() })
+  }
+
+  onDiffers = (e) => { const v = e.target.checked; this.upd({ differs: v }) }
+  onRcName = (e) => { const v = e.target.value; this.upd({ rcName: v }) }
+  onRcPhone = (d) => this.upd({ rcPhone: d })
+  onSaveAddr = (e) => this.setState({ saveAddr: e.target.checked })
+  onSaveLabel = (e) => this.setState({ saveLabel: e.target.value })
+
+  onPromo = (e) => this.setState({ promoText: e.target.value.toUpperCase(), promoError: '' })
+  onPromoKey = (e) => { if (e.key === 'Enter') this.applyPromo() }
+  applyPromo = () => {
+    const code = this.state.promoText.trim().toUpperCase()
+    if (!code || this.state.promoChecking) return
+    this.setState({ promoChecking: true, promoError: '' })
+    clearTimeout(this.promoTimer)
+    this.promoTimer = setTimeout(() => {
+      const hit = PROMOS[code]
+      if (!hit) return this.setState({ promoChecking: false, promoError: 'Такого коду немає' })
+      if (hit.error) return this.setState({ promoChecking: false, promoError: hit.error })
+      this.setState({ promoChecking: false, promo: { code, percent: hit.percent }, promoText: '' })
+    }, 600)
+  }
+  removePromo = () => this.setState({ promo: null, promoText: '', promoError: '' })
+
+  onBonus = (e) => this.setState({ bonusText: e.target.value })
+  openComment = () => this.setState({ commentOpen: true })
+  onComment = (e) => this.setState({ comment: e.target.value })
+
+  onEditProfile = () => this.setState({ editProfile: true })
+
+  replaceGone = () => this.setState({ resolved: 'replaced' })
+  removeGone = () => this.setState({ resolved: 'removed' })
+  removeMissing = () => this.setState({ missingRemoved: true })
+  confirmRecon = () => { if (this.state.resolved && this.state.missingRemoved) this.setState({ confirmed: true }) }
+
+  submit = () => {
+    const s = this.state
+    const props = this.props || {}
+    const f = this.furthest(s, props)
+    const m = this.money(s, props)
+    const bonusBad = m.bonusKind === 'invalid' || m.bonusKind === 'above'
+    if (f < 2 || bonusBad) {
+      const { signed } = this.flags(props)
+      this.setState({ showErrors: true, editProfile: s.editProfile || (signed && !this.recipientOk(s)) })
+      this.scrollToId(f === 0 ? 'co-recipient' : f === 1 ? 'co-delivery' : 'co-payment')
+      return
+    }
+    this.setState({ placing: true })
+    clearTimeout(this.placeTimer)
+    this.placeTimer = setTimeout(() => this.setState({ placing: false }), 1600)
+  }
+
+  renderVals() {
+    const s = this.state
+    const props = this.props || {}
+    const { signed, saved } = this.flags(props)
+    const screen = props.screen ?? 'Форма'
+    const isRecon = screen === 'Звірка'
+    const showRecon = isRecon && !s.confirmed
+    const paymentsEnabled = props.paymentsEnabled ?? true
+    const ordersEnabled = props.ordersEnabled ?? true
+    const isEmpty = screen === 'Порожній кошик'
+    const isBelow = screen === 'Нижче мінімуму'
+
+    const m = this.money(s, props)
+    const rOk = this.recipientOk(s)
+    const dOk = this.deliveryOk(s, props)
+    const reached = Math.max(s.reached, this.furthest(s, props))
+    const off = showRecon ? 1 : 0
+    const step = (i, ok) => {
+      const open = i <= reached
+      const state = !open ? 'locked' : ok ? 'done' : 'current'
+      return { num: String(i + 1 + off), state, done: state === 'done', notDone: state !== 'done', locked: !open, open }
+    }
+
+    const r = s.recipient
+    const err = (cond, text) => (s.showErrors && cond ? text : '')
+    const profileCard = signed && !s.editProfile && rOk
+
+    const isPickup = s.option === 'pickup'
+    const useSaved = this.usingSaved(s, props)
+    const showPickers = !isPickup && !useSaved
+
+    const q = s.cityQuery.trim().toLowerCase()
+    let cityOptions = []
+    let cityMsg = ''
+    if (q.length < 2) cityMsg = 'Введіть щонайменше 2 символи'
+    else {
+      cityOptions = CITIES.filter((c) => c.name.toLowerCase().includes(q))
+        .map((c) => ({ key: c.ref, name: c.name, region: c.region, pick: this.pickCity(c) }))
+      if (!cityOptions.length) cityMsg = 'Нічого не знайдено'
+    }
+
+    const type = s.option === 'np_postomat' ? 'postomat' : 'warehouse'
+    const kind = type === 'postomat' ? 'Поштомат' : 'Відділення'
+    const pts = s.city ? ((POINTS[s.city.ref] || {})[type] || []) : []
+    const pq = s.pointQuery.trim().toLowerCase().replace('№', '')
+    const pointOptions = pts
+      .filter((pt) => !pq || String(pt.num).startsWith(pq) || pt.address.toLowerCase().includes(pq))
+      .map((pt) => {
+        const label = kind + ' №' + pt.num + ': ' + pt.address
+        return { key: String(pt.num), title: kind + ' №' + pt.num, address: pt.address, weight: 'до ' + pt.weight + ' кг', pick: this.pickPoint({ ...pt, label }) }
+      })
+
+    const payment = !paymentsEnabled ? 'cod' : s.payment
+    const off2 = !paymentsEnabled
+    const payOptions = [
+      { key: 'prepaid', label: 'Повна оплата картою', sub: off2 ? 'Тимчасово недоступно' : 'Після оформлення ви будете перенаправлені на сторінку оплати', disabled: off2 },
+      { key: 'cod_advance', label: 'Післяплата з авансом', sub: off2 ? 'Тимчасово недоступно' : 'Аванс ' + fmt(ADVANCE) + ' зараз, решта — при отриманні', disabled: off2 },
+      { key: 'cod', label: 'Післяплата', sub: 'Оплата при отриманні', disabled: false }
+    ].map((o) => ({ ...o, on: payment === o.key, pick: () => this.setState({ payment: o.key }) }))
+
+    const cbBonus = m.live.reduce((n, l) => n + CASHBACK_BONUS(l.price) * l.qty, 0)
+
+    const res = s.resolved
+    const reconRows = [
+      { key: 'bosch', brand: 'BOSCH', article: '0 986 452 041', name: 'Фільтр масляний', offers: 0,
+        changes: [{ key: 'p', label: 'Ціна', was: '12 840 ₴', now: '13 290 ₴', delta: '+450 ₴ за шт' }] },
+      { key: 'bando', brand: 'BANDO', article: '6PK2000', name: LINES[1].name, offers: 0,
+        changes: [{ key: 'd', label: 'Відправка', was: 'завтра', now: '4 вер, пт' }] },
+      { key: 'ngk', brand: SHORT.brand, article: SHORT.article, name: SHORT.name, offers: 3,
+        changes: [{ key: 'q', label: 'Кількість', was: SHORT.wasQty + ' шт', now: SHORT.qty + ' шт' }],
+        note: 'Це вся наявна кількість у цій пропозиції.', showActions: true },
+      /* Після заміни рядок показує, що саме змінилось у позиції, тією ж мовою «було → стало». */
+      { key: 'febi', brand: 'FEBI BILSTEIN GMBH & CO. KG', article: '34781-XL-REINFORCED-KIT', name: LINES[2].name, offers: 1,
+        changes: res === 'replaced'
+          ? [
+              { key: 'p', label: 'Ціна', was: '16 200 ₴', now: '16 900 ₴', delta: '+700 ₴ за шт' },
+              { key: 'd', label: 'Відправка', was: '4 вер, пт', now: '28 жов, ср' }
+            ]
+          : [],
+        status: res === null ? 'Ця пропозиція закінчилась' : '' },
+      { key: 'mann', brand: MISSING.brand, article: MISSING.article, name: MISSING.name, offers: 0,
+        changes: [],
+        status: s.missingRemoved ? '' : 'Деталь закінчилась',
+        note: s.missingRemoved ? '' : 'Інших пропозицій на неї немає — можна підібрати аналог.', showActions: !s.missingRemoved }
+    ].map((row) => {
+      const febi = row.key === 'febi'
+      const mann = row.key === 'mann'
+      return {
+        ...row,
+        changes: row.changes.map((ch) => ({ tone: '', delta: '', ...ch })),
+        hasChanges: row.changes.length > 0,
+        note: row.note || '',
+        status: row.status || '',
+        showActions: !!row.showActions,
+        gone: febi && res === null,
+        unavailable: mann && !s.missingRemoved,
+        /* Є інші пропозиції на цю деталь — ведемо до них на картку; немає жодної — до аналогів
+           (окремий екран результатів за артикулом, як і вкладка на картці деталі). */
+        linkText: row.offers > 0 ? 'Усі пропозиції на цю деталь' : 'Аналоги цієї деталі',
+        linkHref: row.offers > 0 ? 'Картка деталі.dc.html' : 'Пошук за артикулом.dc.html?q=' + encodeURIComponent(row.article),
+        replaced: febi && res === 'replaced',
+        removed: (febi && res === 'removed') || (mann && s.missingRemoved),
+        replPrice: 16900,
+        replDate: '28 жов, ср',
+        replQty: '3 шт',
+        replace: this.replaceGone,
+        remove: mann ? this.removeMissing : this.removeGone
+      }
+    })
+
+    return {
+      signedIn: signed,
+      cartCount: isEmpty ? 0 : isBelow ? 1 : m.lines.length,
+      isEmpty, isBelow, isForm: !isEmpty && !isBelow,
+      backAction: window.DesignSystem_d7c4f4
+        ? React.createElement(window.DesignSystem_d7c4f4.Button, { variant: 'dark', as: 'a', href: 'Кошик.dc.html' }, 'Повернутись у кошик')
+        : null,
+
+      showRecon,
+      reconRows,
+      confirmDisabled: res === null || !s.missingRemoved,
+      onConfirm: this.confirmRecon,
+
+      s1: step(0, rOk), s2: step(1, dOk), s3: step(2, false),
+
+      isGuest: !signed,
+      showProfileCard: profileCard,
+      showFields: !profileCard,
+      profileName: [r.last, r.first, r.patr].filter(Boolean).join(' '),
+      profilePhone: phoneText(r.phone),
+      profileEmail: r.email,
+      onEditProfile: this.onEditProfile,
+      rLast: r.last, rFirst: r.first, rPatr: r.patr, rPhone: r.phone, rEmail: r.email,
+      onLast: this.onLast, onFirst: this.onFirst, onPatr: this.onPatr, onPhone: this.onPhone, onEmail: this.onEmail,
+      errLast: err(!r.last.trim(), 'Вкажіть прізвище'),
+      errFirst: err(!r.first.trim(), 'Вкажіть імʼя'),
+      errPhone: err(r.phone.length !== 9, 'Вкажіть телефон у форматі 0XX XXX XX XX'),
+      errEmail: err(!isEmail(r.email), 'Вкажіть e-mail'),
+
+      methods: [
+        { key: 'np_warehouse', icon: 'warehouse', eyebrow: 'Нова Пошта', label: 'Відділення' },
+        { key: 'np_postomat', icon: 'package', eyebrow: 'Нова Пошта', label: 'Поштомат' },
+        { key: 'pickup', icon: 'store', eyebrow: 'м. Запоріжжя', label: 'Самовивіз' }
+      ].map((x) => ({ ...x, on: s.option === x.key, pick: this.pickMethod(x.key) })),
+
+      showSaved: saved && ADDRESSES.some((a) => a.type === typeOf(s.option)),
+      otherLabel: s.option === 'np_postomat' ? 'Інший поштомат' : 'Інше відділення',
+      saved: ADDRESSES.filter((a) => a.type === typeOf(s.option)).map((a) => ({
+        key: String(a.id),
+        title: a.label || a.name,
+        isDefault: a.isDefault,
+        place: a.city + ', ' + a.point,
+        name: a.name,
+        phoneText: phoneText(a.phone),
+        on: s.savedId === a.id,
+        pick: this.pickSaved(a.id)
+      })),
+      otherOn: s.savedId === 'other',
+      pickOther: this.pickOther,
+
+      showPickers,
+      cityValue: s.city ? s.city.name : s.cityQuery,
+      citySettled: !!s.city,
+      cityClass: 'ds-input ds-input--clearable' + (s.showErrors && !s.city ? ' ds-input--invalid' : ''),
+      cityOpen: s.cityFocus && !s.city,
+      cityOptions, cityMsg,
+      onCityInput: this.onCityInput, onCityFocus: this.onCityFocus, onCityBlur: this.onCityBlur, clearCity: this.clearCity,
+      errCity: err(!s.city, 'Оберіть місто'),
+
+      pointLabel: kind,
+      pointValue: s.point ? s.point.label : s.pointQuery,
+      pointSettled: !!s.point,
+      pointDisabled: !s.city,
+      pointPlaceholder: s.city ? 'Номер або адреса' : 'Спершу оберіть місто',
+      pointClass: 'ds-input ds-input--clearable' + (s.showErrors && s.city && !s.point ? ' ds-input--invalid' : ''),
+      pointOpen: s.pointFocus && !!s.city && !s.point,
+      pointOptions,
+      pointMsg: pointOptions.length ? '' : 'У цьому місті нічого не знайдено',
+      onPointInput: this.onPointInput, onPointFocus: this.onPointFocus, onPointBlur: this.onPointBlur, clearPoint: this.clearPoint,
+      errPoint: err(!!s.city && !s.point, 'Оберіть точку видачі'),
+
+      isNp: !isPickup,
+      isPickup,
+      showDiffers: showPickers,
+      showSaveAddr: signed && showPickers,
+      saveAddr: s.saveAddr,
+      onSaveAddr: this.onSaveAddr,
+      saveLabel: s.saveLabel,
+      onSaveLabel: this.onSaveLabel,
+      differs: s.differs,
+      onDiffers: this.onDiffers,
+      rcName: s.rcName, rcPhone: s.rcPhone, onRcName: this.onRcName, onRcPhone: this.onRcPhone,
+      errRcName: err(s.differs && !s.rcName.trim(), 'Вкажіть імʼя отримувача'),
+      errRcPhone: err(s.differs && s.rcPhone.length !== 9, 'Вкажіть телефон отримувача'),
+
+      payOptions,
+
+      promoIdle: !s.promo,
+      promoApplied: !!s.promo,
+      promoText: s.promoText,
+      promoClass: 'ds-input ds-input--mono' + (s.promoError ? ' ds-input--invalid' : ''),
+      onPromo: this.onPromo, onPromoKey: this.onPromoKey, applyPromo: this.applyPromo, removePromo: this.removePromo,
+      promoApplyDisabled: s.promoChecking || !s.promoText.trim(),
+      promoApplyLabel: s.promoChecking ? 'Перевіряємо…' : 'Застосувати',
+      promoError: s.promoError,
+      promoHint: !s.promoError,
+      promoAppliedText: s.promo ? 'Код ' + s.promo.code + ' — знижка ' + fmt(m.discount) : '',
+
+      bonusGuest: !signed,
+      bonusField: signed && m.bonusMax > 0,
+      bonusCapped: signed && m.bonusMax === 0,
+      bonusCappedText: 'На рахунку ' + fmt(BONUS_BALANCE) + ', але на це замовлення бонуси застосувати не можна — знижка вже досягла максимуму',
+      bonusText: s.bonusText,
+      onBonus: this.onBonus,
+      bonusHint: 'На рахунку ' + fmt(BONUS_BALANCE) + '. На це замовлення можна списати до ' + fmt(m.bonusMax),
+      bonusError: m.bonusKind === 'invalid' ? 'Вкажіть ціле число бонусів' : m.bonusKind === 'above' ? 'Не більше ' + fmt(m.bonusMax) + ' на це замовлення' : '',
+
+      commentClosed: !s.commentOpen,
+      commentOpen: s.commentOpen,
+      comment: s.comment,
+      openComment: this.openComment,
+      onComment: this.onComment,
+
+      countLabel: m.lines.length + ' ' + PLURAL(m.lines.length),
+      sumLines: m.lines.map((l) => ({
+        key: l.id,
+        name: l.name,
+        dim: !!l.gone,
+        totalText: l.gone ? '—' : fmt(l.price * l.qty),
+        brand: l.unavailable ? 'Немає в наявності' : l.gone ? 'Пропозиції вже немає' : l.brand,
+        qtyText: l.gone ? '' : l.qty > 1 ? l.qty + ' × ' + fmt(l.price) : '1 шт'
+      })),
+      hasBreakdown: m.discount > 0 || m.bonusAmount > 0,
+      hasDiscount: m.discount > 0,
+      hasBonus: m.bonusAmount > 0,
+      goodsText: fmt(m.goods),
+      discountText: '−' + fmt(m.discount),
+      bonusSpentText: '−' + fmt(m.bonusAmount),
+      total: m.total,
+      cbPercent: Math.max(1, ...m.live.map((l) => CASHBACK(l.price))),
+      cbBonus,
+      cbTip: 'Повернемо ' + fmt(cbBonus) + ' бонусами — ви зможете їх витратити на наступне замовлення',
+
+      submitDisabled: showRecon || !ordersEnabled || s.placing,
+      submitLabel: s.placing ? 'Оформлюємо…' : 'Оформити замовлення',
+      submitNote: showRecon ? 'Спершу підтвердіть звірку' : !ordersEnabled ? 'Замовлення тимчасово не приймаються' : '',
+      onSubmit: this.submit
+    }
+  }
+}
+</script>
+</body>
+</html>
