@@ -1089,8 +1089,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
  */
 function SearchField({
   variant = 'hero',
-  placeholder = 'Введіть артикул',
-  label = 'Пошук за артикулом',
+  placeholder = 'Введіть номер деталі',
+  label = 'Пошук за номером деталі',
   submitLabel = 'Знайти',
   suggests,
   error,

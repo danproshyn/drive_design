@@ -146,7 +146,7 @@
     <sc-if value="{{ isNoQuery }}" hint-placeholder-val="{{ false }}">
       <div style="display:grid;gap:var(--space-3)">
         <h1 class="ds-section-title" style="margin:0">Результати пошуку</h1>
-        <p style="margin:0;color:var(--text-muted)">Введіть артикул, щоб побачити результати</p>
+        <p style="margin:0;color:var(--text-muted)">Введіть номер деталі, щоб побачити результати</p>
       </div>
     </sc-if>
 
@@ -167,20 +167,20 @@
           </sc-if>
         </h1>
         <sc-if value="{{ noticeResults }}" hint-placeholder-val="{{ true }}">
-          <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" hint-size="100%,56px">Цей артикул є в кількох виробників — оберіть потрібного.</x-import>
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" hint-size="100%,56px">Цей номер є в кількох виробників — оберіть потрібного.</x-import>
         </sc-if>
         <sc-if value="{{ noticeCross }}" hint-placeholder-val="{{ false }}">
-          <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="accent" hint-size="100%,56px">За цим артикулом нічого не знайдено — показуємо аналоги.</x-import>
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="accent" hint-size="100%,56px">За цим номером нічого не знайдено — показуємо аналоги.</x-import>
         </sc-if>
         <sc-if value="{{ noticeFuzzy }}" hint-placeholder-val="{{ false }}">
-          <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="warning" hint-size="100%,56px">Точного збігу немає. Показуємо схожі артикули.</x-import>
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.Notice" tone="warning" hint-size="100%,56px">Точного збігу немає. Показуємо схожі номери.</x-import>
         </sc-if>
       </div>
     </sc-if>
 
     <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
       <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-4)">
-        <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="package-search" title="{{ emptyTitle }}" hint-size="100%,180px">Перевірте артикул — можливо, у ньому помилка або цієї деталі та її аналогів немає в каталозі.</x-import>
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="package-search" title="{{ emptyTitle }}" hint-size="100%,180px">Перевірте номер деталі — можливо, у ньому помилка або цієї деталі та її аналогів немає в каталозі.</x-import>
 
         <section data-cta style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-5);padding:var(--space-5) var(--space-6);border:1px solid var(--line);border-left:3px solid var(--red-500);border-radius:var(--radius-lg);background:var(--surface-sunken)">
           <div data-cta-copy style="flex:1 1 420px;min-width:280px">
@@ -727,7 +727,7 @@ class Component extends DCLogic {
     return {
       copyArticle: this.copyArticle(key, value),
       copyArticleIcon: done ? 'check' : 'copy',
-      copyArticleLabel: done ? 'Скопійовано' : 'Скопіювати артикул ' + value
+      copyArticleLabel: done ? 'Скопійовано' : 'Скопіювати номер ' + value
     }
   }
 

@@ -921,7 +921,7 @@ class Component extends DCLogic {
   articleNode = (key, value) => {
     const Icon = window.DesignSystem_d7c4f4 && window.DesignSystem_d7c4f4.Icon
     const done = this.state.copiedArticle === key
-    const label = done ? 'Скопійовано' : 'Скопіювати артикул ' + value
+    const label = done ? 'Скопійовано' : 'Скопіювати номер ' + value
     return React.createElement(React.Fragment, null, value,
       React.createElement('button', { type: 'button', 'data-copy-article': '', onClick: this.copyArticle(key, value), title: label, 'aria-label': label },
         Icon ? React.createElement(Icon, { name: done ? 'check' : 'copy', size: 14 }) : null))

@@ -102,6 +102,11 @@
   [data-now] { font-weight: 600; color: var(--text-strong); }
   [data-now][data-tone="out"] { color: var(--stock-out); }
   [data-dim="true"] { opacity: .5; }
+  [data-rows] > div + div { border-top: 1px solid var(--line); }
+  [data-row] { display: grid; gap: 4px var(--space-5); padding: var(--space-4); }
+  @media (min-width: 560px) { [data-row] { grid-template-columns: 104px minmax(0, 1fr); align-items: baseline; } }
+  [data-row] > dt { font-size: var(--text-sm); color: var(--text-muted); }
+  [data-row] > dd { margin: 0; display: grid; gap: 3px; min-width: 0; }
 </style>
 </helmet>
 
@@ -111,6 +116,7 @@
 
   <main class="ds-container ds-main">
 
+    <sc-if value="{{ showHead }}" hint-placeholder-val="{{ true }}">
     <div style="display:grid;gap:var(--space-1)">
       <a href="Кошик.dc.html" style="display:inline-flex;align-items:center;gap:6px;width:max-content;min-height:32px;font-size:var(--text-sm);color:var(--text-muted);text-decoration:none;transition:var(--transition-colors)" style-hover="color:var(--text-strong)">
         <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-left" size="15" hint-size="15px,15px"></x-import>
@@ -118,6 +124,7 @@
       </a>
       <h1 class="ds-section-title" style="margin:0">Оформлення</h1>
     </div>
+    </sc-if>
 
     <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
       <div style="max-width:640px">
@@ -129,6 +136,145 @@
       <div style="max-width:640px">
         <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="shopping-cart" title="Мінімальна сума замовлення — 500 ₴" action="{{ backAction }}" hint-size="100%,220px">Додайте позицій ще на 216 ₴, і оформлення відкриється.</x-import>
       </div>
+    </sc-if>
+
+    <sc-if value="{{ isThanks }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Дякуємо" style="display:grid;gap:var(--space-6);max-width:560px">
+        <div style="display:grid;gap:var(--space-3)">
+          <h1 class="ds-section-title" style="margin:0">Дякуємо за замовлення</h1>
+          <sc-if value="{{ hasOrder }}" hint-placeholder-val="{{ true }}">
+            <p style="display:flex;flex-wrap:wrap;align-items:center;gap:4px var(--space-3);margin:0">
+              <span style="display:inline-flex;align-items:center;gap:10px;color:var(--stock-in)">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="circle-check" size="22" hint-size="22px,22px"></x-import>
+                <span class="t-display-xs" style="color:inherit">Замовлення №{{ orderNumber }}</span>
+              </span>
+              <span style="font-size:var(--text-sm);color:var(--text-muted)">{{ orderDate }}</span>
+            </p>
+          </sc-if>
+        </div>
+
+        <p style="display:flex;align-items:center;gap:10px;margin:0;color:var(--text-body);text-wrap:pretty">
+          <span style="flex:none;display:inline-flex;color:var(--text-muted)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="phone" size="18" hint-size="18px,18px"></x-import>
+          </span>
+          <sc-if value="{{ orderNp }}" hint-placeholder-val="{{ true }}">
+            <span>Ми зателефонуємо, щоб підтвердити замовлення й узгодити відправку.</span>
+          </sc-if>
+          <sc-if value="{{ orderPickup }}" hint-placeholder-val="{{ false }}">
+            <span>Ми зателефонуємо, щоб підтвердити замовлення, і скажемо, коли його можна забрати.</span>
+          </sc-if>
+          <sc-if value="{{ noOrder }}" hint-placeholder-val="{{ false }}">
+            <span>Замовлення прийнято. Ми зателефонуємо, щоб його підтвердити.</span>
+          </sc-if>
+        </p>
+
+        <sc-if value="{{ hasOrder }}" hint-placeholder-val="{{ true }}">
+          <dl data-rows style="margin:0;border:1px solid var(--line);border-radius:var(--radius-md)">
+            <div data-row>
+              <dt>До сплати</dt>
+              <dd>
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ orderTotal }}" size="md" hint-size="auto,28px"></x-import>
+                <sc-if value="{{ orderNp }}" hint-placeholder-val="{{ true }}">
+                  <span style="font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">Оплата при отриманні. Доставка — окремо, за тарифами Нової Пошти.</span>
+                </sc-if>
+                <sc-if value="{{ orderPickup }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">Оплата в магазині, коли забиратимете замовлення.</span>
+                </sc-if>
+              </dd>
+            </div>
+            <div data-row>
+              <dt>Доставка</dt>
+              <dd>
+                <span style="font-weight:600;color:var(--text-strong)">{{ orderMethod }}</span>
+                <span style="font-size:var(--text-sm);color:var(--text-body);text-wrap:pretty">{{ orderPlace }}</span>
+                <sc-if value="{{ orderPickup }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-size:var(--text-sm);color:var(--text-muted);font-variant-numeric:tabular-nums">пн–пт 09:00–16:00, сб 09:00–14:00</span>
+                </sc-if>
+              </dd>
+            </div>
+            <div data-row>
+              <dt>Отримувач</dt>
+              <dd>
+                <span style="font-weight:600;color:var(--text-strong)">{{ orderName }}</span>
+                <span class="t-mono" style="font-size:var(--text-sm);color:var(--text-body)">{{ orderPhone }}</span>
+              </dd>
+            </div>
+            <div data-row>
+              <dt>Товари</dt>
+              <dd>
+                <ul style="display:grid;gap:var(--space-3);margin:0;padding:0;list-style:none">
+                  <sc-for list="{{ orderLines }}" as="l" hint-placeholder-count="3">
+                    <li style="display:grid;grid-template-columns:minmax(0,1fr) max-content;gap:var(--space-4);align-items:start">
+                      <span style="display:grid;gap:2px;min-width:0">
+                        <span style="font-size:var(--text-sm);color:var(--text-body);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ l.name }}</span>
+                        <span style="font-size:var(--text-2xs);font-weight:600;color:var(--text-muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis">{{ l.brand }}</span>
+                      </span>
+                      <span style="font-size:var(--text-sm);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--text-strong)">{{ l.qtyText }}</span>
+                    </li>
+                  </sc-for>
+                </ul>
+              </dd>
+            </div>
+            <sc-if value="{{ hasCashback }}" hint-placeholder-val="{{ false }}">
+              <div data-row>
+                <dt>Кешбек</dt>
+                <dd>
+                  <span style="font-weight:600;color:var(--text-strong)">{{ cashbackText }}</span>
+                  <span style="font-size:var(--text-sm);color:var(--text-muted)">Зможете витратити на наступне замовлення.</span>
+                </dd>
+              </div>
+            </sc-if>
+          </dl>
+        </sc-if>
+
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3) var(--space-5)">
+          <sc-if value="{{ signedIn }}" hint-placeholder-val="{{ true }}">
+            <a href="#" class="ds-btn ds-btn--md ds-btn--secondary">Мої замовлення</a>
+            <a href="Головна.dc.html" class="ds-btn ds-btn--link" style="min-height:44px">На головну</a>
+          </sc-if>
+          <sc-if value="{{ isGuest }}" hint-placeholder-val="{{ false }}">
+            <a href="Головна.dc.html" class="ds-btn ds-btn--md ds-btn--secondary">На головну</a>
+          </sc-if>
+        </div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isResult }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Результат оплати" style="display:grid;gap:var(--space-6);max-width:560px">
+        <h1 class="ds-section-title" style="margin:0">Замовлення №{{ orderNumber }}</h1>
+
+        <div style="display:grid;gap:var(--space-4);padding:var(--space-5);border:1px solid var(--line);border-radius:var(--radius-lg)">
+          <div style="display:grid;gap:4px">
+            <span class="t-eyebrow">{{ payLabel }}</span>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ payAmount }}" size="lg" hint-size="auto,36px"></x-import>
+          </div>
+          <div aria-live="polite" style="display:grid;padding-top:var(--space-4);border-top:1px solid var(--line)">
+            <sc-if value="{{ isChecking }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;gap:4px">
+                <p style="display:flex;align-items:center;gap:10px;margin:0;font-weight:600;color:var(--text-strong)">
+                  <span style="display:inline-flex;color:var(--text-muted)">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="clock" size="18" hint-size="18px,18px"></x-import>
+                  </span>
+                  <span>Перевіряємо оплату…</span>
+                </p>
+                <p style="margin:0;padding-left:28px;font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">Це займає кілька секунд. Сторінку можна не оновлювати.</p>
+              </div>
+            </sc-if>
+            <sc-if value="{{ isPaid }}" hint-placeholder-val="{{ true }}">
+              <p style="display:flex;align-items:center;gap:10px;margin:0;font-weight:600;color:var(--stock-in)">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="circle-check" size="18" hint-size="18px,18px"></x-import>
+                <span>Оплачено</span>
+              </p>
+            </sc-if>
+          </div>
+        </div>
+
+        <sc-if value="{{ isPaid }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-wrap:wrap;gap:var(--space-3)">
+            <a href="Головна.dc.html" class="ds-btn ds-btn--md ds-btn--secondary">На головну</a>
+          </div>
+        </sc-if>
+      </section>
     </sc-if>
 
     <sc-if value="{{ isForm }}" hint-placeholder-val="{{ true }}">
@@ -677,7 +823,7 @@
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1100},&quot;buyer&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Гість&quot;,&quot;Увійшов&quot;],&quot;default&quot;:&quot;Увійшов&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Покупець&quot;},&quot;savedAddresses&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Покупець&quot;},&quot;screen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Форма&quot;,&quot;Звірка&quot;,&quot;Нижче мінімуму&quot;,&quot;Порожній кошик&quot;],&quot;default&quot;:&quot;Форма&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;paymentsEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Налаштування магазину&quot;},&quot;ordersEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Налаштування магазину&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1100},&quot;buyer&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Гість&quot;,&quot;Увійшов&quot;],&quot;default&quot;:&quot;Увійшов&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Покупець&quot;},&quot;savedAddresses&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Покупець&quot;},&quot;screen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Форма&quot;,&quot;Звірка&quot;,&quot;Нижче мінімуму&quot;,&quot;Порожній кошик&quot;,&quot;Дякуємо&quot;,&quot;Дякуємо — після оновлення&quot;,&quot;Оплата — перевіряємо&quot;,&quot;Оплачено&quot;],&quot;default&quot;:&quot;Форма&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Стан екрана&quot;},&quot;paymentsEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Налаштування магазину&quot;},&quot;ordersEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Налаштування магазину&quot;}}">
 /*
  * /checkout. Три кроки розкриваються послідовно й лишаються редагованими (lib/checkout.ts,
  * revealedThrough — «висока вода», а не функція поточного стану). Звірка — гілка на серверному
@@ -766,6 +912,13 @@ const LINES = [
 const SHORT = { id: 'ngk', brand: 'NGK', article: 'BKR6E', name: 'Свічка запалювання', price: 145, qty: 2, wasQty: 4 }
 const MISSING = { id: 'mann', brand: 'MANN-FILTER', article: 'C 26 168', name: 'Фільтр повітряний', price: 612, qty: 1 }
 
+/* Успішні екрани: /checkout/thanks (післяплата — payment_token порожній) і /checkout/result
+   (після повернення від LiqPay — картка або аванс). «Після оновлення» — провайдер порожній, номера немає. */
+const SUCCESS = { 'Дякуємо': 'thanks', 'Дякуємо — після оновлення': 'generic', 'Оплата — перевіряємо': 'checking', 'Оплачено': 'paid' }
+const ORDER_NUMBER = 1042
+const MONTHS = ['січня', 'лютого', 'березня', 'квітня', 'травня', 'червня', 'липня', 'серпня', 'вересня', 'жовтня', 'листопада', 'грудня']
+const placedAt = (d) => d.getDate() + ' ' + MONTHS[d.getMonth()] + ', ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0')
+
 class Component extends DCLogic {
   state = this.init(this.props || {})
 
@@ -793,6 +946,7 @@ class Component extends DCLogic {
       showErrors: false,
       resolved: null, missingRemoved: false, confirmed: false,
       placing: false,
+      placed: null,
       reached: 0
     }
     s.reached = this.furthest(s, props)
@@ -806,7 +960,7 @@ class Component extends DCLogic {
     }
   }
 
-  componentWillUnmount() { clearTimeout(this.placeTimer); clearTimeout(this.promoTimer) }
+  componentWillUnmount() { clearTimeout(this.placeTimer); clearTimeout(this.promoTimer); clearTimeout(this.settleTimer) }
 
   recipientOk(s) {
     const r = s.recipient
@@ -865,6 +1019,39 @@ class Component extends DCLogic {
       else { bonusKind = 'ok'; bonusAmount = Number(t) }
     }
     return { lines, live, goods, discount, bonusMax, bonusKind, bonusAmount, total: goods - discount - bonusAmount }
+  }
+
+  /* Що показує сторінка подяки: куди, кому, що й скільки. Порожні поля (вигляд через «screen») — прикладом. */
+  snapshot(s, props) {
+    const { signed } = this.flags(props)
+    const m = this.money(s, props)
+    const r = s.recipient
+    const pickup = s.option === 'pickup'
+    let method = 'Самовивіз'
+    let place = 'м. Запоріжжя, вул. Гуляйпільська, 15'
+    let name = ''
+    let phone = ''
+    if (!pickup) {
+      method = s.option === 'np_postomat' ? 'Нова Пошта, поштомат' : 'Нова Пошта, відділення'
+      const a = this.usingSaved(s, props) ? ADDRESSES.find((x) => x.id === s.savedId) : null
+      if (a) { place = a.city + ', ' + a.point; name = a.name; phone = a.phone }
+      else if (s.city && s.point) place = s.city.name + ', ' + s.point.label
+      else place = s.option === 'np_postomat' ? 'Запоріжжя, Поштомат №5390: вул. Гуляйпільська, 20 (Сільпо)' : 'Запоріжжя, Відділення №12: вул. Перемоги, 64'
+      if (!a && s.differs && s.rcName.trim()) { name = s.rcName.trim(); phone = s.rcPhone }
+    }
+    if (!name) {
+      name = [r.last, r.first].filter((x) => x.trim()).join(' ') || 'Ковальчук Андрій'
+      phone = r.phone.length === 9 ? r.phone : '671234567'
+    }
+    return {
+      payment: pickup || !(props.paymentsEnabled ?? true) ? 'cod' : s.payment,
+      pickup, method, place, name, phone,
+      lines: m.live.map((l) => ({ id: l.id, name: l.name, brand: l.brand, qty: l.qty })),
+      total: m.total,
+      cashback: signed ? m.live.reduce((n, l) => n + CASHBACK_BONUS(l.price) * l.qty, 0) : 0,
+      at: new Date(),
+      settled: false
+    }
   }
 
   scrollToId(id) {
@@ -975,7 +1162,16 @@ class Component extends DCLogic {
     }
     this.setState({ placing: true })
     clearTimeout(this.placeTimer)
-    this.placeTimer = setTimeout(() => this.setState({ placing: false }), 1600)
+    this.placeTimer = setTimeout(() => {
+      const snap = this.snapshot(this.state, this.props || {})
+      this.setState({ placing: false, placed: snap })
+      window.scrollTo(0, 0)
+      /* Картка й аванс ідуть до банку; повернувшись, сторінка спершу перевіряє, потім звітує. */
+      if (snap.payment !== 'cod') {
+        clearTimeout(this.settleTimer)
+        this.settleTimer = setTimeout(() => this.setState((x) => (x.placed ? { placed: { ...x.placed, settled: true } } : {})), 2800)
+      }
+    }, 1600)
   }
 
   renderVals() {
@@ -987,10 +1183,13 @@ class Component extends DCLogic {
     const showRecon = isRecon && !s.confirmed
     const paymentsEnabled = props.paymentsEnabled ?? true
     const ordersEnabled = props.ordersEnabled ?? true
-    const isEmpty = screen === 'Порожній кошик'
-    const isBelow = screen === 'Нижче мінімуму'
+    const placed = s.placed
+    const view = placed ? (placed.payment === 'cod' ? 'thanks' : placed.settled ? 'paid' : 'checking') : (SUCCESS[screen] || '')
+    const isEmpty = !view && screen === 'Порожній кошик'
+    const isBelow = !view && screen === 'Нижче мінімуму'
 
     const m = this.money(s, props)
+    const order = placed || (view ? { ...this.snapshot(s, props), payment: view === 'thanks' ? 'cod' : 'prepaid', at: new Date(2026, 9, 2, 14, 32) } : null)
     const rOk = this.recipientOk(s)
     const dOk = this.deliveryOk(s, props)
     const reached = Math.max(s.reached, this.furthest(s, props))
@@ -1090,8 +1289,30 @@ class Component extends DCLogic {
 
     return {
       signedIn: signed,
-      cartCount: isEmpty ? 0 : isBelow ? 1 : m.lines.length,
-      isEmpty, isBelow, isForm: !isEmpty && !isBelow,
+      cartCount: isEmpty || view ? 0 : isBelow ? 1 : m.lines.length,
+      isEmpty, isBelow, isForm: !view && !isEmpty && !isBelow,
+      showHead: !view,
+
+      isThanks: view === 'thanks' || view === 'generic',
+      hasOrder: view === 'thanks',
+      noOrder: view === 'generic',
+      orderNumber: ORDER_NUMBER,
+      orderTotal: order ? order.total : 0,
+      orderDate: order ? 'від ' + placedAt(order.at) : '',
+      orderNp: view === 'thanks' && !order.pickup,
+      orderPickup: view === 'thanks' && order.pickup,
+      orderMethod: order ? order.method : '',
+      orderPlace: order ? order.place : '',
+      orderName: order ? order.name : '',
+      orderPhone: order ? phoneText(order.phone) : '',
+      orderLines: order ? order.lines.map((l) => ({ key: l.id, name: l.name, brand: l.brand, qtyText: l.qty + ' шт' })) : [],
+      hasCashback: !!order && order.cashback > 0,
+      cashbackText: order ? '+' + fmt(order.cashback) + ' бонусами' : '',
+      isResult: view === 'checking' || view === 'paid',
+      isChecking: view === 'checking',
+      isPaid: view === 'paid',
+      payLabel: order && order.payment === 'cod_advance' ? 'Аванс' : 'Повна оплата картою',
+      payAmount: !order ? 0 : order.payment === 'cod_advance' ? ADVANCE : order.total,
       backAction: window.DesignSystem_d7c4f4
         ? React.createElement(window.DesignSystem_d7c4f4.Button, { variant: 'dark', as: 'a', href: 'Кошик.dc.html' }, 'Повернутись у кошик')
         : null,
