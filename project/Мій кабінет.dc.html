@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/colors.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/space.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/motion.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/layout.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/base.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=18"></script>
+<style>
+  /* Шапка кабінету, списки з волосяними лініями, текстові кнопки. */
+  [data-acc-head] { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-2); }
+  [data-list] { display: grid; grid-template-columns: minmax(0, 1fr); margin: 0; padding: 0; list-style: none; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); overflow: hidden; }
+  [data-list] > * + *, [data-list] > [data-orow] + [data-orow] { border-top: 1px solid var(--line); }
+  [data-tbtn] {
+    display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0; border: 0; background: none;
+    font: inherit; font-size: var(--text-sm); font-weight: 500; color: var(--text-strong); cursor: pointer;
+    text-decoration: underline; text-decoration-color: var(--ink-300); text-decoration-thickness: 1px; text-underline-offset: 3px;
+    transition: var(--transition-colors);
+  }
+  [data-tbtn]:hover { text-decoration-color: currentColor; }
+  [data-tbtn="muted"] { color: var(--text-muted); }
+  [data-tbtn="muted"]:hover { color: var(--text-strong); }
+  [data-tbtn]:focus-visible, [data-back]:focus-visible { outline: 2px solid var(--red-500); outline-offset: 2px; border-radius: 2px; }
+  [data-back] {
+    display: inline-flex; align-items: center; gap: 6px; width: max-content; min-height: 32px; padding: 0; border: 0; background: none;
+    font: inherit; font-size: var(--text-sm); color: var(--text-muted); cursor: pointer; transition: var(--transition-colors);
+  }
+  [data-back]:hover { color: var(--text-strong); }
+
+  /* Рядок замовлення: на телефоні — номер і статус, склад, кількість і сума; від 768 px — чотири колонки. */
+  [data-orow] {
+    display: grid; grid-template-columns: minmax(0, 1fr) max-content; grid-template-areas: "num status" "items items" "total total";
+    gap: 8px var(--space-4); align-items: center; width: 100%; padding: 14px var(--space-4); border: 0; background: var(--surface);
+    font: inherit; color: inherit; text-align: left; cursor: pointer; transition: var(--transition-colors);
+  }
+  [data-orow]:hover { background: var(--surface-sunken); box-shadow: inset 3px 0 0 var(--red-500); }
+  [data-orow]:focus-visible { outline: 2px solid var(--red-500); outline-offset: -2px; }
+  [data-o-num] { grid-area: num; display: grid; gap: 2px; }
+  [data-o-no] { font-family: var(--font-display); font-size: 19px; font-weight: 600; letter-spacing: var(--tracking-display); line-height: 1.1; color: var(--text-strong); font-variant-numeric: tabular-nums; }
+  [data-o-status] { grid-area: status; justify-self: end; }
+  [data-o-items] { grid-area: items; display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; min-width: 0; }
+  [data-o-names] { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; min-width: 0; font-size: var(--text-sm); color: var(--text-body); }
+  [data-orow] { position: relative; }
+  [data-o-open] { padding: 0; border: 0; background: none; text-align: left; cursor: pointer; justify-self: start; }
+  [data-o-open]::after { content: ''; position: absolute; inset: 0; }
+  [data-o-open]:focus-visible { outline: none; }
+  [data-orow]:has([data-o-open]:focus-visible) { outline: 2px solid var(--red-500); outline-offset: -2px; }
+  [data-ttn] { display: inline-flex; align-items: center; gap: 2px; padding-left: 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--text-strong); }
+  [data-copy] { position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 6px; background: none; color: var(--text-muted); cursor: pointer; transition: var(--transition-colors); }
+  [data-copy]:hover { color: var(--text-strong); }
+  [data-copy]:focus-visible { outline: 2px solid var(--red-500); outline-offset: -2px; }
+  [data-copy][data-done="true"] { color: var(--stock-in); }
+  [data-o-total] { grid-area: total; display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
+  [data-o-chev] { display: none; }
+  @media (min-width: 768px) {
+    [data-orow] { grid-template-columns: 136px minmax(0, 1fr) max-content 18px; grid-template-areas: "num status total chev" "num items total chev"; row-gap: 6px; padding: 16px var(--space-5); }
+    [data-o-status] { justify-self: start; align-self: end; }
+    [data-o-items] { align-self: start; }
+    [data-o-total] { flex-direction: column-reverse; align-items: flex-end; gap: 2px; min-width: 112px; }
+    [data-o-chev] { grid-area: chev; display: inline-flex; color: var(--text-faint); }
+    [data-orow]:hover [data-o-chev] { color: var(--text-strong); }
+  }
+
+  /* Етапи замовлення — чотири смуги; пройдене й поточне чорні, червоний у системі означає «купити». */
+  [data-stepper] { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; max-width: 640px; margin: 0; padding: 0; list-style: none; }
+  [data-stepper] > li { display: grid; gap: 8px; font-size: var(--text-xs); color: var(--text-faint); }
+  [data-stepper] > li::before { content: ''; height: 4px; border-radius: 2px; background: var(--line); }
+  [data-stepper] > li[data-on="true"] { color: var(--text-body); }
+  [data-stepper] > li[data-on="true"]::before { background: var(--ink-800); }
+  [data-stepper] > li[data-now="true"] { color: var(--text-strong); font-weight: 600; }
+  [data-note-ic] { flex: none; display: inline-flex; margin-top: 2px; color: var(--text-muted); }
+  [data-note-ic][data-tone="ok"] { color: var(--stock-in); }
+  [data-note-ic][data-tone="warn"] { color: var(--cutoff); }
+
+  /* Картка замовлення: товари й листування ліворуч, підсумок праворуч і липкий від 1120 px. */
+  [data-od] { display: grid; gap: var(--space-10); grid-template-columns: minmax(0, 1fr); grid-template-areas: "lines" "aside" "thread"; align-items: start; }
+  [data-od-lines] { grid-area: lines; min-width: 0; }
+  [data-od-aside] { grid-area: aside; min-width: 0; }
+  [data-od-thread] { grid-area: thread; min-width: 0; }
+  @media (min-width: 1120px) {
+    [data-od] { grid-template-columns: minmax(0, 1fr) 340px; grid-template-areas: "lines aside" "thread aside"; column-gap: var(--space-12); }
+    [data-od-aside] { position: sticky; top: calc(var(--header-total) + var(--space-4)); }
+  }
+  [data-aside-box] { display: grid; gap: var(--space-5); padding: var(--space-5); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface-sunken); }
+  [data-aside-a], [data-aside-b] { display: grid; gap: var(--space-4); align-content: start; min-width: 0; }
+  [data-aside-b] { padding-top: var(--space-5); border-top: 1px solid var(--line); }
+  @media (min-width: 640px) and (max-width: 1119px) {
+    [data-aside-box] { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: var(--space-6); }
+    [data-aside-b] { padding-top: 0; border-top: 0; padding-left: var(--space-6); border-left: 1px solid var(--line); }
+  }
+  [data-kv] { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
+  [data-kv] > dt { color: var(--text-muted); }
+  [data-kv] > dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; color: var(--text-body); }
+
+  /* Позиція замовлення. */
+  [data-line] { display: grid; grid-template-columns: minmax(0, 1fr) max-content; grid-template-areas: "id id" "qty total"; gap: 8px var(--space-4); padding: var(--space-4); align-items: baseline; }
+  @media (min-width: 640px) {
+    [data-line] { grid-template-columns: minmax(0, 1fr) 120px 104px; grid-template-areas: "id qty total"; }
+    [data-l-qty] { text-align: right; }
+  }
+  [data-l-id] { grid-area: id; display: grid; grid-template-columns: minmax(0, 1fr); gap: 3px; min-width: 0; }
+  /* Один рядок із трикрапкою: назви, бренди, артикули, імена. */
+  [data-trunc] { display: block; min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  [data-trunc-row] { display: flex; flex-wrap: wrap; align-items: center; gap: 4px var(--space-2); min-width: 0; }
+  [data-trunc-row] > [data-trunc] { flex: 0 1 auto; }
+  [data-trunc-row] > .ds-badge { flex: none; }
+  [data-l-qty] { grid-area: qty; font-size: var(--text-sm); color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  [data-l-total] { grid-area: total; text-align: right; font-weight: 600; color: var(--text-strong); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  [data-line][data-dim="true"] [data-l-qty], [data-line][data-dim="true"] [data-l-total] { color: var(--text-faint); text-decoration: line-through; text-decoration-thickness: 1px; }
+  [data-l-act] { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--space-4); margin-top: -4px; }
+  [data-l-form] { grid-column: 1 / -1; display: grid; gap: var(--space-4); padding: var(--space-4); border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
+
+  /* Листування. */
+  [data-msgs] { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+  [data-msg] { display: grid; gap: 4px; max-width: 560px; padding: var(--space-3) var(--space-4); border: 1px solid var(--line-subtle); border-radius: var(--radius-md); background: var(--surface-sunken); }
+  [data-msg][data-mine="true"] { border-color: var(--line); background: var(--surface); }
+  @media (min-width: 640px) { [data-msg][data-mine="true"] { justify-self: end; } }
+
+  /* Файли. */
+  [data-attach] {
+    position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 var(--space-3);
+    border: 1px dashed var(--ink-300); border-radius: var(--radius-md); background: var(--surface);
+    font-size: var(--text-sm); font-weight: 500; color: var(--text-strong); cursor: pointer; transition: var(--transition-colors);
+  }
+  [data-attach]:hover { background: var(--surface-sunken); border-color: var(--ink-500); }
+  [data-attach]:focus-within { outline: 2px solid var(--red-500); outline-offset: 2px; }
+  [data-attach] > input { position: absolute; inset: 0; width: 100%; opacity: 0; cursor: pointer; }
+  [data-chip] { display: inline-flex; align-items: center; max-width: 100%; min-height: 40px; padding-left: var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); font-size: var(--text-xs); color: var(--text-body); }
+  [data-chip] > span { max-width: 200px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  [data-chip] > button { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 0; border-radius: var(--radius-md); background: none; color: var(--text-muted); cursor: pointer; }
+  [data-chip] > button:hover { color: var(--text-strong); background: var(--surface-sunken); }
+  [data-chip][data-static] { gap: 6px; min-height: 30px; padding: 0 var(--space-3); }
+
+  /* Бонуси. */
+  [data-bonus-top] { display: grid; gap: var(--space-5); grid-template-columns: minmax(0, 1fr); max-width: 880px; }
+  [data-balance] { font-size: var(--display-lg); font-variant-numeric: tabular-nums; }
+  @media (max-width: 639px) { [data-balance] { font-size: var(--display-md); } }
+  [data-ladder] { display: grid; margin: 0; }
+  [data-ladder] > div { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); padding: 8px 0; border-top: 1px solid var(--line-subtle); font-size: var(--text-sm); }
+  [data-ladder] dt { color: var(--text-body); font-variant-numeric: tabular-nums; }
+  [data-ladder] dd { margin: 0; font-family: var(--font-display); font-size: 17px; font-weight: 600; color: var(--red-600); font-variant-numeric: tabular-nums; }
+  [data-ledger] > li { display: grid; grid-template-columns: minmax(0, 1fr) max-content; gap: 2px var(--space-4); align-items: center; padding: 12px var(--space-4); }
+  [data-amt] { font-family: var(--font-display); font-size: 18px; font-weight: 600; letter-spacing: var(--tracking-display); color: var(--text-strong); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  [data-amt][data-in="true"] { color: var(--stock-in); }
+
+  /* Повернення. */
+  [data-ret] { display: grid; gap: var(--space-3); padding: var(--space-4); }
+  @media (min-width: 640px) { [data-ret] { padding: var(--space-5); } }
+
+  /* Адреси. */
+  [data-arow] { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 4px var(--space-3); padding: var(--space-4); align-items: start; }
+  [data-a-act] { grid-column: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--space-5); }
+  @media (min-width: 768px) {
+    [data-arow] { grid-template-columns: 20px minmax(0, 1fr) max-content; padding: var(--space-4) var(--space-5); }
+    [data-a-act] { grid-column: 3; grid-row: 1; justify-content: flex-end; }
+  }
+  [data-aform] { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5); padding: var(--space-4); background: var(--surface); }
+  @media (min-width: 640px) { [data-aform] { padding: var(--space-5); } }
+  [data-list]:has([data-aform]) { overflow: visible; }
+  [data-types] { display: grid; gap: var(--space-2); grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); max-width: 440px; }
+
+  /* Із «Оформлення»: плитки, вибір зі списку, поля з підказками, розділи. */
+  [data-grid3], [data-grid2] { display: grid; gap: var(--space-4); grid-template-columns: minmax(0, 1fr); align-items: start; }
+  @media (min-width: 640px) {
+    [data-grid3] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    [data-grid2] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  [data-tile] {
+    display: flex; align-items: center; gap: var(--space-3); min-height: 60px; padding: 10px 14px;
+    border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface);
+    font: inherit; text-align: left; color: var(--text-body); cursor: pointer; transition: var(--transition-colors);
+  }
+  [data-tile]:hover { border-color: var(--ink-300); background: var(--surface-sunken); }
+  [data-tile]:active { transform: translateY(1px); }
+  [data-tile][data-on="true"] { border-color: var(--ink-800); box-shadow: inset 0 0 0 1px var(--ink-800); background: var(--surface); }
+  [data-tile][data-on="true"] [data-tile-icon] { color: var(--text-strong); }
+  [data-tile]:focus-visible { outline: 2px solid var(--red-500); outline-offset: 2px; }
+  [data-choices] { display: grid; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); overflow: hidden; }
+  [data-choice] { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 4px var(--space-3); align-items: start; padding: 14px var(--space-4); cursor: pointer; transition: var(--transition-colors); }
+  [data-choice] + [data-choice] { border-top: 1px solid var(--line); }
+  [data-choice]:hover { background: var(--surface-sunken); box-shadow: inset 3px 0 0 var(--red-500); }
+  [data-choice][data-on="true"] { background: var(--surface-sunken); box-shadow: inset 3px 0 0 var(--ink-800); }
+  [data-choice][data-off="true"] { cursor: not-allowed; opacity: .55; box-shadow: none; background: var(--surface); }
+  [data-choice] input[type="radio"] {
+    appearance: none; width: 18px; height: 18px; margin: 1px 0 0; border: 1px solid var(--ink-300);
+    border-radius: var(--radius-full); background: var(--surface); cursor: inherit; transition: var(--transition-colors);
+  }
+  [data-choice] input[type="radio"]:checked { background: var(--ink-800); border-color: var(--ink-800); box-shadow: inset 0 0 0 4px var(--surface); }
+  [data-choice] input[type="radio"]:focus-visible { outline: 2px solid var(--red-500); outline-offset: 2px; }
+  [data-combo] input[data-settled="true"] { border-color: var(--ink-800); font-weight: 500; color: var(--text-strong); }
+  [data-pop] {
+    position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 4px); margin: 0; padding: 4px 0; list-style: none;
+    max-height: 296px; overflow: auto; background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius-md); box-shadow: var(--shadow-lg);
+  }
+  [data-opt] { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); min-height: 44px; box-sizing: border-box; padding: 10px 14px; cursor: pointer; transition: var(--transition-colors); }
+  [data-opt]:hover { background: var(--surface-sunken); box-shadow: inset 3px 0 0 var(--red-500); }
+  [data-sec] { padding-top: var(--space-6); border-top: 1px solid var(--line); }
+  [data-sec-head] { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3) var(--space-4); min-height: 44px; }
+  [data-sec-body] { margin-top: var(--space-4); }
+  [data-rows] > div + div { border-top: 1px solid var(--line); }
+  [data-row] { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px var(--space-5); padding: var(--space-4); }
+  @media (min-width: 560px) { [data-row] { grid-template-columns: 120px minmax(0, 1fr); align-items: baseline; } }
+  [data-row] > dt { font-size: var(--text-sm); color: var(--text-muted); }
+  [data-row] > dd { margin: 0; display: grid; gap: 3px; min-width: 0; }
+  label[data-nrow] { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 2px var(--space-3); align-items: start; min-height: 0; padding: 14px var(--space-4); }
+  label[data-nrow] input { margin-top: 2px; }
+  label[data-nrow] input:disabled { opacity: .5; cursor: not-allowed; }
+  label[data-nrow][data-off="true"] { cursor: not-allowed; }
+</style>
+</helmet>
+
+<div class="ds-page">
+
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteHeader" active="account" signed-in="{{ true }}" cashback-percent="10" cart-count="{{ cartCount }}" hint-size="100%,150px"></x-import>
+
+  <main class="ds-container ds-main">
+
+    <sc-if value="{{ deleted }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Акаунт видалено" style="max-width:640px">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="user-x" title="Акаунт видалено" action="{{ homeAction }}" hint-size="100%,240px">Замовлення лишились у магазині як документи. Купувати можна й без кабінету — а якщо увійдете кодом з SMS, ми створимо новий.</x-import>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ live }}" hint-placeholder-val="{{ true }}">
+
+      <div style="display:grid;gap:var(--space-5)">
+        <div data-acc-head>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)">
+            <h1 class="ds-section-title" style="margin:0;min-width:0">Мій кабінет</h1>
+            <a href="Вхід.dc.html" class="ds-btn ds-btn--sm ds-btn--ghost" style="flex:none;min-height:44px;gap:6px;color:var(--text-muted)">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="log-out" size="16" hint-size="16px,16px"></x-import>
+              <span>Вийти</span>
+            </a>
+          </div>
+          <p style="display:flex;flex-wrap:wrap;align-items:baseline;gap:2px var(--space-4);min-width:0;margin:0;font-size:var(--text-sm);color:var(--text-muted)">
+            <sc-if value="{{ hasName }}" hint-placeholder-val="{{ true }}">
+              <span data-trunc style="font-weight:600;color:var(--text-strong)">{{ shortName }}</span>
+            </sc-if>
+            <span class="t-mono" style="flex:none;color:var(--text-body)">{{ phoneText }}</span>
+          </p>
+        </div>
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.TabStrip" tabs="{{ tabs }}" active="{{ tabKey }}" on-select="{{ onTab }}" hint-size="100%,46px"></x-import>
+      </div>
+
+      <!-- Замовлення: список -->
+      <sc-if value="{{ showList }}" hint-placeholder-val="{{ true }}">
+        <div data-screen-label="Замовлення" style="display:grid;gap:var(--space-8)">
+          <sc-if value="{{ noOrders }}" hint-placeholder-val="{{ false }}">
+            <div style="max-width:640px">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="package" title="Замовлень поки немає" action="{{ catalogAction }}" hint-size="100%,240px">Тут зʼявляться всі замовлення на ваш номер — навіть ті, що ви оформили без входу в кабінет.</x-import>
+            </div>
+          </sc-if>
+          <sc-for list="{{ orderGroups }}" as="g" hint-placeholder-count="2">
+            <section style="display:grid;gap:var(--space-3)">
+              <h2 class="t-eyebrow" style="display:flex;align-items:baseline;gap:var(--space-2);margin:0">
+                <span>{{ g.title }}</span>
+                <span style="font-family:var(--font-sans);font-size:var(--text-xs);font-weight:400;letter-spacing:0;text-transform:none;color:var(--text-faint)">{{ g.count }}</span>
+              </h2>
+              <div data-list>
+                <sc-for list="{{ g.orders }}" as="o" hint-placeholder-count="3">
+                  <div data-orow>
+                    <span data-o-num>
+                      <button type="button" data-o-open data-o-no onClick="{{ o.open }}" aria-label="Замовлення №{{ o.no }}"><span style="letter-spacing:-.07em">№</span>{{ o.no }}</button>
+                      <span style="font-size:var(--text-xs);color:var(--text-muted)">{{ o.date }}</span>
+                    </span>
+                    <span data-o-status><span class="ds-badge ds-badge--{{ o.tone }}">{{ o.statusLabel }}</span></span>
+                    <span data-o-items>
+                      <span data-o-names>
+                        <sc-for list="{{ o.previewNames }}" as="n" hint-placeholder-count="2">
+                          <span style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ n.name }}</span>
+                        </sc-for>
+                        <sc-if value="{{ o.previewMore }}" hint-placeholder-val="{{ false }}">
+                          <span style="color:var(--text-muted)">{{ o.previewMore }}</span>
+                        </sc-if>
+                      </span>
+                      <sc-if value="{{ o.unread }}" hint-placeholder-val="{{ false }}">
+                        <span style="display:inline-flex;align-items:center;gap:6px;font-size:var(--text-xs);font-weight:600;color:var(--text-strong)">
+                          <span style="flex:none;width:7px;height:7px;border-radius:50%;background:var(--red-500)"></span>
+                          <span>Нове повідомлення від магазину</span>
+                        </span>
+                      </sc-if>
+                      <sc-if value="{{ o.ttn }}" hint-placeholder-val="{{ false }}">
+                        <span style="display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;justify-self:start;font-size:var(--text-xs);color:var(--text-muted)" data-comment-anchor="3f473a7952-span">
+                          <span>ТТН</span>
+                          <span data-ttn>
+                            <span class="t-mono">{{ o.ttn }}</span>
+                            <button type="button" data-copy data-done="{{ o.ttnCopied }}" onClick="{{ o.copyTtn }}" aria-label="{{ o.copyLabel }}" title="{{ o.copyLabel }}">
+                              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ o.copyIcon }}" size="14" hint-size="14px,14px"></x-import>
+                            </button>
+                          </span>
+                          <a href="{{ o.trackHref }}" target="_blank" rel="noopener noreferrer" style="position:relative;z-index:1;display:inline-flex;align-items:center;gap:4px;min-height:32px;font-size:var(--text-sm);font-weight:500">
+                            <span>Відстежити</span>
+                            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-right" size="14" hint-size="14px,14px"></x-import>
+                          </a>
+                        </span>
+                      </sc-if>
+                    </span>
+                    <span data-o-total>
+                      <span style="font-size:var(--text-xs);color:var(--text-muted);white-space:nowrap">{{ o.countText }}</span>
+                      <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ o.total }}" size="sm" hint-size="auto,22px"></x-import>
+                    </span>
+                    <span data-o-chev>
+                      <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-right" size="18" hint-size="18px,18px"></x-import>
+                    </span>
+                  </div>
+                </sc-for>
+              </div>
+            </section>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- Замовлення: картка -->
+      <sc-if value="{{ showOrder }}" hint-placeholder-val="{{ false }}">
+        <article data-screen-label="Картка замовлення" style="display:grid;gap:var(--space-6)">
+          <div style="display:grid;gap:var(--space-2)">
+            <button type="button" data-back onClick="{{ backToList }}">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-left" size="15" hint-size="15px,15px"></x-import>
+              <span>Усі замовлення</span>
+            </button>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-4)">
+              <h2 class="t-display-sm" style="margin:0">Замовлення <span style="letter-spacing:-.07em">№</span>{{ od.no }}</h2>
+              <span class="ds-badge ds-badge--{{ od.tone }}">{{ od.statusLabel }}</span>
+            </div>
+            <p style="margin:0;display:flex;flex-wrap:wrap;gap:4px var(--space-5);font-size:var(--text-sm);color:var(--text-muted)" data-comment-anchor="4346c5250a-p"><span>від {{ od.dateLong }}</span><span>{{ od.countText }}</span></p>
+          </div>
+
+          <sc-if value="{{ od.hasSteps }}" hint-placeholder-val="{{ true }}">
+            <ol data-stepper aria-label="Етапи замовлення">
+              <sc-for list="{{ od.steps }}" as="st" hint-placeholder-count="4">
+                <li data-on="{{ st.on }}" data-now="{{ st.now }}">{{ st.label }}</li>
+              </sc-for>
+            </ol>
+          </sc-if>
+
+          <div style="display:flex;align-items:flex-start;gap:var(--space-3);max-width:720px">
+            <span data-note-ic data-tone="{{ od.noteTone }}">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ od.noteIcon }}" size="18" hint-size="18px,18px"></x-import>
+            </span>
+            <div style="display:grid;gap:var(--space-1);min-width:0">
+              <p style="margin:0;color:var(--text-body);text-wrap:pretty">{{ od.note }}</p>
+              <sc-if value="{{ od.ttn }}" hint-placeholder-val="{{ false }}">
+                <p style="display:flex;flex-wrap:wrap;align-items:center;gap:2px var(--space-4);margin:0;font-size:var(--text-sm)">
+                  <span style="display:inline-flex;align-items:center;gap:8px;color:var(--text-muted)">
+                    <span>ТТН</span>
+                    <span data-ttn>
+                      <span class="t-mono">{{ od.ttn }}</span>
+                      <button type="button" data-copy data-done="{{ od.ttnCopied }}" onClick="{{ od.copyTtn }}" aria-label="{{ od.copyLabel }}" title="{{ od.copyLabel }}">
+                        <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ od.copyIcon }}" size="15" hint-size="15px,15px"></x-import>
+                      </button>
+                    </span>
+                  </span>
+                  <a href="{{ od.trackHref }}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:4px;min-height:32px;font-weight:500">
+                    <span>Відстежити</span>
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-right" size="14" hint-size="14px,14px"></x-import>
+                  </a>
+                </p>
+              </sc-if>
+              <sc-if value="{{ od.noteAction }}" hint-placeholder-val="{{ false }}">
+                <button type="button" class="ds-btn ds-btn--link" style="justify-self:start;min-height:32px;font-size:var(--text-sm)" onClick="{{ replyGo }}">{{ od.noteAction }}</button>
+              </sc-if>
+            </div>
+          </div>
+
+          <div data-od>
+
+            <section data-od-lines style="display:grid;gap:var(--space-3)">
+              <h3 class="t-display-xs" style="margin:0">Товари</h3>
+              <ul data-list>
+                <sc-for list="{{ od.lines }}" as="l" hint-placeholder-count="3">
+                  <li data-line data-dim="{{ l.dim }}">
+                    <div data-l-id>
+                      <span data-trunc style="font-size:var(--text-2xs);font-weight:600;color:var(--text-body)">{{ l.brand }}</span>
+                      <span data-trunc-row>
+                        <span data-trunc style="font-weight:600;color:var(--text-strong)">{{ l.name }}</span>
+                        <sc-if value="{{ l.stateLabel }}" hint-placeholder-val="{{ false }}">
+                          <span class="ds-badge ds-badge--analog">{{ l.stateLabel }}</span>
+                        </sc-if>
+                      </span>
+                      <span class="ds-article" data-trunc style="justify-self:start">{{ l.article }}</span>
+                    </div>
+                    <span data-l-qty>{{ l.qtyText }}</span>
+                    <span data-l-total>{{ l.totalText }}</span>
+
+                    <sc-if value="{{ l.showAct }}" hint-placeholder-val="{{ false }}">
+                      <div data-l-act>
+                        <sc-if value="{{ l.canClaim }}" hint-placeholder-val="{{ false }}">
+                          <button type="button" data-tbtn="muted" onClick="{{ l.openClaim }}">
+                            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="rotate-ccw" size="15" hint-size="15px,15px"></x-import>
+                            <span>Повернути</span>
+                          </button>
+                        </sc-if>
+                        <sc-if value="{{ l.claimed }}" hint-placeholder-val="{{ false }}">
+                          <span style="display:inline-flex;align-items:center;gap:6px;min-height:36px;font-size:var(--text-sm);color:var(--text-muted)">
+                            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="file-text" size="15" hint-size="15px,15px"></x-import>
+                            <span>{{ l.claimNote }}</span>
+                          </span>
+                          <button type="button" data-tbtn onClick="{{ goReturns }}">Мої повернення</button>
+                        </sc-if>
+                      </div>
+                    </sc-if>
+
+                    <sc-if value="{{ l.formOpen }}" hint-placeholder-val="{{ false }}">
+                      <div data-l-form data-comment-anchor="1b81f3f992-div">
+                        <p class="t-eyebrow" style="margin:0" data-comment-anchor="171fe414ef-p">Повернути</p>
+                        <div data-choices role="radiogroup" aria-label="Тип заявки">
+                          <sc-for list="{{ claimKinds }}" as="k" hint-placeholder-count="2">
+                            <label data-choice data-on="{{ k.on }}" data-off="{{ k.off }}">
+                              <input type="radio" name="od-claim-kind" checked="{{ k.on }}" disabled="{{ k.off }}" onChange="{{ k.pick }}">
+                              <span style="display:grid;gap:2px;min-width:0">
+                                <span style="font-weight:600;color:var(--text-strong)">{{ k.label }}</span>
+                                <span style="font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">{{ k.sub }}</span>
+                              </span>
+                            </label>
+                          </sc-for>
+                        </div>
+                        <label class="ds-field" style="margin:0">
+                          <span class="ds-field__label" data-comment-anchor="c7d1833d51-span"><sc-if value="{{ claimIsReturn }}" hint-placeholder-val="{{ true }}">Чому повертаєте</sc-if><sc-if value="{{ claimIsWarranty }}" hint-placeholder-val="{{ false }}">Що з деталлю</sc-if></span>
+                          <textarea id="od-claim" class="{{ claimClass }}" rows="4" maxLength="4000" value="{{ claimText }}" onChange="{{ onClaimText }}" style="min-height:112px;padding:10px 12px;resize:vertical;font:inherit;line-height:1.5"></textarea>
+                          <sc-if value="{{ claimErr }}" hint-placeholder-val="{{ false }}">
+                            <span class="ds-field__error" role="alert" style="display:block"><sc-if value="{{ claimIsReturn }}" hint-placeholder-val="{{ true }}">Напишіть, чому повертаєте деталь</sc-if><sc-if value="{{ claimIsWarranty }}" hint-placeholder-val="{{ false }}">Опишіть, що з деталлю</sc-if></span>
+                          </sc-if>
+                          <sc-if value="{{ claimHint }}" hint-placeholder-val="{{ true }}">
+                            <span class="ds-field__hint" style="display:block"><sc-if value="{{ claimIsReturn }}" hint-placeholder-val="{{ true }}">Наприклад, не підійшла за кріпленням. Вкажіть, що хочете — обмін чи гроші.</sc-if><sc-if value="{{ claimIsWarranty }}" hint-placeholder-val="{{ false }}">Як проявляється несправність і коли її встановили. Якщо є акт СТО — додайте фото.</sc-if></span>
+                          </sc-if>
+                        </label>
+                        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)">
+                          <label data-attach>
+                            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="paperclip" size="16" hint-size="16px,16px"></x-import>
+                            <span>Додати фото або відео</span>
+                            <input type="file" multiple="{{ true }}" accept="image/*,video/*" onChange="{{ onClaimFiles }}">
+                          </label>
+                          <sc-for list="{{ claimFiles }}" as="f" hint-placeholder-count="0">
+                            <span data-chip>
+                              <span>{{ f.name }}</span>
+                              <button type="button" aria-label="Прибрати файл" onClick="{{ f.remove }}">
+                                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="x" size="14" hint-size="14px,14px"></x-import>
+                              </button>
+                            </span>
+                          </sc-for>
+                        </div>
+                        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3) var(--space-5)">
+                          <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="dark" loading="{{ claimBusy }}" onClick="{{ submitClaim }}" hint-size="auto,44px">Надіслати заявку</x-import>
+                          <button type="button" data-tbtn="muted" onClick="{{ closeClaim }}">Скасувати</button>
+                        </div>
+                      </div>
+                    </sc-if>
+                  </li>
+                </sc-for>
+              </ul>
+            </section>
+
+            <aside data-od-aside data-screen-label="Підсумок замовлення">
+              <div data-aside-box>
+                <div data-aside-a>
+                  <dl style="display:grid;gap:6px;margin:0;font-size:var(--text-sm)">
+                    <div data-kv><dt>Товари</dt><dd>{{ od.goodsText }}</dd></div>
+                    <sc-if value="{{ od.hasDiscount }}" hint-placeholder-val="{{ false }}">
+                      <div data-kv><dt data-comment-anchor="ac4cd1bde7-dt" style="display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px"><span>Знижка</span><span class="t-mono" style="padding:1px 6px;border:1px solid var(--line);border-radius:6px;font-size:var(--text-xs);color:var(--text-body)">{{ od.promo }}</span></dt><dd>{{ od.discountText }}</dd></div>
+                    </sc-if>
+                    <sc-if value="{{ od.hasBonus }}" hint-placeholder-val="{{ false }}">
+                      <div data-kv><dt>Оплата бонусами</dt><dd>{{ od.bonusText }}</dd></div>
+                    </sc-if>
+                  </dl>
+                  <div style="display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3);padding-top:var(--space-3);border-top:1px solid var(--line)">
+                    <span style="font-weight:500;color:var(--text-strong)">Разом</span>
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.PriceTag" value="{{ od.total }}" size="lg" hint-size="auto,32px"></x-import>
+                  </div>
+                  <dl style="display:grid;gap:6px;margin:0;font-size:var(--text-sm)">
+                    <div data-kv><dt>Оплата</dt><dd>{{ od.payLabel }}</dd></div>
+                    <sc-if value="{{ od.hasPaid }}" hint-placeholder-val="{{ false }}">
+                      <div data-kv><dt>Сплачено</dt><dd>{{ od.paidText }}</dd></div>
+                    </sc-if>
+                    <sc-if value="{{ od.hasRefund }}" hint-placeholder-val="{{ false }}">
+                      <div data-kv><dt>Повернено</dt><dd>{{ od.refundText }}</dd></div>
+                    </sc-if>
+                  </dl>
+                  <sc-if value="{{ od.cbText }}" hint-placeholder-val="{{ false }}">
+                    <p style="display:flex;align-items:flex-start;gap:8px;margin:0;font-size:var(--text-sm);color:var(--text-body);text-wrap:pretty">
+                      <span style="flex:none;display:inline-flex;margin-top:2px;color:var(--red-600)">
+                        <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="badge-percent" size="16" hint-size="16px,16px"></x-import>
+                      </span>
+                      <span>{{ od.cbText }}</span>
+                    </p>
+                  </sc-if>
+                </div>
+
+                <div data-aside-b>
+                  <div style="display:grid;gap:4px">
+                    <span class="t-eyebrow">{{ od.methodLabel }}</span>
+                    <span style="font-weight:600;color:var(--text-strong);text-wrap:pretty">{{ od.place }}</span>
+                  </div>
+                  <div style="display:grid;gap:2px">
+                    <span class="t-eyebrow">Отримувач</span>
+                    <span style="color:var(--text-strong)">{{ od.rcName }}</span>
+                    <span class="t-mono" style="font-size:var(--text-sm);color:var(--text-body)">{{ od.rcPhone }}</span>
+                  </div>
+                  <div style="display:grid;gap:var(--space-3);padding-top:var(--space-4);border-top:1px solid var(--line)">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="secondary" block="{{ true }}" icon="rotate-ccw" loading="{{ repeatBusy }}" onClick="{{ onRepeat }}" hint-size="100%,44px">Повторити замовлення</x-import>
+                    <sc-if value="{{ repeatDone }}" hint-placeholder-val="{{ false }}">
+                      <div role="status" style="display:grid;gap:6px;font-size:var(--text-sm)">
+                        <p style="display:flex;align-items:flex-start;gap:8px;margin:0;color:var(--text-strong);text-wrap:pretty">
+                          <span style="flex:none;display:inline-flex;margin-top:2px;color:var(--stock-in)">
+                            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="circle-check" size="16" hint-size="16px,16px"></x-import>
+                          </span>
+                          <span>{{ repeatText }}</span>
+                        </p>
+                        <sc-if value="{{ repeatAdded }}" hint-placeholder-val="{{ true }}">
+                          <a href="Кошик.dc.html" style="padding-left:24px;font-weight:500">Перейти в кошик</a>
+                        </sc-if>
+                        <sc-if value="{{ repeatHasMissing }}" hint-placeholder-val="{{ false }}">
+                          <div style="display:grid;gap:2px;padding-left:24px;color:var(--text-muted)">
+                            <span>Цих позицій зараз немає, тому їх не додано:</span>
+                            <sc-for list="{{ repeatMissing }}" as="mi" hint-placeholder-count="1">
+                              <span style="color:var(--text-body)">{{ mi.text }}</span>
+                            </sc-for>
+                          </div>
+                        </sc-if>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ od.receipt }}" hint-placeholder-val="{{ false }}">
+                      <a href="#" style="display:inline-flex;align-items:center;gap:6px;width:max-content;min-height:32px;font-size:var(--text-sm);font-weight:500">
+                        <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="receipt-text" size="15" hint-size="15px,15px"></x-import>
+                        <span>Фіскальний чек</span>
+                      </a>
+                    </sc-if>
+                    <sc-if value="{{ od.cancelIdle }}" hint-placeholder-val="{{ false }}">
+                      <button type="button" data-tbtn="muted" style="justify-self:start" onClick="{{ askCancel }}">Скасувати замовлення</button>
+                    </sc-if>
+                    <sc-if value="{{ od.cancelAsk }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:grid;gap:var(--space-3);padding:var(--space-4);border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface)">
+                        <p style="margin:0;font-weight:600;color:var(--text-strong)">Скасувати замовлення <span style="letter-spacing:-.07em">№</span>{{ od.no }}?</p>
+                        <sc-if value="{{ od.paidNote }}" hint-placeholder-val="{{ false }}">
+                          <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">{{ od.paidNote }}</p>
+                        </sc-if>
+                        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-5)">
+                          <button type="button" class="ds-btn ds-btn--md ds-btn--secondary" onClick="{{ confirmCancel }}">Так, скасувати</button>
+                          <button type="button" data-tbtn="muted" onClick="{{ keepOrder }}">Ні, залишити</button>
+                        </div>
+                      </div>
+                    </sc-if>
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            <section data-od-thread id="od-thread" data-screen-label="Листування" style="display:grid;gap:var(--space-4)">
+              <h3 class="t-display-xs" style="margin:0">Листування</h3>
+              <sc-if value="{{ od.noMsgs }}" hint-placeholder-val="{{ false }}">
+                <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Повідомлень поки немає. Напишіть, якщо є питання щодо замовлення.</p>
+              </sc-if>
+              <sc-if value="{{ od.hasMsgs }}" hint-placeholder-val="{{ true }}">
+                <ul data-msgs>
+                  <sc-for list="{{ od.thread }}" as="m" hint-placeholder-count="2">
+                    <li data-msg data-mine="{{ m.mine }}">
+                      <span style="display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;font-size:var(--text-2xs);color:var(--text-muted)" data-comment-anchor="2950b3c9ab-span"><span style="font-weight:600;color:var(--text-strong)">{{ m.who }}</span><span>{{ m.at }}</span></span>
+                      <sc-if value="{{ m.hasText }}" hint-placeholder-val="{{ true }}">
+                        <p style="margin:0;font-size:var(--text-sm);color:var(--text-body);white-space:pre-wrap;text-wrap:pretty">{{ m.text }}</p>
+                      </sc-if>
+                      <sc-if value="{{ m.hasFiles }}" hint-placeholder-val="{{ false }}">
+                        <span style="display:flex;flex-wrap:wrap;gap:6px">
+                          <sc-for list="{{ m.files }}" as="mf" hint-placeholder-count="1">
+                            <span data-chip data-static>
+                              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="paperclip" size="13" hint-size="13px,13px"></x-import>
+                              <span>{{ mf.name }}</span>
+                            </span>
+                          </sc-for>
+                        </span>
+                      </sc-if>
+                    </li>
+                  </sc-for>
+                </ul>
+              </sc-if>
+              <div style="display:grid;gap:var(--space-3);max-width:640px">
+                <label class="ds-field" style="margin:0">
+                  <span class="ds-field__label">Ваше повідомлення</span>
+                  <textarea id="od-msg" class="ds-input" rows="3" maxLength="4000" value="{{ msg }}" onChange="{{ onMsg }}" style="min-height:88px;padding:10px 12px;resize:vertical;font:inherit;line-height:1.5"></textarea>
+                </label>
+                <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-3)">
+                  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2);min-width:0">
+                    <label data-attach>
+                      <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="paperclip" size="16" hint-size="16px,16px"></x-import>
+                      <span>Прикріпити файл</span>
+                      <input type="file" multiple="{{ true }}" onChange="{{ onMsgFiles }}">
+                    </label>
+                    <sc-for list="{{ msgFiles }}" as="f" hint-placeholder-count="0">
+                      <span data-chip>
+                        <span>{{ f.name }}</span>
+                        <button type="button" aria-label="Прибрати файл" onClick="{{ f.remove }}">
+                          <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="x" size="14" hint-size="14px,14px"></x-import>
+                        </button>
+                      </span>
+                    </sc-for>
+                  </div>
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="dark" disabled="{{ msgEmpty }}" onClick="{{ sendMsg }}" hint-size="auto,44px">Надіслати</x-import>
+                </div>
+              </div>
+            </section>
+
+          </div>
+        </article>
+      </sc-if>
+
+      <!-- Бонуси -->
+      <sc-if value="{{ showBonuses }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Бонуси" style="display:grid;gap:var(--space-10)">
+          <div data-bonus-top>
+            <section style="display:grid;gap:var(--space-4);align-content:start;padding:var(--space-6);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)">
+              <div style="display:grid;gap:var(--space-2)">
+                <span class="t-eyebrow">На рахунку</span>
+                <span style="display:flex;align-items:baseline;gap:var(--space-2)">
+                  <span class="t-display-lg" data-balance>{{ balanceText }}</span>
+                  <span class="t-display-xs" style="color:var(--text-muted)">₴</span>
+                </span>
+                <sc-if value="{{ expiryText }}" hint-placeholder-val="{{ true }}">
+                  <span style="font-size:var(--text-sm);color:var(--text-body)">{{ expiryText }}</span>
+                </sc-if>
+              </div>
+              <p style="margin:0;font-size:var(--text-sm);color:var(--text-body);text-wrap:pretty">Бонусами можна оплатити до 20% замовлення. Один бонус — одна гривня.</p>
+              <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ true }}">
+                <div style="display:grid;gap:4px;padding-top:var(--space-4);border-top:1px solid var(--line)">
+                  <span style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px var(--space-2)">
+                    <span data-amt data-in="true">+{{ pendingText }}</span>
+                    <span style="font-size:var(--text-sm);color:var(--text-muted)">очікують нарахування</span>
+                  </span>
+                  <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">
+                    <span>Нарахуємо, щойно отримаєте замовлення </span>
+                    <sc-for list="{{ pendingOrders }}" as="po" hint-placeholder-count="3"><button type="button" class="ds-btn ds-btn--link" style="font-size:inherit" onClick="{{ po.open }}"><span style="white-space:nowrap"><span style="letter-spacing:-.07em">№</span>{{ po.no }}</span></button>{{ po.sep }}</sc-for>
+                  </p>
+                </div>
+              </sc-if>
+            </section>
+          </div>
+
+          <section style="display:grid;gap:var(--space-3);max-width:880px">
+            <h2 class="t-display-xs" style="margin:0">Операції</h2>
+            <sc-if value="{{ noLedger }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Операцій поки немає. Бонуси нараховуються, коли замовлення виконано.</p>
+            </sc-if>
+            <sc-if value="{{ hasLedger }}" hint-placeholder-val="{{ true }}">
+              <ul data-list data-ledger>
+                <sc-for list="{{ ledger }}" as="t" hint-placeholder-count="5">
+                  <li>
+                    <span style="display:grid;gap:2px;min-width:0">
+                      <span style="font-weight:600;color:var(--text-strong)">{{ t.kind }}</span>
+                      <span style="display:flex;flex-wrap:wrap;align-items:baseline;gap:2px var(--space-3);font-size:var(--text-xs);color:var(--text-muted)">
+                        <span>{{ t.date }}</span>
+                        <sc-if value="{{ t.order }}" hint-placeholder-val="{{ true }}">
+                          <button type="button" class="ds-btn ds-btn--link" style="font-size:var(--text-xs)" onClick="{{ t.open }}">Замовлення <span style="white-space:nowrap"><span style="letter-spacing:-.07em">№</span>{{ t.order }}</span></button>
+                        </sc-if>
+                      </span>
+                    </span>
+                    <span style="display:grid;gap:2px;justify-items:end">
+                      <span data-amt data-in="{{ t.in }}">{{ t.amount }}</span>
+                      <span style="font-size:var(--text-2xs);color:var(--text-faint);white-space:nowrap">залишок {{ t.after }}</span>
+                    </span>
+                  </li>
+                </sc-for>
+              </ul>
+            </sc-if>
+          </section>
+        </div>
+      </sc-if>
+
+      <!-- Повернення -->
+      <sc-if value="{{ showReturns }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Повернення" style="display:grid;gap:var(--space-5);max-width:880px">
+          <sc-if value="{{ noReturns }}" hint-placeholder-val="{{ false }}">
+            <div style="max-width:640px">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="rotate-ccw" title="Повернень поки немає" hint-size="100%,220px">Щоб повернути деталь або заявити гарантійний випадок, відкрийте замовлення й оберіть позицію.</x-import>
+            </div>
+          </sc-if>
+          <sc-if value="{{ hasReturns }}" hint-placeholder-val="{{ true }}">
+            <p style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px var(--space-4);margin:0;font-size:var(--text-sm);color:var(--text-muted)">
+              <span data-comment-anchor="f4ff63d4bc-span">Щоб подати заявку на повернення, відкрийте замовлення й оберіть позицію.</span>
+              <a href="Документи.dc.html#returns" style="font-weight:500">Умови повернення</a>
+            </p>
+            <ul data-list>
+              <sc-for list="{{ returnRows }}" as="r" hint-placeholder-count="3">
+                <li data-ret>
+                  <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-2) var(--space-4)">
+                    <span style="display:flex;flex-wrap:wrap;align-items:baseline;gap:2px var(--space-3)">
+                      <span class="t-eyebrow" style="color:var(--text-strong)">{{ r.kindLabel }}</span>
+                      <span style="font-size:var(--text-xs);color:var(--text-muted)">від {{ r.date }}</span>
+                    </span>
+                    <span class="ds-badge ds-badge--{{ r.tone }}">{{ r.stateLabel }}</span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:3px;min-width:0">
+                    <span data-trunc style="font-size:var(--text-2xs);font-weight:600;color:var(--text-body)">{{ r.brand }}</span>
+                    <span data-trunc style="font-weight:600;color:var(--text-strong)">{{ r.name }}</span>
+                    <span class="ds-article" data-trunc style="justify-self:start">{{ r.article }}</span>
+                  </div>
+                  <blockquote style="margin:0;padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);background:var(--surface-sunken);font-size:var(--text-sm);color:var(--text-body);text-wrap:pretty">{{ r.text }}</blockquote>
+                  <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--space-2) var(--space-5)">
+                    <p style="flex:1 1 320px;margin:0;font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">{{ r.explain }}</p>
+                    <button type="button" class="ds-btn ds-btn--link" style="min-height:32px;font-size:var(--text-sm)" onClick="{{ r.open }}">Замовлення <span style="white-space:nowrap"><span style="letter-spacing:-.07em">№</span>{{ r.order }}</span></button>
+                  </div>
+                </li>
+              </sc-for>
+            </ul>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- Адреси -->
+      <sc-if value="{{ showAddresses }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Адреси" style="display:grid;gap:var(--space-4);max-width:880px">
+          <sc-if value="{{ addrToolbar }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-3) var(--space-5)">
+              <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Підставляємо їх в оформлення — основну першою.</p>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="secondary" icon="plus" onClick="{{ openNew }}" hint-size="auto,44px">Додати адресу</x-import>
+            </div>
+          </sc-if>
+          <sc-if value="{{ addrNote }}" hint-placeholder-val="{{ false }}">
+            <p role="status" style="display:flex;flex-wrap:wrap;align-items:center;gap:4px var(--space-3);margin:0;font-size:var(--text-sm);color:var(--text-body)">
+              <span style="display:inline-flex;color:var(--stock-in)">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="circle-check" size="16" hint-size="16px,16px"></x-import>
+              </span>
+              <span>{{ addrNote }}</span>
+              <sc-if value="{{ addrUndo }}" hint-placeholder-val="{{ false }}">
+                <button type="button" data-tbtn onClick="{{ undoDelete }}">Повернути</button>
+              </sc-if>
+            </p>
+          </sc-if>
+          <sc-if value="{{ noAddresses }}" hint-placeholder-val="{{ false }}">
+            <div style="max-width:640px">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.EmptyState" icon="map-pin" title="Збережених адрес поки немає" action="{{ addAction }}" hint-size="100%,240px">Додайте відділення або поштомат Нової Пошти — і в оформленні їх не доведеться вводити.</x-import>
+            </div>
+          </sc-if>
+          <sc-if value="{{ hasAddrRows }}" hint-placeholder-val="{{ true }}">
+            <ul data-list>
+              <sc-for list="{{ addrRows }}" as="a" hint-placeholder-count="4">
+                <li>
+                  <sc-if value="{{ a.view }}" hint-placeholder-val="{{ true }}">
+                    <div data-arow>
+                      <span style="display:inline-flex;margin-top:2px;color:var(--text-muted)">
+                        <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ a.icon }}" size="18" hint-size="18px,18px"></x-import>
+                      </span>
+                      <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:3px;min-width:0">
+                        <span data-trunc-row>
+                          <span data-trunc style="font-weight:600;color:var(--text-strong)">{{ a.title }}</span>
+                          <sc-if value="{{ a.isDefault }}" hint-placeholder-val="{{ false }}">
+                            <span class="ds-badge ds-badge--neutral">Основна</span>
+                          </sc-if>
+                        </span>
+                        <span style="font-size:var(--text-sm);color:var(--text-body);text-wrap:pretty">{{ a.place }}</span>
+                        <span style="display:flex;flex-wrap:wrap;gap:2px var(--space-4);min-width:0;font-size:var(--text-sm);color:var(--text-muted)">
+                          <span data-trunc>{{ a.name }}</span>
+                          <span class="t-mono" style="flex:none">{{ a.phoneText }}</span>
+                        </span>
+                        <sc-if value="{{ a.closed }}" hint-placeholder-val="{{ false }}">
+                          <p style="display:flex;align-items:flex-start;gap:8px;margin:4px 0 0;font-size:var(--text-sm);color:var(--text-body);text-wrap:pretty">
+                            <span style="flex:none;display:inline-flex;margin-top:2px;color:var(--cutoff)">
+                              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="triangle-alert" size="15" hint-size="15px,15px"></x-import>
+                            </span>
+                            <span>Це відділення більше не працює. В оформленні адреси не буде, доки не оберете інше.</span>
+                          </p>
+                        </sc-if>
+                      </div>
+                      <div data-a-act>
+                        <button type="button" data-tbtn onClick="{{ a.edit }}">{{ a.editLabel }}</button>
+                        <sc-if value="{{ a.canDefault }}" hint-placeholder-val="{{ false }}">
+                          <button type="button" data-tbtn="muted" onClick="{{ a.makeDefault }}">Зробити основною</button>
+                        </sc-if>
+                      </div>
+                    </div>
+                  </sc-if>
+
+                  <sc-if value="{{ a.editing }}" hint-placeholder-val="{{ false }}">
+                    <div data-aform>
+                      <h3 class="t-display-xs" style="margin:0;font-size:19px">{{ formTitle }}</h3>
+
+                      <div data-types role="radiogroup" aria-label="Точка видачі">
+                        <sc-for list="{{ afTypes }}" as="m" hint-placeholder-count="2">
+                          <button type="button" role="radio" data-tile data-on="{{ m.on }}" aria-checked="{{ m.on }}" onClick="{{ m.pick }}">
+                            <span data-tile-icon style="flex:none;display:inline-flex;color:var(--text-muted)">
+                              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="{{ m.icon }}" size="20" hint-size="20px,20px"></x-import>
+                            </span>
+                            <span style="display:grid;gap:1px;min-width:0">
+                              <span style="font-size:var(--text-2xs);color:var(--text-muted)">Нова Пошта</span>
+                              <span style="font-weight:600;color:var(--text-strong)">{{ m.label }}</span>
+                            </span>
+                          </button>
+                        </sc-for>
+                      </div>
+
+                      <div data-grid2>
+                        <div data-combo>
+                          <label class="ds-field__label" for="af-city">Місто</label>
+                          <div style="position:relative">
+                            <input id="af-city" class="{{ afCityClass }}" data-settled="{{ afCitySettled }}" value="{{ afCityValue }}" placeholder="Почніть вводити назву" autoComplete="off" role="combobox" aria-expanded="{{ afCityOpen }}" onChange="{{ onAfCityInput }}" onFocus="{{ onAfCityFocus }}" onBlur="{{ onAfCityBlur }}">
+                            <sc-if value="{{ afCitySettled }}" hint-placeholder-val="{{ false }}">
+                              <button type="button" class="ds-clear" aria-label="Змінити місто" onClick="{{ clearAfCity }}">
+                                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="x" size="16" hint-size="16px,16px"></x-import>
+                              </button>
+                            </sc-if>
+                            <sc-if value="{{ afCityOpen }}" hint-placeholder-val="{{ false }}">
+                              <ul data-pop role="listbox">
+                                <sc-for list="{{ afCityOptions }}" as="c" hint-placeholder-count="0">
+                                  <li data-opt role="option" onMouseDown="{{ c.pick }}">
+                                    <span style="font-weight:500;color:var(--text-strong)">{{ c.name }}</span>
+                                    <span style="font-size:var(--text-2xs);color:var(--text-muted);white-space:nowrap">{{ c.region }}</span>
+                                  </li>
+                                </sc-for>
+                                <sc-if value="{{ afCityMsg }}" hint-placeholder-val="{{ false }}">
+                                  <li style="padding:10px 14px;font-size:var(--text-sm);color:var(--text-muted)">{{ afCityMsg }}</li>
+                                </sc-if>
+                              </ul>
+                            </sc-if>
+                          </div>
+                          <sc-if value="{{ afErrCity }}" hint-placeholder-val="{{ false }}">
+                            <p class="ds-field__error" role="alert">{{ afErrCity }}</p>
+                          </sc-if>
+                        </div>
+
+                        <div data-combo>
+                          <label class="ds-field__label" for="af-point">{{ afPointLabel }}</label>
+                          <div style="position:relative">
+                            <input id="af-point" class="{{ afPointClass }}" data-settled="{{ afPointSettled }}" value="{{ afPointValue }}" placeholder="{{ afPointPlaceholder }}" disabled="{{ afPointDisabled }}" autoComplete="off" role="combobox" aria-expanded="{{ afPointOpen }}" onChange="{{ onAfPointInput }}" onFocus="{{ onAfPointFocus }}" onBlur="{{ onAfPointBlur }}">
+                            <sc-if value="{{ afPointSettled }}" hint-placeholder-val="{{ false }}">
+                              <button type="button" class="ds-clear" aria-label="Змінити точку видачі" onClick="{{ clearAfPoint }}">
+                                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="x" size="16" hint-size="16px,16px"></x-import>
+                              </button>
+                            </sc-if>
+                            <sc-if value="{{ afPointOpen }}" hint-placeholder-val="{{ false }}">
+                              <ul data-pop role="listbox">
+                                <sc-for list="{{ afPointOptions }}" as="pt" hint-placeholder-count="0">
+                                  <li data-opt role="option" onMouseDown="{{ pt.pick }}">
+                                    <span style="display:grid;gap:1px;min-width:0">
+                                      <span style="font-weight:500;color:var(--text-strong)">{{ pt.title }}</span>
+                                      <span style="font-size:var(--text-sm);color:var(--text-muted)">{{ pt.address }}</span>
+                                    </span>
+                                    <span style="flex:none;font-size:var(--text-2xs);color:var(--text-muted);white-space:nowrap">{{ pt.weight }}</span>
+                                  </li>
+                                </sc-for>
+                                <sc-if value="{{ afPointMsg }}" hint-placeholder-val="{{ false }}">
+                                  <li style="padding:10px 14px;font-size:var(--text-sm);color:var(--text-muted)">{{ afPointMsg }}</li>
+                                </sc-if>
+                              </ul>
+                            </sc-if>
+                          </div>
+                          <sc-if value="{{ afErrPoint }}" hint-placeholder-val="{{ false }}">
+                            <p class="ds-field__error" role="alert">{{ afErrPoint }}</p>
+                          </sc-if>
+                        </div>
+                      </div>
+
+                      <div data-grid2>
+                        <x-import component-from-global-scope="DesignSystem_d7c4f4.TextField" label="Отримувач" value="{{ afName }}" on-change="{{ onAfName }}" auto-complete="name" max-length="120" hint="Прізвище й імʼя — Нова Пошта звірить їх із документом" error="{{ afErrName }}" hint-size="100%,90px"></x-import>
+                        <div>
+                          <x-import component-from-global-scope="DesignSystem_d7c4f4.PhoneField" label="Телефон отримувача" digits="{{ afPhone }}" on-digits="{{ onAfPhone }}" hint-size="100%,70px"></x-import>
+                          <sc-if value="{{ afErrPhone }}" hint-placeholder-val="{{ false }}">
+                            <p class="ds-field__error" role="alert">{{ afErrPhone }}</p>
+                          </sc-if>
+                        </div>
+                      </div>
+
+                      <div data-grid2>
+                        <x-import component-from-global-scope="DesignSystem_d7c4f4.TextField" label="Назва" value="{{ afLabel }}" on-change="{{ onAfLabel }}" max-length="80" hint="Необовʼязково. Наприклад, «Дім» або «СТО»" hint-size="100%,90px"></x-import>
+                      </div>
+
+                      <label class="ds-check" style="justify-self:start;align-items:flex-start;max-width:100%;min-height:44px;padding-top:12px;box-sizing:border-box">
+                        <input type="checkbox" checked="{{ afDefault }}" onChange="{{ onAfDefault }}" style="margin-top:2px">
+                        <span>Основна адреса — підставимо в оформлення першою</span>
+                      </label>
+
+                      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-3) var(--space-5);padding-top:var(--space-4);border-top:1px solid var(--line)">
+                        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3) var(--space-5)">
+                          <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="dark" onClick="{{ saveAddr }}" hint-size="auto,44px">Зберегти</x-import>
+                          <button type="button" data-tbtn="muted" onClick="{{ cancelAddr }}">Скасувати</button>
+                        </div>
+                        <sc-if value="{{ afDelIdle }}" hint-placeholder-val="{{ false }}">
+                          <button type="button" data-tbtn="muted" onClick="{{ askDelAddr }}">
+                            <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="trash-2" size="15" hint-size="15px,15px"></x-import>
+                            <span>Видалити адресу</span>
+                          </button>
+                        </sc-if>
+                        <sc-if value="{{ afDelAsk }}" hint-placeholder-val="{{ false }}">
+                          <span style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-4);font-size:var(--text-sm)">
+                            <span style="color:var(--text-strong);font-weight:500">Видалити цю адресу?</span>
+                            <button type="button" class="ds-btn ds-btn--sm ds-btn--secondary" style="min-height:40px" onClick="{{ confirmDelAddr }}">Так, видалити</button>
+                            <button type="button" data-tbtn="muted" onClick="{{ keepAddr }}">Ні</button>
+                          </span>
+                        </sc-if>
+                      </div>
+                    </div>
+                  </sc-if>
+                </li>
+              </sc-for>
+            </ul>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- Профіль -->
+      <sc-if value="{{ showProfile }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Профіль" style="display:grid;gap:var(--space-10);max-width:760px">
+
+          <section data-sec style="padding-top:0;border-top:0">
+            <div data-sec-head>
+              <h2 class="t-display-xs" style="margin:0">Особисті дані</h2>
+              <sc-if value="{{ pfView }}" hint-placeholder-val="{{ true }}">
+                <button type="button" class="ds-btn ds-btn--sm ds-btn--secondary" style="min-height:44px" onClick="{{ editProfile }}">Змінити</button>
+              </sc-if>
+            </div>
+            <div data-sec-body>
+              <sc-if value="{{ pfView }}" hint-placeholder-val="{{ true }}">
+                <dl data-rows style="margin:0;border:1px solid var(--line);border-radius:var(--radius-md)">
+                  <div data-row>
+                    <dt>ПІБ</dt>
+                    <dd>
+                      <span data-trunc style="font-weight:600;color:var(--text-strong)">{{ nameText }}</span>
+                      <sc-if value="{{ noName }}" hint-placeholder-val="{{ false }}">
+                        <span style="font-size:var(--text-sm);color:var(--text-muted)">Вкажіть — підставимо в оформлення замість вас.</span>
+                      </sc-if>
+                    </dd>
+                  </div>
+                  <div data-row>
+                    <dt>Телефон</dt>
+                    <dd>
+                      <span class="t-mono" style="font-weight:500;color:var(--text-strong)">{{ phoneText }}</span>
+                    </dd>
+                  </div>
+                  <div data-row>
+                    <dt>Пошта</dt>
+                    <dd><span style="color:var(--text-strong);overflow-wrap:anywhere">{{ emailText }}</span></dd>
+                  </div>
+                </dl>
+              </sc-if>
+              <sc-if value="{{ pfEdit }}" hint-placeholder-val="{{ false }}">
+                <div style="display:grid;gap:var(--space-4)">
+                  <div data-grid3>
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.TextField" label="Прізвище" value="{{ pfLast }}" on-change="{{ onPfLast }}" auto-complete="family-name" max-length="100" error="{{ errPfLast }}" hint-size="100%,70px"></x-import>
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.TextField" label="Імʼя" value="{{ pfFirst }}" on-change="{{ onPfFirst }}" auto-complete="given-name" max-length="100" error="{{ errPfFirst }}" hint-size="100%,70px"></x-import>
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.TextField" label="По батькові" value="{{ pfPatr }}" on-change="{{ onPfPatr }}" auto-complete="additional-name" max-length="100" hint="Необовʼязково" hint-size="100%,70px"></x-import>
+                  </div>
+                  <div data-grid2>
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.TextField" label="Пошта" type="email" auto-complete="email" max-length="254" value="{{ pfEmail }}" on-change="{{ onPfEmail }}" hint="Для листів про замовлення й входу з паролем" error="{{ errPfEmail }}" hint-size="100%,90px"></x-import>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3) var(--space-5)">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="dark" onClick="{{ saveProfile }}" hint-size="auto,44px">Зберегти</x-import>
+                    <button type="button" data-tbtn="muted" onClick="{{ cancelProfile }}">Скасувати</button>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </section>
+
+          <section data-sec>
+            <div data-sec-head>
+              <h2 class="t-display-xs" style="margin:0">Вхід</h2>
+            </div>
+            <div data-sec-body style="display:grid;gap:var(--space-4)">
+              <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-3) var(--space-5);padding:var(--space-4);border:1px solid var(--line);border-radius:var(--radius-md)">
+                <span style="display:flex;align-items:flex-start;gap:var(--space-3);min-width:0;flex:1 1 320px">
+                  <span style="flex:none;display:inline-flex;margin-top:2px;color:var(--text-muted)">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="key-round" size="18" hint-size="18px,18px"></x-import>
+                  </span>
+                  <span style="display:grid;gap:2px;min-width:0">
+                    <span style="font-weight:600;color:var(--text-strong)">{{ pwTitle }}</span>
+                    <span style="font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">{{ pwSub }}</span>
+                  </span>
+                </span>
+                <sc-if value="{{ pwCanOpen }}" hint-placeholder-val="{{ true }}">
+                  <button type="button" class="ds-btn ds-btn--sm ds-btn--secondary" style="min-height:44px" onClick="{{ openPw }}">{{ pwAction }}</button>
+                </sc-if>
+              </div>
+              <sc-if value="{{ pwOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="display:grid;gap:var(--space-4);max-width:440px">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.TextField" label="Новий пароль" type="password" auto-complete="new-password" max-length="128" value="{{ pw }}" on-change="{{ onPw }}" hint="Щонайменше 8 символів. Логін — ваша пошта" error="{{ pwErr }}" hint-size="100%,90px"></x-import>
+                  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3) var(--space-5)">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="dark" onClick="{{ savePw }}" hint-size="auto,44px">Зберегти пароль</x-import>
+                    <button type="button" data-tbtn="muted" onClick="{{ closePw }}">Скасувати</button>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ pwNote }}" hint-placeholder-val="{{ false }}">
+                <p role="status" style="display:flex;align-items:center;gap:8px;margin:0;font-size:var(--text-sm);color:var(--text-body)">
+                  <span style="display:inline-flex;color:var(--stock-in)">
+                    <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="circle-check" size="16" hint-size="16px,16px"></x-import>
+                  </span>
+                  <span>{{ pwNote }}</span>
+                </p>
+              </sc-if>
+            </div>
+          </section>
+
+          <section data-sec>
+            <div data-sec-head>
+              <h2 class="t-display-xs" style="margin:0">Сповіщення</h2>
+            </div>
+            <div data-sec-body style="display:grid;gap:var(--space-3)">
+              <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Пишемо про стан замовлень і бонуси.</p>
+              <div data-list>
+                <label class="ds-check" data-nrow data-off="{{ smsOff }}">
+                  <input type="checkbox" checked="{{ smsOn }}" disabled="{{ smsOff }}" onChange="{{ onSms }}">
+                  <span style="display:grid;gap:2px;min-width:0">
+                    <span style="font-weight:600;color:var(--text-strong)">SMS</span>
+                    <span style="font-size:var(--text-sm);color:var(--text-muted)">{{ smsSub }}</span>
+                  </span>
+                </label>
+                <label class="ds-check" data-nrow data-off="{{ emailOff }}">
+                  <input type="checkbox" checked="{{ emailOn }}" disabled="{{ emailOff }}" onChange="{{ onEmail }}">
+                  <span style="display:grid;gap:2px;min-width:0">
+                    <span style="font-weight:600;color:var(--text-strong)">Пошта</span>
+                    <span style="font-size:var(--text-sm);color:var(--text-muted);overflow-wrap:anywhere">{{ emailSub }}</span>
+                  </span>
+                </label>
+              </div>
+              <sc-if value="{{ notifyNote }}" hint-placeholder-val="{{ false }}">
+                <p style="margin:0;font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty" data-comment-anchor="10ba46f60e-p">{{ notifyNote }}</p>
+              </sc-if>
+            </div>
+          </section>
+
+          <section data-sec>
+            <div data-sec-head>
+              <h2 class="t-display-xs" style="margin:0;color:var(--text-muted)">Видалення акаунта</h2>
+            </div>
+            <div data-sec-body style="display:grid;gap:var(--space-4)">
+              <sc-if value="{{ delClosed }}" hint-placeholder-val="{{ true }}">
+                <button type="button" data-tbtn="muted" style="justify-self:start" onClick="{{ openDel }}">Видалити акаунт</button>
+              </sc-if>
+              <sc-if value="{{ delOpen }}" hint-placeholder-val="{{ false }}">
+                <p style="margin:0;font-size:var(--text-sm);color:var(--text-body);text-wrap:pretty;max-width:62ch">{{ delText }}</p>
+                <div style="max-width:320px">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.TextField" label="Щоб підтвердити, введіть ВИДАЛИТИ" value="{{ delWord }}" on-change="{{ onDelWord }}" auto-complete="off" max-length="20" mono="{{ true }}" hint-size="100%,70px"></x-import>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3) var(--space-5)">
+                  <button type="button" class="ds-btn ds-btn--md ds-btn--secondary" style="color:var(--danger)" disabled="{{ delDisabled }}" onClick="{{ doDelete }}">{{ delLabel }}</button>
+                  <button type="button" data-tbtn="muted" onClick="{{ closeDel }}">Скасувати</button>
+                </div>
+              </sc-if>
+            </div>
+          </section>
+
+        </div>
+      </sc-if>
+
+    </sc-if>
+
+  </main>
+
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.SiteFooter" hint-size="100%,260px"></x-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1100},&quot;tab&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Замовлення&quot;,&quot;Картка замовлення&quot;,&quot;Бонуси&quot;,&quot;Повернення&quot;,&quot;Адреси&quot;,&quot;Профіль&quot;],&quot;default&quot;:&quot;Замовлення&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Екран&quot;},&quot;account&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;З історією&quot;,&quot;Новий&quot;],&quot;default&quot;:&quot;З історією&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Покупець&quot;},&quot;hasPassword&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Покупець&quot;}}">
+/*
+ * /account. Одна сторінка з пʼятьма вкладками замість пʼяти маршрутів (§10.2): замовлення
+ * (список → картка в тій самій вкладці), бонуси, повернення, адреси, профіль. Вкладка й відкрите
+ * замовлення живуть в адресі (#orders, #order-1045), щоб на них можна було послатися з листа
+ * чи сторінки подяки.
+ */
+const fmt = (n) => new Intl.NumberFormat('uk-UA').format(n) + ' ₴'
+const num = (n) => new Intl.NumberFormat('uk-UA').format(n)
+const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())
+const phoneText = (d) => (d && d.length === 9 ? '+38 (0' + d.slice(0, 2) + ') ' + d.slice(2, 5) + '-' + d.slice(5, 7) + '-' + d.slice(7, 9) : '')
+const plural = (n, f) => {
+  const a = n % 100, b = n % 10
+  if (a >= 11 && a <= 14) return f[2]
+  if (b === 1) return f[0]
+  if (b >= 2 && b <= 4) return f[1]
+  return f[2]
+}
+const POS = ['позиція', 'позиції', 'позицій']
+const POS_ACC = ['позицію', 'позиції', 'позицій']
+/* Драбина кешбеку — та сама, що в кошику й оформленні: відсоток за ціною позиції. */
+const CASHBACK = (p) => (p >= 10000 ? 1 : p >= 4000 ? 2 : p >= 1500 ? 3 : p >= 700 ? 5 : p >= 300 ? 7 : 10)
+const lineCb = (l) => Math.round((l.price * CASHBACK(l.price)) / 100) * l.qty
+const clone = (x) => JSON.parse(JSON.stringify(x))
+const inTotal = (l) => l.state !== 'unavailable' && l.state !== 'cancelled' && l.state !== 'replaced' && l.state !== 'returned'
+const kept = (l) => l.state !== 'cancelled' && l.state !== 'replaced'
+
+const STATUS = {
+  new: { label: 'Прийнято', tone: 'neutral', stage: 0, icon: 'phone', text: 'Замовлення надійшло. Ми зателефонуємо, щоб його підтвердити.' },
+  confirming: { label: 'Уточнюємо', tone: 'neutral', stage: 0, icon: 'phone', text: 'Перевіряємо наявність у постачальника. Зателефонуємо, щоб підтвердити замовлення.' },
+  confirmed: { label: 'Підтверджено', tone: 'neutral', stage: 1, icon: 'package', text: 'Замовлення підтверджено. Збираємо його до відправки.' },
+  substitution: { label: 'Погоджуємо заміну', tone: 'staff', stage: 1, icon: 'refresh-cw', tint: 'warn', text: 'Однієї позиції не виявилось у постачальника. Менеджер запропонував заміну.', action: 'Відповісти менеджеру' },
+  ordered_supplier: { label: 'Замовлено', tone: 'neutral', stage: 1, icon: 'package', text: 'Замовили деталі в постачальника. Щойно надійдуть — відправимо.' },
+  arrived: { label: 'На складі', tone: 'neutral', stage: 1, icon: 'package', text: 'Деталі вже в магазині, готуємо відправку.' },
+  shipping: { label: 'У дорозі', tone: 'neutral', stage: 2, icon: 'truck', text: 'Передали в Нову Пошту.' },
+  awaiting_pickup: { label: 'Готове до видачі', tone: 'best-date', stage: 2, icon: 'store', tint: 'ok', text: 'Можна забирати: м.\u00A0Запоріжжя, вул.\u00A0Гуляйпільська,\u00A015. Пн–пт 09:00–16:00, сб 09:00–14:00.' },
+  done: { label: 'Виконано', tone: 'analog', stage: 3, icon: 'circle-check', tint: 'ok' },
+  cancelled: { label: 'Скасовано', tone: 'analog', stage: -1, icon: 'circle-x' },
+  returned: { label: 'Повернено', tone: 'analog', stage: -1, icon: 'rotate-ccw' }
+}
+const ACTIVE = ['new', 'confirming', 'confirmed', 'substitution', 'ordered_supplier', 'arrived', 'shipping', 'awaiting_pickup']
+const PAY = { prepaid: 'Повна оплата картою', cod_advance: 'Післяплата з авансом', cod: 'Післяплата' }
+const METHOD = { np_warehouse: 'Нова Пошта, відділення', np_postomat: 'Нова Пошта, поштомат', pickup: 'Самовивіз' }
+const LINE_STATE = { unavailable: 'Немає в наявності', replaced: 'Замінено', cancelled: 'Скасовано', returned: 'Повернено' }
+
+const L = (id, brand, article, name, qty, price, extra) => ({ id, brand, article, name, qty, price, state: 'ok', claim: false, ...(extra || {}) })
+const ME = { name: 'Ковальчук Андрій', phone: '671234567' }
+const SHOP_PLACE = 'м.\u00A0Запоріжжя, вул.\u00A0Гуляйпільська,\u00A015'
+const HOME = 'Запоріжжя, Відділення №12: вул. Перемоги, 64'
+
+const ORDERS = [
+  { no: 1047, date: 'сьогодні, 09:14', dateLong: 'сьогодні, 09:14', status: 'confirming', pay: 'cod', method: 'np_warehouse', place: HOME, rc: ME, canCancel: true,
+    lines: [L(1, 'MANN-FILTER', 'C 26 168', 'Фільтр повітряний', 1, 612), L(2, 'NGK', 'BKR6E', 'Свічка запалювання', 4, 145)], thread: [] },
+  { no: 1045, date: '30 вер', dateLong: '30 вересня, 16:05', status: 'shipping', pay: 'prepaid', method: 'np_postomat', place: 'Запоріжжя, Поштомат №5390: вул. Гуляйпільська, 20 (Сільпо)', rc: ME, ttn: '20 4512 3456 7890', promo: 'DRIVE10', discount: 292,
+    lines: [L(1, 'TRW', 'GDB1550', 'Колодки гальмівні передні', 1, 1340), L(2, 'BOSCH', '3 397 118 974', 'Щітки склоочисника Aerotwin, комплект', 1, 880), L(3, 'ATE', '03.9901-6202.2', 'Рідина гальмівна DOT 4, 1 л', 2, 349), L(4, 'BOSCH', '3 397 004 629', 'Щітка склоочисника задня', 1, 395, { state: 'cancelled' })],
+    thread: [{ who: 'shop', at: '30 вер, 17:20', text: 'Задню щітку BOSCH 3 397 004 629 прибрали із замовлення — у постачальника її не виявилось, а аналога під ваше кріплення немає. Суму за неї в оплату не включили.' }, { who: 'shop', at: '1 жов, 10:12', text: 'Відправили сьогодні. Нова Пошта обіцяє доставку в поштомат завтра після 14:00.' }] },
+  { no: 1040, date: '26 вер', dateLong: '26 вересня, 09:15', status: 'ordered_supplier', pay: 'cod', method: 'np_warehouse', place: HOME, rc: ME,
+    lines: [L(1, 'TRW', 'DF4294', 'Диск гальмівний передній', 2, 1240, { state: 'replaced' }), L(3, 'BREMBO', '09.9468.11', 'Диск гальмівний передній', 2, 1310), L(2, 'FEBI BILSTEIN', '24123', 'Датчик зносу колодок', 1, 186)],
+    thread: [{ who: 'shop', at: '26 вер, 13:05', text: 'Диски TRW DF4294 у постачальника закінчились. Можемо поставити BREMBO 09.9468.11 — на 140 ₴ дорожче за пару, відправка 3 жовтня. Підходить?' }, { who: 'me', at: '26 вер, 13:40', text: 'Так, ставте BREMBO.' }, { who: 'shop', at: '26 вер, 14:02', text: 'Замінили в замовленні. До сплати при отриманні — 2 806 ₴.' }] },
+  { no: 1038, date: '24 вер', dateLong: '24 вересня, 11:40', status: 'substitution', pay: 'cod_advance', advance: 300, method: 'pickup', place: SHOP_PLACE, rc: ME, canCancel: true, unread: true,
+    lines: [L(1, 'VALEO', '826704', 'Комплект зчеплення', 1, 5980, { state: 'unavailable' }), L(2, 'SWAG', '30 92 2722', 'Опора двигуна', 1, 1150)],
+    thread: [{ who: 'shop', at: 'вчора, 15:47', text: 'Комплект зчеплення VALEO 826704 у постачальника закінчився. Можемо поставити SACHS 3000 951 393 за 6 240 ₴, відправка 3 жовтня. Підходить такий варіант?' }] },
+  { no: 1043, date: '25 вер', dateLong: '25 вересня, 18:22', status: 'done', doneDate: '29 вересня', returnUntil: '5 жовтня', pay: 'cod', method: 'np_warehouse', place: 'Запоріжжя, Відділення №47: вул. Північнокільцева, 4', rc: { name: 'Мельник Сергій', phone: '503334455' }, bonus: 270, receipt: true,
+    lines: [L(1, 'BOSCH', '0 986 452 041', 'Фільтр масляний', 2, 284), L(2, 'BANDO', '6PK2000', 'Ремінь поліклиновий', 1, 486), L(3, 'FEBI BILSTEIN', '34781', 'Натягувач ременя допоміжних агрегатів', 1, 1620)], thread: [] },
+  { no: 1021, date: '3 вер', dateLong: '3 вересня, 12:10', status: 'done', doneDate: '5 вересня', pay: 'cod', method: 'np_warehouse', place: HOME, rc: ME, receipt: true, refunded: 4300,
+    lines: [L(1, 'CASTROL', '15F6B3', 'Олива моторна EDGE 5W-30 LL, 4 л', 1, 1890), L(2, 'MANN-FILTER', 'HU 719/7 x', 'Фільтр масляний', 1, 312), L(3, 'VAG', 'N 908 132 02', 'Пробка зливна', 1, 48), L(4, 'SACHS', '313 378', 'Амортизатор передній', 2, 2150, { state: 'returned', claim: true })],
+    thread: [{ who: 'me', at: '6 вер, 09:30', text: 'Амортизатори не підійшли, подав заявку на повернення. Можна привезти в магазин?' }, { who: 'shop', at: '6 вер, 11:02', text: 'Так, привозьте в будь-який робочий день. Кошти повернемо переказом на картку — реквізити надішліть сюди.' }] },
+  { no: 1009, date: '18 серп', dateLong: '18 серпня, 20:31', status: 'cancelled', pay: 'cod', method: 'np_warehouse', place: HOME, rc: ME,
+    lines: [L(1, 'LUK', '623 3087 00', 'Комплект зчеплення', 1, 6480)], thread: [] },
+  { no: 987, date: '2 лип', dateLong: '2 липня, 10:03', status: 'done', doneDate: '5 липня', pay: 'cod', method: 'pickup', place: SHOP_PLACE, rc: ME, receipt: true,
+    lines: [L(1, 'BOSCH', '0 986 049 191', 'Генератор 14 В, 90 А', 1, 8950, { claim: true }), L(2, 'DAYCO', '6PK1153', 'Ремінь поліклиновий', 1, 410)], thread: [] },
+  { no: 956, date: '17 чер', dateLong: '17 червня, 13:55', status: 'done', doneDate: '21 червня', pay: 'prepaid', method: 'np_warehouse', place: 'Дніпро, Відділення №3: вул. Князя Ярослава Мудрого, 2', rc: { name: 'Ковальчук Олена', phone: '960001122' }, receipt: true,
+    lines: [L(1, 'BOSCH', '0 445 110 369', 'Форсунка дизельна', 4, 9800, { claim: true }), L(2, 'GATES', 'K015603XS', 'Комплект ГРМ з помпою', 1, 4860, { claim: true }), L(3, 'SKF', 'VKPC 81418', 'Помпа системи охолодження', 1, 2280), L(4, 'ELRING', '150.920', 'Ущільнювач форсунки', 4, 105, { gone: true })], thread: [] },
+  { no: 942, date: '12 тра', dateLong: '12 травня, 17:20', status: 'done', doneDate: '14 травня', pay: 'cod', method: 'np_warehouse', place: HOME, rc: ME, receipt: true,
+    lines: [L(1, 'MOOG', 'VO-LS-0417', 'Стійка стабілізатора', 2, 640, { gone: true }), L(2, 'NORMA', 'GBS 80-100/12', 'Хомут', 1, 60)], thread: [] }
+]
+
+const RSTATE = {
+  new: { label: 'Прийнято до розгляду', tone: 'neutral', text: () => 'Менеджер прочитає заявку й звʼяжеться з вами.' },
+  in_review: { label: 'Розглядається', tone: 'staff', text: () => 'Менеджер перевіряє заявку й напише вам, щойно матиме рішення. Якщо знадобиться сама деталь, менеджер скаже, як її передати.' },
+  accepted: { label: 'Погоджено', tone: 'best-date', text: () => 'Менеджер узгодить з вами обмін або повернення коштів.' },
+  declined: { label: 'Відхилено', tone: 'analog', text: () => 'Якщо не згодні з рішенням, напишіть у листуванні щодо замовлення або подайте заявку ще раз.' },
+  refunded: { label: 'Кошти повернуто', tone: 'best-date', text: (r) => 'Повернули ' + fmt(r.refund) + ' ' + r.refundDate + ' — переказом на рахунок.' }
+}
+const RETURNS = [
+  { id: 4, order: 956, lineId: 2, brand: 'GATES', article: 'K015603XS', name: 'Комплект ГРМ з помпою', kind: 'warranty', date: 'сьогодні', state: 'new',
+    text: 'Помпа підтікає через дренажний отвір, антифриз йде з бачка. Комплект ставили на СТО в липні, замовлення-наряд є.' },
+  { id: 5, order: 956, lineId: 1, brand: 'BOSCH', article: '0 445 110 369', name: 'Форсунка дизельна', kind: 'warranty', date: '22 вер', state: 'accepted',
+    text: 'Одна з чотирьох форсунок льє — СТО перевірило на стенді, акт рекламації й замовлення-наряд додаю.' },
+  { id: 3, order: 987, lineId: 1, brand: 'BOSCH', article: '0 986 049 191', name: 'Генератор 14 В, 90 А', kind: 'warranty', date: '28 вер', state: 'in_review',
+    text: 'Через два місяці після встановлення почав гудіти, на холостих просідає напруга. Встановлювали на СТО, є замовлення-наряд і акт рекламації.' },
+  { id: 2, order: 1021, lineId: 4, brand: 'SACHS', article: '313 378', name: 'Амортизатор передній, 2 шт', kind: 'return', date: '6 вер', state: 'refunded', refund: 4300, refundDate: '12 вер',
+    text: 'Не підійшли — на машині стоять стійки під інший тип кріплення. Не встановлював, упаковка ціла.' },
+  { id: 1, order: 942, lineId: 1, brand: 'MOOG', article: 'VO-LS-0417', name: 'Стійка стабілізатора', kind: 'return', date: '30 тра', state: 'declined',
+    text: 'Замовив не ту сторону, деталь не встановлював.' }
+]
+
+const LEDGER = [
+  { id: 7, kind: 'accrual', amount: 139, after: 1250, order: 1043, date: '29 вер' },
+  { id: 6, kind: 'spend', amount: 270, after: 1111, order: 1043, date: '25 вер' },
+  { id: 5, kind: 'clawback', amount: 130, after: 1381, order: 1021, date: '12 вер' },
+  { id: 4, kind: 'accrual', amount: 214, after: 1511, order: 1021, date: '5 вер' },
+  { id: 3, kind: 'accrual', amount: 208, after: 1297, order: 987, date: '5 лип' },
+  { id: 2, kind: 'accrual', amount: 993, after: 1089, order: 956, date: '21 чер' },
+  { id: 1, kind: 'accrual', amount: 96, after: 96, order: 942, date: '14 тра' }
+]
+const KIND = { accrual: 'Кешбек за замовлення', spend: 'Оплата бонусами', clawback: 'Зняття за повернення', expiry: 'Згоріли' }
+const LADDER = [
+  { range: 'до 299 ₴', pct: '10%' }, { range: '300–699 ₴', pct: '7%' }, { range: '700–1 499 ₴', pct: '5%' },
+  { range: '1 500–3 999 ₴', pct: '3%' }, { range: '4 000–9 999 ₴', pct: '2%' }, { range: 'від 10 000 ₴', pct: '1%' }
+].map((r, i) => ({ key: String(i), ...r }))
+
+const CITIES = [
+  { ref: 'zp', name: 'Запоріжжя', region: 'Запорізька обл.' },
+  { ref: 'vil', name: 'Вільнянськ', region: 'Запорізька обл.' },
+  { ref: 'kyiv', name: 'Київ', region: 'м. Київ' },
+  { ref: 'dnipro', name: 'Дніпро', region: 'Дніпропетровська обл.' },
+  { ref: 'lviv', name: 'Львів', region: 'Львівська обл.' },
+  { ref: 'odesa', name: 'Одеса', region: 'Одеська обл.' },
+  { ref: 'kharkiv', name: 'Харків', region: 'Харківська обл.' },
+  { ref: 'zhytomyr', name: 'Житомир', region: 'Житомирська обл.' }
+]
+const CITY = Object.fromEntries(CITIES.map((c) => [c.ref, c]))
+const P = (num, address, weight) => ({ num, address, weight })
+const POINTS = {
+  zp: {
+    warehouse: [P(1, 'просп. Соборний, 160', 30), P(12, 'вул. Перемоги, 64', 30), P(20, 'вул. Гоголя, 118', 30), P(33, 'вул. Гуляйпільська, 32', 30), P(47, 'вул. Північнокільцева, 4', 1100)],
+    postomat: [P(5214, 'просп. Соборний, 147 (АТБ)', 20), P(5390, 'вул. Гуляйпільська, 20 (Сільпо)', 20), P(7731, 'вул. Перемоги, 90', 20)]
+  },
+  vil: { warehouse: [P(1, 'вул. Бочарова, 9', 30)], postomat: [] },
+  kyiv: {
+    warehouse: [P(1, 'вул. Пирогівський шлях, 135', 30), P(5, 'вул. Федорова, 32', 30), P(27, 'просп. Миколи Бажана, 26', 30)],
+    postomat: [P(2081, 'вул. Хрещатик, 22', 20), P(3310, 'просп. Берестейський, 37', 20)]
+  },
+  dnipro: {
+    warehouse: [P(3, 'вул. Князя Ярослава Мудрого, 2', 30), P(7, 'просп. Дмитра Яворницького, 107', 30)],
+    postomat: [P(4122, 'вул. Січеславська Набережна, 15', 20)]
+  },
+  lviv: { warehouse: [P(1, 'вул. Городоцька, 355', 1100), P(9, 'вул. Шевченка, 60', 30)], postomat: [P(1150, 'вул. Під Дубом, 7Б', 20)] },
+  odesa: { warehouse: [P(2, 'вул. Базова, 16', 1100), P(11, 'вул. Генуезька, 24', 30)], postomat: [P(6016, 'просп. Шевченка, 4', 20)] },
+  kharkiv: { warehouse: [P(1, 'вул. Польова, 67', 1100), P(14, 'просп. Науки, 9', 30)], postomat: [] },
+  zhytomyr: { warehouse: [P(1, 'вул. Леха Качинського, 6', 30)], postomat: [P(3002, 'вул. Київська, 77', 20)] }
+}
+const kindOf = (type) => (type === 'postomat' ? 'Поштомат' : 'Відділення')
+const pointLabel = (type, pt) => kindOf(type) + ' №' + pt.num + ': ' + pt.address
+
+/* Збережені адреси — ті самі, що пропонує оформлення, плюс одна із закритим відділенням
+   (np_point: null, Р7 §3.1): кабінет її показує, оформлення — ні. */
+const ADDRESSES = [
+  { id: 1, type: 'warehouse', label: 'Дім', isDefault: true, cityRef: 'zp', num: 12, address: 'вул. Перемоги, 64', name: 'Ковальчук Андрій', phone: '671234567' },
+  { id: 2, type: 'warehouse', label: 'СТО', isDefault: false, cityRef: 'zp', num: 47, address: 'вул. Північнокільцева, 4', name: 'Мельник Сергій', phone: '503334455' },
+  { id: 3, type: 'warehouse', label: '', isDefault: false, cityRef: 'dnipro', num: 3, address: 'вул. Князя Ярослава Мудрого, 2', name: 'Ковальчук Олена', phone: '960001122' },
+  { id: 4, type: 'postomat', label: 'Біля дому', isDefault: false, cityRef: 'zp', num: 5390, address: 'вул. Гуляйпільська, 20 (Сільпо)', name: 'Ковальчук Андрій', phone: '671234567' },
+  { id: 5, type: 'postomat', label: 'Робота', isDefault: false, cityRef: 'zp', num: 5214, address: 'просп. Соборний, 147 (АТБ)', name: 'Ковальчук Андрій', phone: '671234567' },
+  { id: 6, type: 'warehouse', label: 'Дача', isDefault: false, cityRef: 'vil', num: 2, address: 'вул. Центральна, 41', name: 'Ковальчук Андрій', phone: '671234567', closed: true }
+]
+
+const PROFILE = { last: 'Ковальчук', first: 'Андрій', patr: 'Петрович', phone: '671234567', email: 'a.kovalchuk@ukr.net' }
+const NEW_PROFILE = { last: '', first: '', patr: '', phone: '671234567', email: '' }
+
+const TAB_KEYS = ['orders', 'bonuses', 'returns', 'addresses', 'profile']
+const TAB_PROP = {
+  'Замовлення': { tab: 'orders', orderNo: null },
+  'Картка замовлення': { tab: 'orders', orderNo: 1045 },
+  'Бонуси': { tab: 'bonuses', orderNo: null },
+  'Повернення': { tab: 'returns', orderNo: null },
+  'Адреси': { tab: 'addresses', orderNo: null },
+  'Профіль': { tab: 'profile', orderNo: null }
+}
+
+class Component extends DCLogic {
+  state = this.init(this.props || {})
+
+  init(p) {
+    const fresh = (p.account ?? 'З історією') === 'Новий'
+    const t = TAB_PROP[p.tab ?? 'Замовлення'] || TAB_PROP['Замовлення']
+    return {
+      tab: t.tab, orderNo: t.orderNo,
+      orders: fresh ? [] : clone(ORDERS),
+      returns: fresh ? [] : clone(RETURNS),
+      addresses: fresh ? [] : clone(ADDRESSES),
+      ledger: fresh ? [] : LEDGER,
+      balance: fresh ? 0 : 1250,
+      profile: { ...(fresh ? NEW_PROFILE : PROFILE) },
+      hasPassword: !!(p.hasPassword ?? false),
+      notify: { sms: true, email: !fresh },
+      cartCount: 3,
+      deleted: false,
+      seq: 100,
+      ...this.orderBlank(),
+      ...this.addrBlank(),
+      pfEdit: false, pf: null, pfErr: false,
+      pwOpen: false, pw: '', pwErr: '', pwNote: '',
+      delOpen: false, delWord: '', delBusy: false
+    }
+  }
+  orderBlank() {
+    return { repeat: null, cancelAsk: false, claimLine: null, claimKind: 'return', claimText: '', claimFiles: [], claimErr: false, claimBusy: false, claimSent: null, msg: '', msgFiles: [] }
+  }
+  addrBlank() { return { addrEdit: null, af: null, afErr: false, afDelAsk: false, addrNote: '', addrUndo: null } }
+
+  componentDidMount() {
+    this.onHash = () => { const h = this.fromHash(); if (h) this.setState((s) => this.navPatch(s, h.tab, h.orderNo)) }
+    window.addEventListener('hashchange', this.onHash)
+    this.onHash()
+  }
+  componentWillUnmount() {
+    window.removeEventListener('hashchange', this.onHash)
+    ;[this.t1, this.t2, this.t3, this.t4, this.t5].forEach((t) => clearTimeout(t))
+  }
+  componentDidUpdate(prev) {
+    const p = this.props
+    if (prev.tab !== p.tab || prev.account !== p.account || prev.hasPassword !== p.hasPassword) this.setState(this.init(p))
+  }
+
+  fromHash() {
+    let m = ''
+    try { m = decodeURIComponent(window.location.hash.slice(1)) } catch (e) { m = '' }
+    if (/^order-\d+$/.test(m)) return { tab: 'orders', orderNo: Number(m.slice(6)) }
+    if (TAB_KEYS.includes(m)) return { tab: m, orderNo: null }
+    return null
+  }
+  navPatch(s, tab, orderNo) {
+    return {
+      tab, orderNo,
+      ...this.orderBlank(),
+      ...(tab !== s.tab ? this.addrBlank() : {}),
+      pfEdit: tab === 'profile' ? s.pfEdit : false,
+      orders: orderNo ? s.orders.map((o) => (o.no === orderNo ? { ...o, unread: false } : o)) : s.orders
+    }
+  }
+  go = (tab, orderNo = null) => {
+    this.setState((s) => this.navPatch(s, tab, orderNo))
+    try { window.history.replaceState(null, '', '#' + (orderNo ? 'order-' + orderNo : tab)) } catch (e) {}
+    this.toTop()
+  }
+  toTop() {
+    requestAnimationFrame(() => {
+      const el = document.querySelector('[data-acc-head]')
+      if (!el) return
+      const head = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-total'), 10) || 0
+      const y = el.getBoundingClientRect().top + window.scrollY - head - 16
+      if (window.scrollY > y) window.scrollTo(0, Math.max(0, y))
+    })
+  }
+  scrollToEl(id, focus) {
+    requestAnimationFrame(() => {
+      const el = document.getElementById(id)
+      if (!el) return
+      const head = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-total'), 10) || 0
+      window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - head - 16)
+      if (focus) { const f = document.getElementById(focus); if (f) f.focus({ preventScroll: true }) }
+    })
+  }
+
+  onTab = (key) => this.go(key)
+  openOrder = (no) => () => this.go('orders', no)
+  backToList = () => this.go('orders')
+  goReturns = () => this.go('returns')
+  cur() { return this.state.orders.find((o) => o.no === this.state.orderNo) }
+  patchOrder(no, fn) { this.setState((s) => ({ orders: s.orders.map((o) => (o.no === no ? fn(o) : o)) })) }
+
+  money(o) {
+    const goods = o.lines.filter(inTotal).reduce((n, l) => n + l.price * l.qty, 0)
+    const total = goods - (o.discount || 0) - (o.bonus || 0)
+    const back = o.lines.filter((l) => l.state === 'returned').reduce((n, l) => n + l.price * l.qty, 0)
+    const paid = o.status === 'cancelled'
+      ? (o.pay === 'cod_advance' ? o.advance : 0)
+      : o.pay === 'prepaid' || o.status === 'done' ? total + back : o.pay === 'cod_advance' ? o.advance : 0
+    const cb = o.lines.filter((l) => inTotal(l) || l.state === 'returned').reduce((n, l) => n + lineCb(l), 0)
+    const claw = o.lines.filter((l) => l.state === 'returned').reduce((n, l) => n + lineCb(l), 0)
+    return { goods, total, paid, cb, claw }
+  }
+
+  /* Повторити: доступні позиції — у кошик, відсутні — названо поіменно, щоб кошик не виявився
+     тихо коротшим за замовлення (§10.2). */
+  onRepeat = () => {
+    const o = this.cur()
+    if (!o || this.state.repeat === 'busy') return
+    this.setState({ repeat: 'busy' })
+    clearTimeout(this.t1)
+    this.t1 = setTimeout(() => {
+      const ok = o.lines.filter((l) => !l.gone && l.state !== 'unavailable')
+      const missing = o.lines.filter((l) => l.gone || l.state === 'unavailable')
+      this.setState((s) => ({
+        repeat: { added: ok.length, missing: missing.map((l, i) => ({ key: String(i), text: l.brand + ' ' + l.article + ' — ' + l.name })) },
+        cartCount: s.cartCount + ok.length
+      }))
+    }, 700)
+  }
+  askCancel = () => this.setState({ cancelAsk: true })
+  keepOrder = () => this.setState({ cancelAsk: false })
+  confirmCancel = () => {
+    const no = this.state.orderNo
+    this.setState({ cancelAsk: false })
+    this.patchOrder(no, (o) => ({ ...o, status: 'cancelled', canCancel: false, cancelledNow: true }))
+  }
+  replyGo = () => this.scrollToEl('od-thread', 'od-msg')
+
+  openClaim = (lineId) => () => {
+    const o = this.cur()
+    this.setState({ claimLine: lineId, claimKind: o && o.returnUntil ? 'return' : 'warranty', claimText: '', claimFiles: [], claimErr: false, claimSent: null })
+  }
+  closeClaim = () => this.setState({ claimLine: null })
+  pickKind = (k) => () => this.setState({ claimKind: k })
+  onClaimText = (e) => { const v = e.target.value; this.setState({ claimText: v, claimErr: false }) }
+  addFiles = (key) => (e) => {
+    const names = Array.from(e.target.files || []).map((f) => f.name)
+    e.target.value = ''
+    this.setState((s) => ({ [key]: s[key].concat(names).slice(0, 10) }))
+  }
+  onClaimFiles = this.addFiles('claimFiles')
+  onMsgFiles = this.addFiles('msgFiles')
+  dropFile = (key, i) => () => this.setState((s) => ({ [key]: s[key].filter((_, j) => j !== i) }))
+  submitClaim = () => {
+    if (!this.state.claimText.trim()) { this.setState({ claimErr: true }); return }
+    this.setState({ claimBusy: true })
+    clearTimeout(this.t2)
+    this.t2 = setTimeout(() => {
+      this.setState((s) => {
+        const o = s.orders.find((x) => x.no === s.orderNo)
+        const l = o && o.lines.find((x) => x.id === s.claimLine)
+        if (!l) return { claimBusy: false }
+        const r = { id: s.seq, order: o.no, lineId: l.id, brand: l.brand, article: l.article, name: l.name, kind: s.claimKind, date: 'сьогодні', state: 'new', text: s.claimText.trim() }
+        return {
+          claimBusy: false, claimSent: l.id, claimLine: null, seq: s.seq + 1,
+          returns: [r, ...s.returns],
+          orders: s.orders.map((x) => (x.no === o.no ? { ...x, lines: x.lines.map((y) => (y.id === l.id ? { ...y, claim: true } : y)) } : x))
+        }
+      })
+    }, 600)
+  }
+
+  onMsg = (e) => this.setState({ msg: e.target.value })
+  sendMsg = () => {
+    const s = this.state
+    if (!s.msg.trim() && !s.msgFiles.length) return
+    const entry = { who: 'me', at: 'щойно', text: s.msg.trim(), files: s.msgFiles }
+    this.setState({ msg: '', msgFiles: [] })
+    this.patchOrder(s.orderNo, (o) => ({ ...o, thread: [...o.thread, entry] }))
+  }
+
+  /* ── Адреси ─────────────────────────────────────────────────────────────── */
+  blankAf(a) {
+    const p = this.state.profile
+    if (!a) return { label: '', type: 'warehouse', city: null, cityQuery: '', cityFocus: false, point: null, pointQuery: '', pointFocus: false, name: [p.last, p.first].filter(Boolean).join(' '), phone: p.phone, isDefault: this.state.addresses.length === 0 }
+    return { label: a.label, type: a.type, city: CITY[a.cityRef], cityQuery: '', cityFocus: false, point: a.closed ? null : { num: a.num, address: a.address }, pointQuery: '', pointFocus: false, name: a.name, phone: a.phone, isDefault: a.isDefault }
+  }
+  openNew = () => this.setState({ ...this.addrBlank(), addrEdit: 'new', af: this.blankAf(null) })
+  openEdit = (id) => () => {
+    const a = this.state.addresses.find((x) => x.id === id)
+    this.setState({ ...this.addrBlank(), addrEdit: id, af: this.blankAf(a) })
+    if (a && a.closed) requestAnimationFrame(() => { const el = document.getElementById('af-point'); if (el) el.focus() })
+  }
+  cancelAddr = () => this.setState(this.addrBlank())
+  setAf = (patch) => this.setState((s) => ({ af: { ...s.af, ...patch } }))
+  pickType = (type) => () => this.setState((s) => (s.af.type === type ? {} : { af: { ...s.af, type, point: null, pointQuery: '' } }))
+  onAfCityInput = (e) => { const v = e.target.value; this.setAf({ cityQuery: v, city: null, point: null, pointQuery: '', cityFocus: true }) }
+  onAfCityFocus = () => this.setAf({ cityFocus: true })
+  onAfCityBlur = () => this.setAf({ cityFocus: false })
+  pickCity = (c) => (e) => { e.preventDefault(); this.setAf({ city: c, cityQuery: c.name, cityFocus: false, point: null, pointQuery: '' }) }
+  clearAfCity = () => {
+    this.setAf({ city: null, cityQuery: '', point: null, pointQuery: '' })
+    requestAnimationFrame(() => { const el = document.getElementById('af-city'); if (el) el.focus() })
+  }
+  onAfPointInput = (e) => { const v = e.target.value; this.setAf({ pointQuery: v, point: null, pointFocus: true }) }
+  onAfPointFocus = () => this.setAf({ pointFocus: true })
+  onAfPointBlur = () => this.setAf({ pointFocus: false })
+  pickPoint = (pt) => (e) => { e.preventDefault(); this.setAf({ point: pt, pointQuery: '', pointFocus: false }) }
+  clearAfPoint = () => {
+    this.setAf({ point: null, pointQuery: '' })
+    requestAnimationFrame(() => { const el = document.getElementById('af-point'); if (el) el.focus() })
+  }
+  onAfName = (e) => { const v = e.target.value; this.setAf({ name: v }) }
+  onAfPhone = (d) => this.setAf({ phone: d })
+  onAfLabel = (e) => { const v = e.target.value; this.setAf({ label: v }) }
+  onAfDefault = (e) => { const v = e.target.checked; this.setAf({ isDefault: v }) }
+  saveAddr = () => {
+    const s = this.state
+    const f = s.af
+    if (!f.city || !f.point || !f.name.trim() || f.phone.length !== 9) { this.setState({ afErr: true }); return }
+    const row = { type: f.type, label: f.label.trim(), isDefault: f.isDefault, cityRef: f.city.ref, num: f.point.num, address: f.point.address, name: f.name.trim(), phone: f.phone, closed: false }
+    this.setState((x) => {
+      const isNew = x.addrEdit === 'new'
+      const id = isNew ? x.seq : x.addrEdit
+      let list = isNew ? [{ id, ...row }, ...x.addresses] : x.addresses.map((a) => (a.id === id ? { ...a, ...row } : a))
+      if (row.isDefault) list = list.map((a) => ({ ...a, isDefault: a.id === id }))
+      return { addresses: list, seq: x.seq + 1, ...this.addrBlank(), addrNote: isNew ? 'Адресу додано' : 'Зміни збережено' }
+    })
+  }
+  askDelAddr = () => this.setState({ afDelAsk: true })
+  keepAddr = () => this.setState({ afDelAsk: false })
+  confirmDelAddr = () => this.setState((s) => {
+    const idx = s.addresses.findIndex((a) => a.id === s.addrEdit)
+    const a = s.addresses[idx]
+    if (!a) return {}
+    return { addresses: s.addresses.filter((x) => x.id !== a.id), ...this.addrBlank(), addrNote: 'Адресу «' + (a.label || a.name) + '» видалено', addrUndo: { row: a, idx } }
+  })
+  undoDelete = () => this.setState((s) => {
+    if (!s.addrUndo) return {}
+    const list = s.addresses.slice()
+    list.splice(s.addrUndo.idx, 0, s.addrUndo.row)
+    return { addresses: list, addrNote: '', addrUndo: null }
+  })
+  makeDefault = (id) => () => this.setState((s) => ({ addresses: s.addresses.map((a) => ({ ...a, isDefault: a.id === id })), addrNote: '', addrUndo: null }))
+
+  /* ── Профіль ────────────────────────────────────────────────────────────── */
+  editProfile = () => this.setState((s) => ({ pfEdit: true, pfErr: false, pf: { last: s.profile.last, first: s.profile.first, patr: s.profile.patr, email: s.profile.email } }))
+  cancelProfile = () => this.setState({ pfEdit: false })
+  setPf = (k) => (e) => { const v = e.target.value; this.setState((s) => ({ pf: { ...s.pf, [k]: v } })) }
+  onPfLast = this.setPf('last')
+  onPfFirst = this.setPf('first')
+  onPfPatr = this.setPf('patr')
+  onPfEmail = this.setPf('email')
+  saveProfile = () => {
+    const f = this.state.pf
+    if (!f.last.trim() || !f.first.trim() || !isEmail(f.email)) { this.setState({ pfErr: true }); return }
+    this.setState((s) => {
+      const email = f.email.trim()
+      /* Пошта обовʼязкова. Перша вказана пошта вмикає її канал; далі вибір клієнта зберігається. */
+      const emailOn = s.profile.email ? s.notify.email : true
+      return {
+        profile: { ...s.profile, last: f.last.trim(), first: f.first.trim(), patr: f.patr.trim(), email },
+        notify: { sms: s.notify.sms || !emailOn, email: emailOn },
+        pfEdit: false
+      }
+    })
+  }
+  openPw = () => this.setState({ pwOpen: true, pw: '', pwErr: '', pwNote: '' })
+  closePw = () => this.setState({ pwOpen: false })
+  onPw = (e) => this.setState({ pw: e.target.value, pwErr: '' })
+  savePw = () => {
+    if (this.state.pw.length < 8) { this.setState({ pwErr: 'Щонайменше 8 символів' }); return }
+    this.setState((s) => ({ pwOpen: false, pw: '', pwNote: s.hasPassword ? 'Пароль змінено' : 'Пароль задано — тепер можна входити й поштою', hasPassword: true }))
+  }
+  copyTtn = (ttn) => () => {
+    try { navigator.clipboard.writeText(String(ttn).replace(/\s/g, '')).catch(() => {}) } catch (e) {}
+    clearTimeout(this.t5)
+    this.setState({ copied: ttn })
+    this.t5 = setTimeout(() => this.setState({ copied: null }), 1800)
+  }
+  copyVals(ttn) {
+    const done = !!ttn && this.state.copied === ttn
+    return { copyTtn: this.copyTtn(ttn), ttnCopied: done, copyIcon: done ? 'check' : 'copy', copyLabel: done ? 'Скопійовано' : 'Скопіювати номер ТТН' }
+  }
+  onSms = (e) => { const v = e.target.checked; this.setState((s) => (!v && !s.notify.email ? {} : { notify: { ...s.notify, sms: v } })) }
+  onEmail = (e) => { const v = e.target.checked; this.setState((s) => (!s.profile.email || (!v && !s.notify.sms) ? {} : { notify: { ...s.notify, email: v } })) }
+  openDel = () => this.setState({ delOpen: true, delWord: '' })
+  closeDel = () => this.setState({ delOpen: false, delWord: '' })
+  onDelWord = (e) => this.setState({ delWord: e.target.value })
+  doDelete = () => {
+    if (this.state.delWord.trim() !== 'ВИДАЛИТИ' || this.state.delBusy) return
+    this.setState({ delBusy: true })
+    clearTimeout(this.t3)
+    this.t3 = setTimeout(() => { this.setState({ deleted: true, delBusy: false }); window.scrollTo(0, 0) }, 800)
+  }
+
+  detail(o) {
+    const s = this.state
+    const m = this.money(o)
+    const st = STATUS[o.status]
+    const pickup = o.method === 'pickup'
+    const isActive = ACTIVE.includes(o.status)
+    const steps = st.stage < 0 ? [] : ['Прийнято', 'Готуємо', pickup ? 'Готове до видачі' : 'У дорозі', 'Отримано']
+      .map((label, i) => ({ key: String(i), label, on: i <= st.stage, now: i === st.stage }))
+    let note = st.text || ''
+    if (o.status === 'done') note = 'Отримано ' + o.doneDate + '.'
+    if (o.status === 'cancelled') note = o.cancelledNow ? 'Замовлення скасовано. Щоб купити ці деталі знову, натисніть «Повторити замовлення».' : 'Замовлення скасовано.'
+    if (o.status === 'shipping' && o.method === 'np_postomat') note = 'Передали в Нову Пошту — доставка в поштомат.'
+    const done = o.status === 'done'
+    const cbText = isActive ? '+' + fmt(m.cb) + ' бонусами — нарахуємо, коли отримаєте замовлення'
+      : done ? 'Нараховано +' + fmt(m.cb) + ' бонусами' + (m.claw ? ', знято ' + fmt(m.claw) + ' за повернення' : '') : ''
+    const thread = o.thread.map((t, i) => ({
+      key: String(i), mine: t.who === 'me', who: t.who === 'me' ? 'Ви' : 'Магазин', at: t.at, text: t.text,
+      hasText: !!t.text, hasFiles: !!(t.files && t.files.length),
+      files: (t.files || []).map((f, j) => ({ key: String(j), name: f }))
+    }))
+    return {
+      no: o.no, tone: st.tone, statusLabel: st.label, dateLong: o.dateLong,
+      countText: o.lines.filter(kept).length + ' ' + plural(o.lines.filter(kept).length, POS),
+      hasSteps: steps.length > 0, steps,
+      note, noteIcon: st.icon, noteTone: st.tint || '', noteAction: st.action || '',
+      ttn: o.status === 'shipping' ? o.ttn || '' : '',
+      ...this.copyVals(o.ttn),
+      trackHref: 'https://novaposhta.ua/tracking/?cargo_number=' + String(o.ttn || '').replace(/\s/g, ''),
+      lines: o.lines.map((l) => {
+        const canClaim = done && !l.claim && inTotal(l)
+        const r = l.claim ? s.returns.find((x) => x.order === o.no && x.lineId === l.id) : null
+        return {
+          key: String(l.id), brand: l.brand, article: l.article, name: l.name,
+          stateLabel: LINE_STATE[l.state] || '', dim: !inTotal(l) || l.state === 'returned',
+          qtyText: l.qty + ' × ' + fmt(l.price), totalText: fmt(l.price * l.qty),
+          showAct: (canClaim && s.claimLine !== l.id) || !!l.claim,
+          canClaim: canClaim && s.claimLine !== l.id,
+          claimed: !!l.claim,
+          claimNote: s.claimSent === l.id ? 'Заявку на повернення надіслано' : 'Є заявка на повернення' + (r ? ' — ' + RSTATE[r.state].label.toLowerCase() : ''),
+          openClaim: this.openClaim(l.id),
+          formOpen: s.claimLine === l.id
+        }
+      }),
+      goodsText: fmt(m.goods),
+      hasDiscount: !!o.discount, promo: o.promo || '', discountText: '−' + fmt(o.discount || 0),
+      hasBonus: !!o.bonus, bonusText: '−' + fmt(o.bonus || 0),
+      total: m.total,
+      payLabel: pickup && o.pay === 'cod' ? 'Оплата в магазині' : PAY[o.pay],
+      hasPaid: m.paid > 0,
+      paidText: o.pay === 'cod_advance' && !done ? fmt(m.paid) + ' — аванс' : fmt(m.paid),
+      hasRefund: !!o.refunded, refundText: fmt(o.refunded || 0),
+      cbText,
+      methodLabel: METHOD[o.method], place: o.place, rcName: o.rc.name, rcPhone: phoneText(o.rc.phone),
+      receipt: !!o.receipt,
+      cancelIdle: !!o.canCancel && !s.cancelAsk,
+      cancelAsk: !!o.canCancel && s.cancelAsk,
+      paidNote: m.paid > 0 ? 'Аванс ' + fmt(m.paid) + ' не повернеться автоматично — менеджер оформить повернення й звʼяжеться з вами.' : '',
+      noMsgs: thread.length === 0, hasMsgs: thread.length > 0, thread
+    }
+  }
+
+  addrForm(f) {
+    const s = this.state
+    const q = f.cityQuery.trim().toLowerCase()
+    let cityOptions = []
+    let cityMsg = ''
+    if (q.length < 2) cityMsg = 'Введіть щонайменше 2 символи'
+    else {
+      cityOptions = CITIES.filter((c) => c.name.toLowerCase().includes(q)).map((c) => ({ key: c.ref, name: c.name, region: c.region, pick: this.pickCity(c) }))
+      if (!cityOptions.length) cityMsg = 'Нічого не знайдено'
+    }
+    const kind = kindOf(f.type)
+    const pts = f.city ? ((POINTS[f.city.ref] || {})[f.type] || []) : []
+    const pq = f.pointQuery.trim().toLowerCase().replace('№', '')
+    const pointOptions = pts
+      .filter((pt) => !pq || String(pt.num).startsWith(pq) || pt.address.toLowerCase().includes(pq))
+      .map((pt) => ({ key: String(pt.num), title: kind + ' №' + pt.num, address: pt.address, weight: 'до ' + pt.weight + ' кг', pick: this.pickPoint(pt) }))
+    const err = s.afErr
+    return {
+      formTitle: s.addrEdit === 'new' ? 'Нова адреса' : 'Змінити адресу',
+      afTypes: [
+        { key: 'warehouse', icon: 'warehouse', label: 'Відділення' },
+        { key: 'postomat', icon: 'package', label: 'Поштомат' }
+      ].map((x) => ({ ...x, on: f.type === x.key, pick: this.pickType(x.key) })),
+      afCityValue: f.city ? f.city.name : f.cityQuery,
+      afCitySettled: !!f.city,
+      afCityClass: 'ds-input ds-input--clearable' + (err && !f.city ? ' ds-input--invalid' : ''),
+      afCityOpen: f.cityFocus && !f.city,
+      afCityOptions: cityOptions, afCityMsg: cityMsg,
+      afErrCity: err && !f.city ? 'Оберіть місто' : '',
+      afPointLabel: kind,
+      afPointValue: f.point ? pointLabel(f.type, f.point) : f.pointQuery,
+      afPointSettled: !!f.point,
+      afPointDisabled: !f.city,
+      afPointPlaceholder: f.city ? 'Номер або адреса' : 'Спершу оберіть місто',
+      afPointClass: 'ds-input ds-input--clearable' + (err && f.city && !f.point ? ' ds-input--invalid' : ''),
+      afPointOpen: f.pointFocus && !!f.city && !f.point,
+      afPointOptions: pointOptions,
+      afPointMsg: pointOptions.length ? '' : pts.length ? 'Нічого не знайдено' : 'У цьому місті ' + (f.type === 'postomat' ? 'поштоматів' : 'відділень') + ' немає',
+      afErrPoint: err && f.city && !f.point ? (f.type === 'postomat' ? 'Оберіть поштомат' : 'Оберіть відділення') : '',
+      afName: f.name, afErrName: err && !f.name.trim() ? 'Вкажіть отримувача' : '',
+      afPhone: f.phone, afErrPhone: err && f.phone.length !== 9 ? 'Вкажіть телефон у форматі 0XX XXX XX XX' : '',
+      afLabel: f.label, afDefault: f.isDefault,
+      afDelIdle: s.addrEdit !== 'new' && !s.afDelAsk,
+      afDelAsk: s.addrEdit !== 'new' && s.afDelAsk
+    }
+  }
+
+  renderVals() {
+    const s = this.state
+    const p = s.profile
+    const D = window.DesignSystem_d7c4f4
+    const btn = (props, label) => (D ? React.createElement(D.Button, props, label) : null)
+    const shortName = [p.first, p.last].filter(Boolean).join(' ')
+    const fullName = [p.last, p.first, p.patr].filter(Boolean).join(' ')
+    const od = s.tab === 'orders' && s.orderNo ? s.orders.find((o) => o.no === s.orderNo) || null : null
+    const live = !s.deleted
+
+    const row = (o) => {
+      const st = STATUS[o.status]
+      const names = o.lines.filter(kept).map((l) => l.name)
+      const more = names.length - 2
+      return {
+        key: String(o.no), no: o.no, date: o.date, tone: st.tone, statusLabel: st.label,
+        previewNames: names.slice(0, 2).map((name, i) => ({ key: String(i), name })),
+        previewMore: more > 0 ? 'і ще ' + more + ' ' + plural(more, POS) : '',
+        ...this.copyVals(o.ttn),
+        countText: names.length + ' ' + plural(names.length, POS), total: this.money(o).total,
+        unread: !!o.unread, ttn: o.status === 'shipping' ? o.ttn || '' : '', open: this.openOrder(o.no),
+        trackHref: 'https://novaposhta.ua/tracking/?cargo_number=' + String(o.ttn || '').replace(/\s/g, '')
+      }
+    }
+    const active = s.orders.filter((o) => ACTIVE.includes(o.status))
+    const past = s.orders.filter((o) => !ACTIVE.includes(o.status))
+    const orderGroups = [
+      { key: 'a', title: 'В роботі', count: String(active.length), orders: active.map(row) },
+      { key: 'p', title: 'Завершені', count: String(past.length), orders: past.map(row) }
+    ].filter((g) => g.orders.length)
+
+    const pend = active.map((o) => ({ o, cb: this.money(o).cb })).filter((x) => x.cb > 0)
+    const pendingTotal = pend.reduce((n, x) => n + x.cb, 0)
+
+    const rep = s.repeat && s.repeat !== 'busy' ? s.repeat : null
+    const until = od && od.returnUntil
+    const claimKinds = [
+      { key: 'return', label: 'Повернення', off: !until,
+        sub: until ? 'Деталь справна, але не підійшла. До ' + until + ' — без слідів встановлення й у цілій упаковці.' : 'Минуло 10 днів з моменту замовлення — повернути справну деталь уже не можна.' },
+      { key: 'warranty', label: 'Гарантійний випадок', off: false,
+        sub: 'Брак або несправність. Якщо деталь уже встановлювали, знадобляться замовлення-наряд і акт рекламації зі СТО.' }
+    ].map((k) => ({ ...k, on: s.claimKind === k.key, pick: this.pickKind(k.key) }))
+
+    const addrRows = (s.addrEdit === 'new' ? [{ key: 'new', view: false, editing: true }] : []).concat(
+      s.addresses.map((a) => ({
+        key: String(a.id),
+        view: s.addrEdit !== a.id,
+        editing: s.addrEdit === a.id,
+        title: a.label || a.name,
+        isDefault: a.isDefault,
+        icon: a.type === 'postomat' ? 'package' : 'warehouse',
+        place: CITY[a.cityRef].name + ', ' + pointLabel(a.type, a),
+        name: a.name, phoneText: phoneText(a.phone),
+        closed: !!a.closed,
+        editLabel: a.closed ? 'Обрати інше' : 'Змінити',
+        edit: this.openEdit(a.id),
+        canDefault: !a.isDefault && !a.closed,
+        makeDefault: this.makeDefault(a.id)
+      }))
+    )
+
+    const smsLast = s.notify.sms && !s.notify.email
+    const emailLast = s.notify.email && !s.notify.sms
+    const notifyNote = smsLast && !p.email
+      ? 'Поки немає пошти, SMS — єдиний канал, тому вимкнути його не можна.'
+      : smsLast ? 'SMS — єдиний увімкнений канал, тому вимкнути його не можна. Увімкніть пошту — і SMS можна буде вимкнути.'
+      : emailLast ? 'Пошта — єдиний увімкнений канал, тому вимкнути її не можна. Увімкніть SMS — і пошту можна буде вимкнути.' : ''
+
+    return {
+      cartCount: s.cartCount,
+      deleted: s.deleted, live,
+      homeAction: btn({ variant: 'dark', as: 'a', href: 'Головна.dc.html' }, 'На головну'),
+      hasName: !!shortName, shortName, phoneText: phoneText(p.phone),
+
+      tabs: [
+        { key: 'orders', label: 'Замовлення' },
+        { key: 'bonuses', label: 'Бонуси', count: s.balance > 0 ? fmt(s.balance) : null },
+        { key: 'returns', label: 'Повернення' },
+        { key: 'addresses', label: 'Адреси' },
+        { key: 'profile', label: 'Профіль' }
+      ],
+      tabKey: s.tab,
+      onTab: this.onTab,
+
+      showList: live && s.tab === 'orders' && !od,
+      noOrders: s.orders.length === 0,
+      catalogAction: btn({ variant: 'dark', as: 'a', href: 'Каталог за авто.dc.html' }, 'Підібрати деталі за авто'),
+      orderGroups,
+
+      showOrder: live && !!od,
+      od: od ? this.detail(od) : {},
+      backToList: this.backToList,
+      goReturns: this.goReturns,
+      replyGo: this.replyGo,
+      claimKinds,
+      claimText: s.claimText, onClaimText: this.onClaimText,
+      claimClass: 'ds-input' + (s.claimErr ? ' ds-input--invalid' : ''),
+      claimErr: s.claimErr, claimHint: !s.claimErr,
+      claimIsReturn: s.claimKind !== 'warranty', claimIsWarranty: s.claimKind === 'warranty',
+      claimFiles: s.claimFiles.map((n, i) => ({ key: String(i), name: n, remove: this.dropFile('claimFiles', i) })),
+      onClaimFiles: this.onClaimFiles,
+      claimBusy: s.claimBusy, submitClaim: this.submitClaim, closeClaim: this.closeClaim,
+      onRepeat: this.onRepeat, repeatBusy: s.repeat === 'busy',
+      repeatDone: !!rep, repeatAdded: !!rep && rep.added > 0,
+      repeatText: rep ? (rep.added > 0 ? 'Додали ' + rep.added + ' ' + plural(rep.added, POS_ACC) + ' в кошик.' : 'Жодної позиції з цього замовлення зараз немає в наявності.') : '',
+      repeatHasMissing: !!rep && rep.added > 0 && rep.missing.length > 0,
+      repeatMissing: rep ? rep.missing : [],
+      askCancel: this.askCancel, keepOrder: this.keepOrder, confirmCancel: this.confirmCancel,
+      msg: s.msg, onMsg: this.onMsg, sendMsg: this.sendMsg, onMsgFiles: this.onMsgFiles,
+      msgFiles: s.msgFiles.map((n, i) => ({ key: String(i), name: n, remove: this.dropFile('msgFiles', i) })),
+      msgEmpty: !s.msg.trim() && s.msgFiles.length === 0,
+
+      showBonuses: live && s.tab === 'bonuses',
+      balanceText: num(s.balance),
+      expiryText: s.balance > 0 ? 'Згорають 29 березня 2027' : '',
+      hasPending: pendingTotal > 0,
+      pendingText: fmt(pendingTotal),
+      pendingOrders: pend.map((x, i) => ({ key: String(x.o.no), no: x.o.no, open: this.openOrder(x.o.no), sep: i < pend.length - 2 ? ', ' : i === pend.length - 2 ? ' і ' : '.' })),
+      ladder: LADDER,
+      noLedger: s.ledger.length === 0, hasLedger: s.ledger.length > 0,
+      ledger: s.ledger.map((t) => {
+        const isIn = t.kind === 'accrual'
+        return { key: String(t.id), kind: KIND[t.kind], date: t.date, order: t.order || '', open: t.order ? this.openOrder(t.order) : null, in: isIn, amount: (isIn ? '+' : '−') + fmt(t.amount), after: fmt(t.after) }
+      }),
+
+      showReturns: live && s.tab === 'returns',
+      noReturns: s.returns.length === 0, hasReturns: s.returns.length > 0,
+      returnRows: s.returns.map((r) => ({
+        key: String(r.id), kindLabel: r.kind === 'warranty' ? 'Гарантія' : 'Повернення', date: r.date,
+        tone: RSTATE[r.state].tone, stateLabel: RSTATE[r.state].label,
+        brand: r.brand, name: r.name, article: r.article, text: r.text,
+        explain: RSTATE[r.state].text(r), order: r.order, open: this.openOrder(r.order)
+      })),
+
+      showAddresses: live && s.tab === 'addresses',
+      addrToolbar: s.addresses.length > 0 && s.addrEdit !== 'new',
+      openNew: this.openNew,
+      addAction: btn({ variant: 'dark', icon: 'plus', onClick: this.openNew }, 'Додати адресу'),
+      addrNote: s.addrNote, addrUndo: !!s.addrUndo, undoDelete: this.undoDelete,
+      noAddresses: s.addresses.length === 0 && s.addrEdit !== 'new',
+      hasAddrRows: addrRows.length > 0,
+      addrRows,
+      ...(s.af ? this.addrForm(s.af) : {}),
+      onAfCityInput: this.onAfCityInput, onAfCityFocus: this.onAfCityFocus, onAfCityBlur: this.onAfCityBlur, clearAfCity: this.clearAfCity,
+      onAfPointInput: this.onAfPointInput, onAfPointFocus: this.onAfPointFocus, onAfPointBlur: this.onAfPointBlur, clearAfPoint: this.clearAfPoint,
+      onAfName: this.onAfName, onAfPhone: this.onAfPhone, onAfLabel: this.onAfLabel, onAfDefault: this.onAfDefault,
+      saveAddr: this.saveAddr, cancelAddr: this.cancelAddr,
+      askDelAddr: this.askDelAddr, keepAddr: this.keepAddr, confirmDelAddr: this.confirmDelAddr,
+
+      showProfile: live && s.tab === 'profile',
+      pfView: !s.pfEdit, pfEdit: s.pfEdit, editProfile: this.editProfile, cancelProfile: this.cancelProfile, saveProfile: this.saveProfile,
+      nameText: fullName || 'Не вказано', noName: !fullName,
+      emailText: p.email || 'Не вказана',
+      pfLast: s.pf ? s.pf.last : '', pfFirst: s.pf ? s.pf.first : '', pfPatr: s.pf ? s.pf.patr : '', pfEmail: s.pf ? s.pf.email : '',
+      onPfLast: this.onPfLast, onPfFirst: this.onPfFirst, onPfPatr: this.onPfPatr, onPfEmail: this.onPfEmail,
+      errPfLast: s.pfErr && s.pf && !s.pf.last.trim() ? 'Вкажіть прізвище' : '',
+      errPfFirst: s.pfErr && s.pf && !s.pf.first.trim() ? 'Вкажіть імʼя' : '',
+      errPfEmail: s.pfErr && s.pf && !isEmail(s.pf.email) ? (s.pf.email.trim() ? 'Це не схоже на адресу пошти' : 'Вкажіть пошту') : '',
+
+      pwTitle: s.hasPassword ? 'Пароль задано' : 'Пароль не задано',
+      pwSub: !p.email
+        ? 'Ви входите кодом з SMS. Щоб входити й з паролем, спершу вкажіть пошту — вона буде логіном.'
+        : s.hasPassword ? 'Входьте кодом з SMS або поштою й паролем. Забули пароль — увійдіть кодом і задайте новий тут.' : 'Зараз ви входите кодом з SMS. Задайте пароль, щоб входити ще й поштою.',
+      pwCanOpen: !!p.email && !s.pwOpen,
+      pwAction: s.hasPassword ? 'Змінити пароль' : 'Задати пароль',
+      pwOpen: s.pwOpen, pw: s.pw, onPw: this.onPw, pwErr: s.pwErr, savePw: this.savePw, closePw: this.closePw, openPw: this.openPw,
+      pwNote: s.pwNote,
+
+      smsOn: s.notify.sms, emailOn: s.notify.email,
+      smsOff: smsLast, emailOff: !p.email || emailLast,
+      smsSub: 'На ' + phoneText(p.phone),
+      emailSub: p.email ? 'На ' + p.email : 'Спершу вкажіть пошту в особистих даних',
+      onSms: this.onSms, onEmail: this.onEmail,
+      notifyNote,
+
+      delClosed: !s.delOpen, delOpen: s.delOpen, openDel: this.openDel, closeDel: this.closeDel,
+      delWord: s.delWord, onDelWord: this.onDelWord,
+      delDisabled: s.delWord.trim() !== 'ВИДАЛИТИ' || s.delBusy,
+      delLabel: s.delBusy ? 'Видаляємо…' : 'Видалити акаунт',
+      doDelete: this.doDelete,
+      delText: 'Ми видалимо профіль, збережені адреси й бонуси' + (s.balance > 0 ? ' — ' + fmt(s.balance) + ' на рахунку згорять' : '') + '. Замовлення залишаться в магазині як бухгалтерські документи: ми зобовʼязані зберігати їх 1095 днів, але з вашим акаунтом вони більше не будуть повʼязані.'
+    }
+  }
+}
+</script>
+</body>
+</html>
