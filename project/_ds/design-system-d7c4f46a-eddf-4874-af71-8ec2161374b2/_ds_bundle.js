@@ -3324,6 +3324,7 @@ const SHOP = {
     oem: 'Оригінальні каталоги.dc.html',
     account: 'Вхід.dc.html',
     cart: 'Кошик.dc.html',
+    panel: 'Панель.dc.html',
     search: 'Пошук за артикулом.dc.html',
     part: 'Картка деталі.dc.html',
     request: 'Головна.dc.html#request',
@@ -3565,9 +3566,13 @@ function SiteHeader({
   cartCount = 0,
   active = '',
   signedIn = false,
+  staff,
   onNavigate,
   className = '',
 }) {
+  /* Працівник магазину, що зайшов у панель, бачить сайт як каталог: замість «Увійти» й
+     «Кошик» — повернення в панель. Ознаку ставить панель, знімає її «Вийти». */
+  const isStaff = staff ?? (() => { try { return localStorage.getItem('drive.staff') === '1' } catch (e) { return false } })();
   const nav_ = (key) => (event) => {
     if (!onNavigate) return;
     event.preventDefault();
@@ -3631,13 +3636,17 @@ function SiteHeader({
           key: item.key, href: link(item.key), className: 'ds-navlink ds-navlink--wide',
           'data-active': active === item.key ? 'true' : 'false', onClick: nav_(item.key),
         }, item.label)),
-        h('a', {
+        isStaff ? h('a', {
+          href: link('panel'), className: 'ds-navlink', 'aria-label': 'Панель', onClick: nav_('panel'),
+        }, h(__ds_scope.Icon, { name: 'layout-dashboard', size: 17 }),
+          h('span', { className: 'ds-navlink__text' }, 'Панель')) : null,
+        isStaff ? null : h('a', {
           href: link('account'), className: 'ds-navlink',
           'aria-label': signedIn ? 'Мій кабінет' : 'Увійти',
           'data-active': active === 'account' ? 'true' : 'false', onClick: nav_('account'),
         }, h(__ds_scope.Icon, { name: 'user', size: 17 }),
           h('span', { className: 'ds-navlink__text' }, signedIn ? 'Мій кабінет' : 'Увійти')),
-        h('a', {
+        isStaff ? null : h('a', {
           href: link('cart'), className: 'ds-navlink', 'aria-label': 'Кошик',
           'data-active': active === 'cart' ? 'true' : 'false', onClick: nav_('cart'),
         }, h(__ds_scope.Icon, { name: 'shopping-cart', size: 17 }),
