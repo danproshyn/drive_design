@@ -211,6 +211,7 @@
   [data-od] { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-8); align-items: start; }
   [data-od-main] { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-8); min-width: 0; }
   [data-od-aside] { min-width: 0; }
+  @container main (min-width: 640px) and (max-width: 999px) { [data-od-aside], [data-split] > [data-sticky] { width: 100%; max-width: 460px; } }
   @container main (min-width: 1000px) {
     [data-od] { grid-template-columns: minmax(0, 1fr) 340px; gap: var(--space-10); }
     [data-od-aside] { position: sticky; top: var(--space-6); }
@@ -373,6 +374,27 @@
 </style>
 </helmet>
 
+<sc-if value="{{ showLogin }}" hint-placeholder-val="{{ false }}">
+  <main data-screen-label="Вхід у панель" style="min-height:100vh;box-sizing:border-box;display:grid;justify-items:center;align-content:start;padding:clamp(48px, 14vh, 140px) var(--space-4) var(--space-16)">
+    <div style="width:100%;max-width:384px;display:grid;gap:var(--space-8)">
+      <div data-brand style="padding:0">
+        <img src="assets/logo.svg" alt="Драйв" style="height:28px">
+        <span data-brand-tag>Панель</span>
+      </div>
+      <form noValidate="{{ true }}" onSubmit="{{ lgnSubmit }}" style="display:grid;gap:var(--space-4);margin:0">
+        <h1 class="ds-section-title" style="margin:0 0 var(--space-2)">Вхід у панель</h1>
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.TextField" id="lgn-user" label="Логін" value="{{ lgn.user }}" onChange="{{ lgnUser }}" autoComplete="username" maxLength="150" hint-size="100%,72px"></x-import>
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.TextField" id="lgn-pass" type="password" label="Пароль" value="{{ lgn.pass }}" onChange="{{ lgnPass }}" autoComplete="current-password" maxLength="128" hint-size="100%,72px"></x-import>
+        <sc-if value="{{ lgn.hasErr }}" hint-placeholder-val="{{ false }}">
+          <div class="ds-notice ds-notice--danger" role="alert" style="margin:0">{{ lgn.err }}</div>
+        </sc-if>
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" type="submit" variant="dark" block="{{ true }}" loading="{{ lgn.busy }}" hint-size="100%,44px">{{ lgn.label }}</x-import>
+      </form>
+    </div>
+  </main>
+</sc-if>
+
+<sc-if value="{{ showApp }}" hint-placeholder-val="{{ true }}">
 <div data-app>
   <sc-if value="{{ navOpen }}" hint-placeholder-val="{{ false }}">
     <button type="button" data-scrim aria-label="Закрити меню" onClick="{{ closeNav }}"></button>
@@ -2459,8 +2481,9 @@
     </main>
   </div>
 </div>
+</sc-if>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;role&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Власник&quot;, &quot;Продавець&quot;], &quot;default&quot;: &quot;Власник&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Сесія&quot;}, &quot;shift&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Відкрита&quot;, &quot;Закрита&quot;], &quot;default&quot;: &quot;Відкрита&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Сесія&quot;}, &quot;data&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Робочий день&quot;, &quot;Порожньо&quot;], &quot;default&quot;: &quot;Робочий день&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Дані&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;login&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Сесія&quot;}, &quot;loginError&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Немає&quot;, &quot;Невірний логін або пароль&quot;, &quot;Забагато спроб&quot;], &quot;default&quot;: &quot;Немає&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Сесія&quot;}, &quot;role&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Власник&quot;, &quot;Продавець&quot;], &quot;default&quot;: &quot;Власник&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Сесія&quot;}, &quot;shift&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Відкрита&quot;, &quot;Закрита&quot;], &quot;default&quot;: &quot;Відкрита&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Сесія&quot;}, &quot;data&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Робочий день&quot;, &quot;Порожньо&quot;], &quot;default&quot;: &quot;Робочий день&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Дані&quot;}}">
 const uah = (n) => new Intl.NumberFormat('uk-UA').format(Math.round(n)) + '\u00a0₴'
 const num = (n) => new Intl.NumberFormat('uk-UA').format(n)
 const plural = (n, f) => { const a = Math.abs(n) % 100, b = a % 10; return f[(a > 10 && a < 20) ? 2 : b === 1 ? 0 : (b >= 2 && b <= 4) ? 1 : 2] }
@@ -2762,6 +2785,7 @@ class Component extends DCLogic {
   init(p) {
     const empty = (p.data ?? 'Робочий день') === 'Порожньо'
     return {
+      signedOut: false, entered: false, lgn: this.lgnBlank(),
       screen: 'today', param: null, navOpen: false,
       shift: (p.shift ?? 'Відкрита') === 'Закрита' ? 'closed' : 'open',
       orders: empty ? [] : clone(ORDERS), customers: empty ? [] : clone(CUSTOMERS), returns: empty ? [] : clone(RETURNS), leads: empty ? [] : clone(LEADS), vins: empty ? [] : VINS,
@@ -2795,9 +2819,11 @@ class Component extends DCLogic {
     this.onHash()
     try { localStorage.setItem('drive.staff', '1') } catch (e) {}
   }
-  componentWillUnmount() { window.removeEventListener('hashchange', this.onHash); clearTimeout(this.tCopy); clearTimeout(this.tShift); clearTimeout(this.tBusy) }
+  lgnBlank() { return { user: '', pass: '', busy: false, err: '' } }
+  componentWillUnmount() { window.removeEventListener('hashchange', this.onHash); clearTimeout(this.tLogin); clearTimeout(this.tCopy); clearTimeout(this.tShift); clearTimeout(this.tBusy) }
   componentDidUpdate(prev) {
     const p = this.props
+    if (prev.login !== p.login || prev.loginError !== p.loginError) { clearTimeout(this.tLogin); this.setState({ signedOut: false, entered: false, lgn: this.lgnBlank() }) }
     if (prev.data !== p.data) this.setState(this.init(p))
     else if (prev.shift !== p.shift) this.setState({ shift: (p.shift ?? 'Відкрита') === 'Закрита' ? 'closed' : 'open' })
   }
@@ -2867,7 +2893,12 @@ class Component extends DCLogic {
       openNav: () => this.setState({ navOpen: true }), closeNav: () => this.setState({ navOpen: false }),
       goToday: (e) => { if (e && e.preventDefault) e.preventDefault(); this.go('today') },
       me: { name: this.staffName(), role: owner ? 'Власник' : 'Продавець' },
-      signOut: () => { try { localStorage.removeItem('drive.staff') } catch (e) {} },
+      signOut: (e) => {
+        if (e && e.preventDefault) e.preventDefault()
+        try { localStorage.removeItem('drive.staff') } catch (err) {}
+        this.setState({ signedOut: true, entered: false, navOpen: false, lgn: this.lgnBlank() })
+        try { window.scrollTo(0, 0) } catch (err) {}
+      },
       shiftLabel: sh[0], shiftTone: sh[1], shiftAction: sh[2], shiftCanAct: !!sh[2],
       toggleShift: () => {
         const to = s.shift === 'open' ? 'closed' : 'open'
@@ -3789,8 +3820,36 @@ class Component extends DCLogic {
     }
   }
 
+  vLogin() {
+    const s = this.state, lg = s.lgn
+    const show = s.signedOut || (this.props.login === true && !s.entered)
+    const set = (k) => (e) => { const v = e && e.target ? e.target.value : e; this.setState((x) => ({ lgn: { ...x.lgn, [k]: v } })) }
+    return {
+      showLogin: show, showApp: !show,
+      lgn: { user: lg.user, pass: lg.pass, busy: lg.busy, err: lg.err, hasErr: !!lg.err, label: lg.busy ? 'Входимо…' : 'Увійти' },
+      lgnUser: set('user'), lgnPass: set('pass'),
+      lgnSubmit: (e) => {
+        if (e && e.preventDefault) e.preventDefault()
+        if (lg.busy || !lg.user.trim() || !lg.pass) return
+        this.setState({ lgn: { ...lg, busy: true, err: '' } })
+        clearTimeout(this.tLogin)
+        this.tLogin = setTimeout(() => {
+          const fail = this.props.loginError ?? 'Немає'
+          if (fail !== 'Немає') {
+            const err = fail === 'Забагато спроб' ? 'Забагато спроб входу. Спробуйте за годину' : 'Невірний логін або пароль'
+            this.setState((x) => ({ lgn: { ...x.lgn, busy: false, err } }))
+            return
+          }
+          try { localStorage.setItem('drive.staff', '1') } catch (err) {}
+          this.setState({ signedOut: false, entered: true, lgn: this.lgnBlank() })
+          try { window.scrollTo(0, 0) } catch (err) {}
+        }, 700)
+      }
+    }
+  }
+
   renderVals() {
-    return { ...this.vShell(), ...this.vToday(), ...this.vOrders(), ...this.vOrder(), ...this.vWork(), ...this.vOwner() }
+    return { ...this.vLogin(), ...this.vShell(), ...this.vToday(), ...this.vOrders(), ...this.vOrder(), ...this.vWork(), ...this.vOwner() }
   }
 }
 </script>
