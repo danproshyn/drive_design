@@ -739,12 +739,14 @@
                   <sc-if value="{{ od.hasCar }}" hint-placeholder-val="{{ true }}">
                     <div style="display:grid;gap:var(--space-3);min-width:0">
                       <img src="assets/vehicle-no-photo.png" alt="" width="96" height="64" style="width:96px;height:64px;object-fit:contain;border-radius:var(--radius-sm);background:var(--surface-sunken)">
-                      <dl data-kvs style="min-width:0">
-                        <div>
-                          <dt>Модель</dt>
-                          <dd style="white-space:normal">{{ od.carName }}</dd>
+                      <div style="display:grid;gap:var(--space-2);min-width:0">
+                        <span style="font-size:var(--text-sm);font-weight:500;color:var(--text-strong);text-wrap:pretty">{{ od.carName }}</span>
+                        <div class="ds-garage__specs">
+                          <sc-for list="{{ od.carTags }}" as="t" hint-placeholder-count="4">
+                            <span class="ds-garage__spec">{{ t }}</span>
+                          </sc-for>
                         </div>
-                      </dl>
+                      </div>
                     </div>
                     <a href="Оригінальні каталоги.dc.html" style="display:inline-flex;align-items:center;gap:4px;min-height:32px;font-size:var(--text-sm);font-weight:500">
                       <span>Каталог за цим авто</span>
@@ -2500,6 +2502,15 @@ const NEXT = {
   confirmed: ['ordered_supplier', 'arrived', 'cancelled'], substitution: ['confirmed', 'cancelled'], ordered_supplier: ['arrived', 'substitution'],
   arrived: ['shipping', 'awaiting_pickup'], shipping: ['done', 'returned'], awaiting_pickup: ['done', 'cancelled'], done: ['returned'], cancelled: [], returned: []
 }
+const CAR_TAGS = {
+  'Škoda Octavia III 1.6 TDI, 2015': ['Універсал', 'з 2018', '231 к.с.', 'Дизель/електрика'],
+  'Toyota RAV4 IV 2.0, 2017': ['Позашляховик', 'з 2012', '146 к.с.', 'Бензин'],
+  'Renault Megane III 1.5 dCi, 2012': ['Хетчбек', 'з 2008', '110 к.с.', 'Дизель'],
+  'Hyundai Elantra MD 1.6, 2013': ['Седан', 'з 2010', '132 к.с.', 'Бензин'],
+  'Volkswagen Passat B7 1.8 TSI, 2012': ['Седан', 'з 2010', '160 к.с.', 'Бензин'],
+  'Kia Ceed II 1.4, 2014': ['Хетчбек', 'з 2012', '100 к.с.', 'Бензин'],
+  'Mitsubishi Lancer X 2.0, 2010': ['Седан', 'з 2007', '150 к.с.', 'Бензин']
+}
 const LETTER = new Set(['confirmed', 'cancelled', 'shipping', 'awaiting_pickup', 'done'])
 const PAY = { prepaid: 'Повна оплата карткою', cod_advance: 'Післяплата з авансом', cod: 'Післяплата' }
 const PSTATE = { unpaid: ['Не оплачено', 'no'], partial: ['Оплачено частково', 'part'], paid: ['Оплачено', 'ok'], refunded: ['Повернуто', 'muted'] }
@@ -3143,7 +3154,7 @@ class Component extends DCLogic {
         phoneCopied: s.copied === 'phone', phoneCopyIcon: s.copied === 'phone' ? 'check' : 'copy', copyPhone: () => this.copy('phone', o.phone.replace(/\s+/g, '')),
         isNp: o.del === 'np', delLabel: o.del === 'np' ? 'Нова Пошта' : 'Самовивіз', city: o.city, pointLabel: o.del === 'np' ? 'Точка видачі' : 'Адреса', point: o.point, recipient: o.recipient,
         hasOther: !!o.other, otherName: o.other ? o.other.name : '', otherPhone: o.other ? o.other.phone : '',
-        hasCar: !!o.car, noCar: !o.car, carName: o.car ? o.car.name : '', carPhoto: (o.car && o.car.photo) || 'assets/vehicle-no-photo.png', vin: o.car ? o.car.vin : '', carLabel: o.car && o.car.label ? o.car.label : '—',
+        hasCar: !!o.car, noCar: !o.car, carName: o.car ? o.car.name : '', carTags: (o.car && CAR_TAGS[o.car.name]) || [], carPhoto: (o.car && o.car.photo) || 'assets/vehicle-no-photo.png', vin: o.car ? o.car.vin : '', carLabel: o.car && o.car.label ? o.car.label : '—',
         lines, lineCount: o.lines.length, canEditLines: linesEditable,
         isNp: o.del === 'np', hasTtn: !!sh, ttnForm: !sh && ttnStage, ttnLater: !sh && !ttnStage,
         ttnLaterText: ['new', 'confirming', 'draft'].includes(o.status) ? 'Накладну створюють, коли замовлення підтверджене.' : 'Накладної немає.',
