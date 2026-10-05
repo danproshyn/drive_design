@@ -246,6 +246,13 @@ input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appe
 .ds-search__input:placeholder-shown { padding-right: var(--space-3); }
 .ds-search--hero .ds-search__input { padding-left: 50px; padding-right: 54px; }
 .ds-search--hero .ds-search__icon { left: var(--space-4); }
+.ds-search__flag {
+  position: absolute; left: 0; top: calc(100% + 6px); z-index: var(--z-dropdown);
+  margin: 0; padding: 6px var(--space-3);
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  background: var(--surface); box-shadow: var(--shadow-md);
+  white-space: nowrap;
+}
 .ds-suggest {
   position: absolute; inset-inline: 0; top: calc(100% + 6px);
   z-index: var(--z-dropdown);

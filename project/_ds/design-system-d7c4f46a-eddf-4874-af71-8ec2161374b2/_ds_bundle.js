@@ -1101,6 +1101,7 @@ function SearchField({
   ...rest
 }) {
   const hero = variant === 'hero';
+  const errorId = React.useId();
   /* One cross for every text field on the site: ours, not the browser's — it appears the
      moment there is something to clear, not only on focus, and it is 34/40 px of target. */
   const clearable = onClear && String(rest.value == null ? '' : rest.value) !== '';
@@ -1119,6 +1120,8 @@ function SearchField({
     className: ['ds-input', 'ds-search__input', hero ? 'ds-input--lg' : ''].filter(Boolean).join(' '),
     placeholder: placeholder,
     "aria-label": label,
+    "aria-invalid": error ? 'true' : undefined,
+    "aria-describedby": error ? errorId : undefined,
     autoComplete: "off"
   }, rest)), clearable ? /*#__PURE__*/React.createElement("button", {
     type: "button",
@@ -1134,13 +1137,11 @@ function SearchField({
     size: hero ? 'lg' : 'md',
     onClick: onSubmit
   }, submitLabel), suggests, error ? /*#__PURE__*/React.createElement("p", {
-    className: "ds-field__error",
-    role: "alert",
-    style: {
-      position: 'absolute',
-      top: '100%',
-      left: 0
-    }
+    id: errorId,
+    /* Поза потоком, бо шапка sticky: у потоці вона б виростала на рядок і сторінка під нею
+       стрибала. Власна підкладка — щоб прапорець не лягав на текст під шапкою. */
+    className: "ds-field__error ds-search__flag",
+    role: "alert"
   }, error) : null);
 }
 
