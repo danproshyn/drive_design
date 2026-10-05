@@ -3560,7 +3560,7 @@ function HeaderMenu({ items, phones, cashbackPercent, onNavigate }) {
  * shop's numbers) and the white band with the mark, the article search and the nav.
  */
 function SiteHeader({
-  logoSrc = 'assets/logo-v2.svg',
+  logoSrc = 'assets/logo-v2-md2.svg',
   phones = SHOP.phones,
   cashbackPercent = 7,
   cartCount = 0,
@@ -3830,7 +3830,7 @@ function RequestModal({ open, onClose, vin = '' }) {
 
 /** The footer. It is the shop's contact card, so its content is owned here, not per page. */
 function SiteFooter({
-  logoSrc = 'assets/logo-v2-dark.svg',
+  logoSrc = 'assets/logo-v2-dark-md2.svg',
   onRequest,
   className = '',
 }) {

@@ -33,7 +33,7 @@
 - пункт меню «Контакти» вилучено — адреса, години й телефони є у смузі та футері (7 сторінок
   приховували цей пункт правилом `.ds-header__nav > .ds-navlink:nth-child(3)`);
 - пункти меню, логотип, «Увійти» та «Кошик» ведуть на реальні сторінки (`SHOP.pages`);
-- `logoSrc` за замовчуванням `assets/logo-v2.svg`;
+- `logoSrc` за замовчуванням `assets/logo-v2-sm.svg` — спрощений знак для 28–40 px (без зовнішнього контуру й ™, 4 смуги замість 6);
 - бейдж кількості в кошику — клас `.ds-navlink__count` замість inline-стилів.
 
 ## 2. `components/navigation/SiteFooter.jsx` — переписано
@@ -50,7 +50,7 @@
 - години — сітка «день / час» у три рядки;
 - телефони — 099 першим, з позначкою оператора;
 - посилання на документи ведуть на `Документи.dc.html#offer|#privacy|#returns`;
-- `logoSrc` за замовчуванням `assets/logo-v2-dark.svg`, без `filter: invert()`
+- `logoSrc` за замовчуванням `assets/logo-v2-dark-sm.svg` (спрощений знак), без `filter: invert()`
   (кожна сторінка мала `.ds-footer img { filter: none !important }`).
 
 ## 3. `components/catalog/ShipDate.jsx` — розкладка зафіксована
