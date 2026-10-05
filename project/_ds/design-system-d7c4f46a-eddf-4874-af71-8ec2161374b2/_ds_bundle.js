@@ -3416,8 +3416,39 @@ function suggestArticles(query) {
   return { kind: 'empty', results: [] };
 }
 
+/* Нещодавні запити — у цьому браузері, без входу. Показуються, коли поле в фокусі й порожнє:
+   людина, що повернулась до тієї самої деталі, не набирає номер удруге. Запис, що вів на
+   картку деталі, памʼятає бренд і назву й відкриває картку; простий запит запускає пошук. */
+const RECENT_KEY = 'drive.searchRecent';
+const RECENT_MAX = 6;
+const RECENT_DEMO = [
+  { q: '1987946573' },
+  { q: 'GDB1330', brand: 'TRW', name: 'Колодки гальмівні передні' },
+  { q: 'W 712/95', brand: 'MANN-FILTER', name: 'Фільтр масляний' },
+  { q: 'OC 90' },
+];
+function __readRecent() {
+  try {
+    const raw = localStorage.getItem(RECENT_KEY);
+    if (raw === null) return RECENT_DEMO;
+    const list = JSON.parse(raw);
+    return Array.isArray(list) ? list.slice(0, RECENT_MAX) : [];
+  } catch (e) { return []; }
+}
+function __writeRecent(list) {
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(list)); } catch (e) { /* приватний режим */ }
+  return list;
+}
+function __rememberRecent(entry) {
+  const key = __norm(entry.q) + '|' + (entry.brand || '');
+  const rest = __readRecent().filter((x) => __norm(x.q) + '|' + (x.brand || '') !== key);
+  return __writeRecent([entry].concat(rest).slice(0, RECENT_MAX));
+}
+
 function HeaderSearch({ parts, onOpenPart, onSearch, initialValue = '' }) {
   const [value, setValue] = React.useState(initialValue);
+  const [recentOpen, setRecentOpen] = React.useState(false);
+  const [recent, setRecent] = React.useState(__readRecent);
   /* Typing opens the list; pasting and submitting close it. A flag rather than «the field
      is non-empty», because what §6.7 Р4 separates is how the text arrived. */
   const [typing, setTyping] = React.useState(false);
@@ -3433,27 +3464,47 @@ function HeaderSearch({ parts, onOpenPart, onSearch, initialValue = '' }) {
   }, [value]);
 
   React.useEffect(() => {
-    if (!typing) return undefined;
+    if (!typing && !recentOpen) return undefined;
     /* pointerdown, not click: a press that starts outside and ends on a row would otherwise
        close the list before the row's own press was delivered. */
     const away = (event) => {
-      if (form.current && event.target instanceof Node && !form.current.contains(event.target)) setTyping(false);
+      if (form.current && event.target instanceof Node && !form.current.contains(event.target)) { setTyping(false); setRecentOpen(false); }
     };
     document.addEventListener('pointerdown', away);
     return () => document.removeEventListener('pointerdown', away);
-  }, [typing]);
+  }, [typing, recentOpen]);
 
   const run = (raw) => {
     const query = String(raw == null ? '' : raw).trim();
     if (query.length < MIN_QUERY_LENGTH) { setTooShort(true); return; }
     setTooShort(false);
     setTyping(false);
+    setRecentOpen(false);
     /* §6.1 Р1 — one exact match is the part page, not a one-item list. On the site the
        server decides this and answers `redirect_to`; this side only follows it. */
     const answer = suggestArticles(query);
-    if (answer.kind === 'exact' && answer.results.length === 1 && onOpenPart) onOpenPart(answer.results[0]);
-    else if (onSearch) onSearch(query);
+    if (answer.kind === 'exact' && answer.results.length === 1 && onOpenPart) {
+      const part = answer.results[0];
+      setRecent(__rememberRecent({ q: part.article, brand: part.brand, name: part.name }));
+      onOpenPart(part);
+    } else {
+      setRecent(__rememberRecent({ q: query }));
+      if (onSearch) onSearch(query);
+    }
   };
+
+  const pickRecent = (item) => {
+    setValue(item.q);
+    setRecentOpen(false);
+    if (item.brand && onOpenPart) { setRecent(__rememberRecent(item)); onOpenPart(item); }
+    else run(item.q);
+  };
+  const dropRecent = (item) => (event) => {
+    event.stopPropagation();
+    setRecent(__writeRecent(recent.filter((x) => x !== item)));
+    if (input.current) input.current.focus();
+  };
+  const drawRecent = recentOpen && value.trim() === '' && recent.length > 0;
 
   const data = debounced.length >= MIN_QUERY_LENGTH ? suggestArticles(debounced) : null;
   const exact = data !== null && data.kind === 'exact';
@@ -3465,8 +3516,9 @@ function HeaderSearch({ parts, onOpenPart, onSearch, initialValue = '' }) {
   return h('div', {
     ref: form, role: 'search', style: { position: 'relative', width: '100%' },
     onKeyDown: (event) => {
-      if (event.key !== 'Escape' || !typing) return;
+      if (event.key !== 'Escape' || (!typing && !recentOpen)) return;
       setTyping(false);
+      setRecentOpen(false);
       /* Only when focus sits on a row does this move focus and fire an event the focus
          handler would read as a return to the field. A list that keeps focus is a trap. */
       if (document.activeElement !== input.current) swallowFocus.current = true;
@@ -3479,23 +3531,32 @@ function HeaderSearch({ parts, onOpenPart, onSearch, initialValue = '' }) {
       inputRef: input,
       maxLength: MAX_QUERY_LENGTH,
       error: tooShort ? 'Введіть щонайменше 3 символи' : undefined,
-      onChange: (event) => { setValue(event.target.value); setTyping(true); setTooShort(false); },
+      onChange: (event) => {
+        const next = event.target.value;
+        setValue(next); setTyping(true); setTooShort(false);
+        /* Стерли все — повертаються нещодавні, як при фокусі на порожньому полі. */
+        setRecentOpen(next.trim() === '');
+      },
       onClear: () => {
         setValue('');
         setTyping(false);
         setTooShort(false);
+        setRecentOpen(true);
         if (input.current) input.current.focus();
       },
+      onClick: () => { if (value.trim() === '') setRecentOpen(true); },
       onPaste: (event) => {
         const pasted = (event.clipboardData.getData('text') || '').slice(0, MAX_QUERY_LENGTH);
         if (pasted.trim() === '') return;
         event.preventDefault();
         setValue(pasted);
+        setRecentOpen(false);
         run(pasted);
       },
       onFocus: () => {
         if (swallowFocus.current) { swallowFocus.current = false; return; }
         if (value.trim() !== '') setTyping(true);
+        else setRecentOpen(true);
       },
       onKeyDown: (event) => { if (event.key === 'Enter') run(value); },
       onSubmit: () => run(value),
@@ -3514,7 +3575,28 @@ function HeaderSearch({ parts, onOpenPart, onSearch, initialValue = '' }) {
               key: part.id, query: value,
               onClick: () => { setTyping(false); if (onOpenPart) onOpenPart(part); },
             }, part))))
-        : null,
+        : drawRecent
+          ? h(__ds_scope.SearchSuggests, { label: 'Нещодавні запити' },
+              h('div', { className: 'ds-suggest__head' },
+                h('span', { className: 'ds-suggest__headtitle' }, 'Нещодавні запити'),
+                h('button', {
+                  type: 'button', className: 'ds-suggest__clear',
+                  onClick: () => { setRecent(__writeRecent([])); setRecentOpen(false); if (input.current) input.current.focus(); },
+                }, 'Очистити')),
+              recent.map((item) => h('div', { key: __norm(item.q) + '|' + (item.brand || ''), className: 'ds-suggest__recent' },
+                h('button', { type: 'button', className: 'ds-suggest__recentpick', onClick: () => pickRecent(item) },
+                  h(__ds_scope.Icon, { name: 'history', size: 16, className: 'ds-suggest__recenticon' }),
+                  h('span', { className: 'ds-suggest__recentbody' },
+                    h('span', { className: 'ds-suggest__ident' },
+                      h('span', { className: 'ds-article ds-suggest__recentq' }, item.q),
+                      item.brand ? h('span', { className: 'ds-suggest__brand' }, item.brand) : null),
+                    item.name ? h('span', { className: 'ds-suggest__name ds-suggest__recentname', title: item.name }, item.name) : null)),
+                h('button', {
+                  type: 'button', className: 'ds-suggest__remove',
+                  'aria-label': 'Прибрати ' + item.q + ' з нещодавніх', title: 'Прибрати',
+                  onClick: dropRecent(item),
+                }, h(__ds_scope.Icon, { name: 'x', size: 15 })))))
+          : null,
     }));
 }
 

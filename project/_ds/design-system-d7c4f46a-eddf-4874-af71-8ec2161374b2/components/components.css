@@ -296,6 +296,46 @@ input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appe
   border-bottom: 1px solid var(--line-subtle);
   font-size: var(--text-2xs); color: var(--text-muted);
 }
+/* Нещодавні запити — той самий список під полем, коли воно порожнє. */
+.ds-suggest__head {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-4);
+  border-bottom: 1px solid var(--line-subtle);
+}
+.ds-suggest__headtitle {
+  font-family: var(--font-display); font-size: var(--text-2xs); font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-eyebrow); text-transform: uppercase; color: var(--text-muted);
+}
+.ds-suggest__clear {
+  min-height: 36px; padding: 0 var(--space-2); border: 0; border-radius: var(--radius-sm); background: none;
+  font: inherit; font-size: var(--text-xs); color: var(--text-muted); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 2px; transition: var(--transition-colors);
+}
+.ds-suggest__clear:hover { color: var(--text-strong); }
+.ds-suggest__recent {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center;
+  box-shadow: inset 3px 0 0 transparent; transition: var(--transition-colors);
+}
+.ds-suggest__recent + .ds-suggest__recent { border-top: 1px solid var(--line-subtle); }
+.ds-suggest__recent:hover { background: var(--surface-sunken); box-shadow: var(--keyline-red); }
+.ds-suggest__recentpick {
+  display: flex; align-items: center; gap: var(--space-3); min-width: 0; min-height: 48px;
+  padding: var(--space-2) 0 var(--space-2) var(--space-4);
+  border: 0; background: none; font: inherit; color: inherit; text-align: left; cursor: pointer;
+}
+.ds-suggest__recenticon { flex: none; color: var(--text-faint); }
+.ds-suggest__recentbody { display: block; min-width: 0; }
+.ds-suggest__recentq.ds-article { font-size: var(--text-sm); color: var(--text-strong); white-space: nowrap; }
+/* Назва — окремим рядком під номером, завжди в один рядок із трикрапкою. Тіло рядка
+   розтягнуте на всю ширину, щоб обрізання рахувалось від краю списку, а не від довжини тексту. */
+.ds-suggest__recentbody { flex: 1 1 auto; }
+.ds-suggest__recentname { max-width: 100%; font-weight: var(--weight-regular); color: var(--text-muted); }
+.ds-suggest__remove {
+  display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px;
+  margin-right: var(--space-1); border: 0; border-radius: var(--radius-sm); background: none;
+  color: var(--text-faint); cursor: pointer; transition: var(--transition-colors);
+}
+.ds-suggest__remove:hover { color: var(--text-strong); background: var(--surface); }
 @media (max-width: 639px) {
   .ds-suggest__row { grid-template-columns: 44px minmax(0, 1fr); row-gap: 2px; }
   .ds-suggest__price { grid-column: 2; justify-self: start; font-size: var(--text-sm); }
