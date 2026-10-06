@@ -63,8 +63,9 @@
       width: 100%; justify-content: flex-end; gap: var(--space-3);
     }
     .ds-row { padding-inline: var(--space-3) !important; }
-    [data-toolbar] { flex-direction: column; align-items: flex-start !important; }
+    /* Сортування поруч із «Фільтри»; переноситься, лише якщо не вміщається найдовша опція. */
     [data-toolbar] > * { margin-left: 0 !important; }
+    .ds-sortfield__trigger[data-sortsizer] { display: flex !important; height: 0; border-top: 0; border-bottom: 0; overflow: hidden; visibility: hidden; pointer-events: none; }
     [data-toolbar] > [data-treefield] { order: -2; flex: none !important; max-width: none !important; width: 100%; }
     [data-toolbar] > [data-facets-toggle] { order: -1; }
     [data-toolbar] .ds-sortfield__menu { right: auto; left: 0; }
@@ -161,6 +162,7 @@
                 <span>{{ sortLabel }}</span>
                 <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="15" hint-size="15px,15px"></x-import>
               </button>
+              <span class="ds-sortfield__trigger" data-sortsizer aria-hidden="true" style="display:none"><span style="width:15px;flex:none"></span><span style="display:grid;white-space:nowrap"><sc-for list="{{ sortOptions }}" as="opt" hint-placeholder-count="0"><span>{{ opt.label }}</span></sc-for></span><span style="width:15px;flex:none"></span></span>
               <sc-if value="{{ sortOpen }}" hint-placeholder-val="{{ false }}">
                 <ul class="ds-sortfield__menu" role="listbox">
                   <sc-for list="{{ sortOptions }}" as="opt" hint-placeholder-count="3">

@@ -65,9 +65,11 @@
     /* Блок запиту на підбір: 280 px мінімуму плюс паддинги не вміщувалися в 360 px. */
     [data-cta] { min-width: 0 !important; padding-inline: var(--space-4) !important; }
     [data-cta-copy] { min-width: 0 !important; flex-basis: 100% !important; }
-    /* Сортування й «Фільтри» — двома рядками, по лівому краю, кожна кнопка своєї ширини.
-       «Фільтри» вище: вони змінюють склад списку, сортування лише впорядковує відібране. */
-    [data-toolbar-actions] { margin-left: 0 !important; flex: 1 1 100% !important; flex-direction: column !important; align-items: flex-start !important; }
+    /* «Фільтри» першими, сортування — поруч, по лівому краю. На наступний рядок воно
+       переходить, лише якщо поруч не вміщається найдовша опція, а не обрана зараз. */
+    [data-toolbar-actions] { margin-left: 0 !important; flex: 1 1 100% !important; }
+    [data-toolbar-actions] .ds-sortfield__menu { right: auto; left: 0; }
+    .ds-sortfield__trigger[data-sortsizer] { display: flex !important; height: 0; border-top: 0; border-bottom: 0; overflow: hidden; visibility: hidden; pointer-events: none; }
     [data-facets-toggle] { flex: 0 0 auto !important; justify-content: flex-start !important; order: -1; }
   }
   /* Ширина колонки пропозицій тут не залежить від ширини екрана: від неї віднімається
@@ -223,6 +225,7 @@
                 <span>{{ sortLabel }}</span>
                 <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="15" hint-size="15px,15px"></x-import>
               </button>
+              <span class="ds-sortfield__trigger" data-sortsizer aria-hidden="true" style="display:none"><span style="width:15px;flex:none"></span><span style="display:grid;white-space:nowrap"><sc-for list="{{ sortOptions }}" as="opt" hint-placeholder-count="0"><span>{{ opt.label }}</span></sc-for></span><span style="width:15px;flex:none"></span></span>
               <sc-if value="{{ sortOpen }}" hint-placeholder-val="{{ false }}">
                 <ul class="ds-sortfield__menu" data-sortmenu role="listbox">
                   <sc-for list="{{ sortOptions }}" as="opt" hint-placeholder-count="4">

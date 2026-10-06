@@ -176,11 +176,10 @@
     .ds-row { padding-inline: var(--space-3) !important; }
     .ds-pager { flex-wrap: wrap; }
     [data-carphoto] { width: 112px !important; height: 74px !important; }
-    /* Сортування й фільтри — окремими рядками, притиснуті вліво. «Фільтри» стоять
-       вище: вони змінюють склад списку й несуть стан, а сортування лише впорядковує
-       те, що вже відібрано, тому сидить одразу над рядками. */
-    [data-toolbar] { flex-direction: column; align-items: flex-start !important; }
+    /* «Фільтри» першими, сортування — поруч, по лівому краю. На наступний рядок воно
+       переходить, лише якщо поруч не вміщається найдовша опція, а не обрана зараз. */
     [data-toolbar] > * { margin-left: 0 !important; max-width: 100%; }
+    .ds-sortfield__trigger[data-sortsizer] { display: flex !important; height: 0; border-top: 0; border-bottom: 0; overflow: hidden; visibility: hidden; pointer-events: none; }
     [data-toolbar] > [data-facets-toggle] { order: -1; }
     [data-toolbar] .ds-sortfield__menu { right: auto; left: 0; }
     /* Дії над машиною в шапці вузла: свій рядок, інакше рядок не вміщається */
@@ -410,6 +409,7 @@
                   <span>{{ sortLabel }}</span>
                   <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="15" hint-size="15px,15px"></x-import>
                 </button>
+                <span class="ds-sortfield__trigger" data-sortsizer aria-hidden="true" style="display:none"><span style="width:15px;flex:none"></span><span style="display:grid;white-space:nowrap"><sc-for list="{{ sortOptions }}" as="opt" hint-placeholder-count="0"><span>{{ opt.label }}</span></sc-for></span><span style="width:15px;flex:none"></span></span>
                 <sc-if value="{{ sortOpen }}" hint-placeholder-val="{{ false }}">
                   <ul class="ds-sortfield__menu" data-sortmenu role="listbox">
                     <sc-for list="{{ sortOptions }}" as="opt" hint-placeholder-count="4">
