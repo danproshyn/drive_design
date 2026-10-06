@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/colors.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/space.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/motion.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/layout.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/base.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=20"></script>
+<script src="cart-store.js?v=2"></script>
+<style>
+  body { margin: 0; background: var(--surface-sunken); }
+  a { color: var(--red-600); }
+  a:hover { color: var(--red-700, #A01015); }
+  .ds-section-title__count { white-space: nowrap; }
+</style>
+</helmet>
+
+<section style="padding:48px 40px;display:flex;flex-direction:column;gap:28px">
+  <div style="max-width:84ch;display:grid;gap:8px">
+    <p class="t-eyebrow" style="margin:0;color:var(--text-muted)">Тур 1 · Каталог за авто, вузол</p>
+    <h1 class="ds-section-title" style="margin:0">Перехід у «Універсальні товари» з листка дерева</h1>
+    <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">Зараз посилання стоїть першим у правій групі, поруч із сортуванням, і звучить «Усі 1 222 в Універсальних товарах →». Три проблеми: навігація з'являється серед контролів списку; «Усі» обіцяє, що там є й ці 15 деталей, а розділ — не надмножина листка; стрілка — символ, а не іконка. Кожен варіант нижче показує випадок N, випадок «=1» і телефон. Коли посилання немає (82 % листків), у всіх варіантах рядок інструментів виглядає як зараз — лише сортування.</p>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+
+    <!-- Зараз -->
+    <div style="width:1164px;flex:0 0 auto;display:grid;gap:14px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <span style="font-family:var(--font-mono);font-size:var(--text-xs);padding:2px 6px;border-radius:var(--radius-sm);border:1px solid var(--ink-800);color:var(--ink-800)">зараз</span>
+        <strong style="font-size:var(--text-md)">Як у фронтенді після §27.2</strong>
+      </div>
+      <div style="display:flex;gap:24px;align-items:flex-start">
+        <div style="width:780px;flex:none;padding:24px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);display:grid;gap:var(--space-4)">
+          <h2 class="ds-section-title" style="margin:0">Фільтр масляний <span class="ds-section-title__count">15 деталей</span></h2>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)">
+            <div style="margin-left:auto;display:flex;align-items:center;gap:var(--space-2)">
+              <a href="#" style="font-size:var(--text-sm)">Усі 1 222 в Універсальних товарах →</a>
+              <div class="ds-sortfield"><button type="button" class="ds-sortfield__trigger"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-down" size="15" hint-size="15px,15px"></x-import><span>За популярністю</span><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="15" hint-size="15px,15px"></x-import></button></div>
+            </div>
+          </div>
+          <ul class="ds-rows" data-list="parts" style="list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
+            <sc-for list="{{ rows }}" as="row" hint-placeholder-count="2">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" oem="{{ row.oem }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogsCount }}" line-id="{{ row.lineId }}" max-qty="{{ row.maxQty }}" href="#" hint-size="100%,130px">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.AddToCartButton" line-id="{{ row.lineId }}" max-qty="{{ row.maxQty }}" hint-size="134px,34px"></x-import>
+              </x-import>
+            </sc-for>
+          </ul>
+        </div>
+        <div style="width:360px;flex:none;padding:16px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);display:grid;gap:var(--space-4)">
+          <h2 class="ds-section-title" style="margin:0">Фільтр масляний <span class="ds-section-title__count">15 деталей</span></h2>
+          <div style="display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-2)">
+            <a href="#" style="font-size:var(--text-sm)">Усі 1 222 в Універсальних товарах →</a>
+            <button type="button" style="display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:var(--text-sm);font-weight:600;color:var(--text-strong)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="sliders-horizontal" size="17" hint-size="17px,17px"></x-import>Фільтри</button>
+            <div class="ds-sortfield"><button type="button" class="ds-sortfield__trigger"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-down" size="15" hint-size="15px,15px"></x-import><span>За популярністю</span><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="15" hint-size="15px,15px"></x-import></button></div>
+          </div>
+          <div style="display:grid;gap:8px"><div style="height:92px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)"></div><div style="height:92px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1a -->
+    <div id="1a" style="width:1164px;flex:0 0 auto;display:grid;gap:14px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <span style="font-family:var(--font-mono);font-size:var(--text-xs);padding:2px 6px;border-radius:var(--radius-sm);background:var(--ink-800);color:#fff">1a</span>
+        <strong style="font-size:var(--text-md)">Назва розділу з лічильником, ліворуч від контролів</strong>
+      </div>
+      <p style="margin:0;max-width:84ch;font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">Найменша зміна. Посилання переходить на лівий край рядка, тож праворуч лишаються тільки контролі списку. Формат «назва + число» — той самий, що в дереві категорій, тому відмінювання не потрібне: «=1» і «1 222» читаються однаково. Пігулка — як «Змінити авто» в шапці вузла.</p>
+      <div style="display:flex;gap:24px;align-items:flex-start">
+        <div style="width:780px;flex:none;padding:24px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);display:grid;gap:var(--space-4)">
+          <h2 class="ds-section-title" style="margin:0">Фільтр масляний <span class="ds-section-title__count">15 деталей</span></h2>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)">
+            <a href="#" style="display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 12px;border:1px solid var(--line);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:500;color:var(--text-strong);text-decoration:none" style-hover="border-color:var(--ink-300);background:var(--surface-sunken)">
+              <span style="display:inline-flex;color:var(--text-faint)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="package" size="16" hint-size="16px,16px"></x-import></span>
+              Всі товари в цій категорії
+              <span style="font-weight:400;color:var(--text-muted)">1 222</span>
+              <span style="display:inline-flex;color:var(--text-faint)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-right" size="15" hint-size="15px,15px"></x-import></span>
+            </a>
+            <div class="ds-sortfield" style="margin-left:auto"><button type="button" class="ds-sortfield__trigger"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-down" size="15" hint-size="15px,15px"></x-import><span>За популярністю</span><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="15" hint-size="15px,15px"></x-import></button></div>
+          </div>
+          <ul class="ds-rows" data-list="parts" style="list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
+            <sc-for list="{{ rows }}" as="row" hint-placeholder-count="2">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" oem="{{ row.oem }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogsCount }}" line-id="{{ row.lineId }}" max-qty="{{ row.maxQty }}" href="#" hint-size="100%,130px">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.AddToCartButton" line-id="{{ row.lineId }}" max-qty="{{ row.maxQty }}" hint-size="134px,34px"></x-import>
+              </x-import>
+            </sc-for>
+          </ul>
+        </div>
+        <div style="width:360px;flex:none;padding:16px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);display:grid;gap:var(--space-4)">
+          <h2 class="ds-section-title" style="margin:0">Фільтр масляний <span class="ds-section-title__count">15 деталей</span></h2>
+          <div style="display:flex;flex-direction:column;align-items:stretch;gap:var(--space-2)">
+            <a href="#" style="display:flex;align-items:center;gap:7px;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:500;color:var(--text-strong);text-decoration:none">
+              <span style="display:inline-flex;color:var(--text-faint)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="package" size="16" hint-size="16px,16px"></x-import></span>
+              Всі товари в цій категорії
+              <span style="font-weight:400;color:var(--text-muted)">1</span>
+              <span style="display:inline-flex;margin-left:auto;color:var(--text-faint)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-right" size="15" hint-size="15px,15px"></x-import></span>
+            </a>
+            <div style="display:flex;align-items:center;gap:var(--space-2)">
+              <button type="button" style="display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:var(--text-sm);font-weight:600;color:var(--text-strong)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="sliders-horizontal" size="17" hint-size="17px,17px"></x-import>Фільтри</button>
+              <div class="ds-sortfield" style="margin-left:auto"><button type="button" class="ds-sortfield__trigger"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-down" size="15" hint-size="15px,15px"></x-import><span>За популярністю</span><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="15" hint-size="15px,15px"></x-import></button></div>
+            </div>
+          </div>
+          <div style="display:grid;gap:8px"><div style="height:92px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)"></div><div style="height:92px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)"></div></div>
+          <p style="margin:0;font-size:var(--text-xs);color:var(--text-faint)">Телефон показано з випадком «=1».</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1b -->
+    <div id="1b" style="width:1164px;flex:0 0 auto;display:grid;gap:14px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <span style="font-family:var(--font-mono);font-size:var(--text-xs);padding:2px 6px;border-radius:var(--radius-sm);background:var(--ink-800);color:#fff">1b</span>
+        <strong style="font-size:var(--text-md)">Одне речення під заголовком</strong>
+      </div>
+      <p style="margin:0;max-width:84ch;font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">Посилання йде з рядка інструментів у шапку списку і пояснює, чим два списки різняться: тут — сумісне з машиною, там — для будь-якого авто. Рядок сортування на телефоні не змінюється взагалі, отже й питання, де стоїть сортування до і після відповіді, зникає. Потрібне відмінювання: 1 товар, 2–4 товари, 5+ товарів.</p>
+      <div style="display:flex;gap:24px;align-items:flex-start">
+        <div style="width:780px;flex:none;padding:24px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);display:grid;gap:var(--space-4)">
+          <div style="display:grid;gap:6px">
+            <h2 class="ds-section-title" style="margin:0">Фільтр масляний <span class="ds-section-title__count">15 деталей</span></h2>
+            <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">Тут — лише сумісні з цією машиною. Для будь-якого авто — <a href="#">1 222 товари в Універсальних товарах</a>.</p>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)">
+            <div class="ds-sortfield" style="margin-left:auto"><button type="button" class="ds-sortfield__trigger"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-down" size="15" hint-size="15px,15px"></x-import><span>За популярністю</span><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="15" hint-size="15px,15px"></x-import></button></div>
+          </div>
+          <ul class="ds-rows" data-list="parts" style="list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
+            <sc-for list="{{ rows }}" as="row" hint-placeholder-count="2">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" oem="{{ row.oem }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogsCount }}" line-id="{{ row.lineId }}" max-qty="{{ row.maxQty }}" href="#" hint-size="100%,130px">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.AddToCartButton" line-id="{{ row.lineId }}" max-qty="{{ row.maxQty }}" hint-size="134px,34px"></x-import>
+              </x-import>
+            </sc-for>
+          </ul>
+        </div>
+        <div style="width:360px;flex:none;padding:16px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);display:grid;gap:var(--space-4)">
+          <div style="display:grid;gap:6px">
+            <h2 class="ds-section-title" style="margin:0">Фільтр масляний <span class="ds-section-title__count">15 деталей</span></h2>
+            <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">Тут — лише сумісні з цією машиною. Для будь-якого авто — <a href="#">1 товар в Універсальних товарах</a>.</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:var(--space-2)">
+            <button type="button" style="display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:var(--text-sm);font-weight:600;color:var(--text-strong)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="sliders-horizontal" size="17" hint-size="17px,17px"></x-import>Фільтри</button>
+            <div class="ds-sortfield" style="margin-left:auto"><button type="button" class="ds-sortfield__trigger"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-down" size="15" hint-size="15px,15px"></x-import><span>За популярністю</span><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="15" hint-size="15px,15px"></x-import></button></div>
+          </div>
+          <div style="display:grid;gap:8px"><div style="height:92px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)"></div><div style="height:92px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)"></div></div>
+          <p style="margin:0;font-size:var(--text-xs);color:var(--text-faint)">Телефон показано з випадком «=1».</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1c -->
+    <div id="1c" style="width:1164px;flex:0 0 auto;display:grid;gap:14px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <span style="font-family:var(--font-mono);font-size:var(--text-xs);padding:2px 6px;border-radius:var(--radius-sm);background:var(--ink-800);color:#fff">1c</span>
+        <strong style="font-size:var(--text-md)">Перемикач «Під цю машину / Універсальні»</strong>
+      </div>
+      <p style="margin:0;max-width:84ch;font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">Найпомітніший варіант: два обсяги однієї категорії поруч, активний — чорний, як фільтр. Друга пігулка веде на іншу сторінку, тому має іконку виходу. Ризик: вона виглядає як фільтр, а поводиться як посилання, і «назад» поверне на машину, а не скине вибір. Без посилання ряд пігулок зникає цілком.</p>
+      <div style="display:flex;gap:24px;align-items:flex-start">
+        <div style="width:780px;flex:none;padding:24px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);display:grid;gap:var(--space-4)">
+          <h2 class="ds-section-title" style="margin:0">Фільтр масляний</h2>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.Chip" active="{{ true }}" count="15" href="#" hint-size="auto,34px">Під цю машину</x-import>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.Chip" count="1 222" href="#" hint-size="auto,34px">Універсальні <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-right" size="14" hint-size="14px,14px"></x-import></x-import>
+            <div class="ds-sortfield" style="margin-left:auto"><button type="button" class="ds-sortfield__trigger"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-down" size="15" hint-size="15px,15px"></x-import><span>За популярністю</span><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="15" hint-size="15px,15px"></x-import></button></div>
+          </div>
+          <ul class="ds-rows" data-list="parts" style="list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
+            <sc-for list="{{ rows }}" as="row" hint-placeholder-count="2">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" oem="{{ row.oem }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogsCount }}" line-id="{{ row.lineId }}" max-qty="{{ row.maxQty }}" href="#" hint-size="100%,130px">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.AddToCartButton" line-id="{{ row.lineId }}" max-qty="{{ row.maxQty }}" hint-size="134px,34px"></x-import>
+              </x-import>
+            </sc-for>
+          </ul>
+        </div>
+        <div style="width:360px;flex:none;padding:16px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);display:grid;gap:var(--space-4)">
+          <h2 class="ds-section-title" style="margin:0">Фільтр масляний</h2>
+          <div style="display:flex;flex-wrap:wrap;gap:var(--space-2)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.Chip" active="{{ true }}" count="15" href="#" hint-size="auto,34px">Під цю машину</x-import>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.Chip" count="1" href="#" hint-size="auto,34px">Універсальні <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-right" size="14" hint-size="14px,14px"></x-import></x-import>
+          </div>
+          <div style="display:flex;align-items:center;gap:var(--space-2)">
+            <button type="button" style="display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:var(--text-sm);font-weight:600;color:var(--text-strong)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="sliders-horizontal" size="17" hint-size="17px,17px"></x-import>Фільтри</button>
+            <div class="ds-sortfield" style="margin-left:auto"><button type="button" class="ds-sortfield__trigger"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="arrow-up-down" size="15" hint-size="15px,15px"></x-import><span>За популярністю</span><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="15" hint-size="15px,15px"></x-import></button></div>
+          </div>
+          <div style="display:grid;gap:8px"><div style="height:92px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)"></div><div style="height:92px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)"></div></div>
+          <p style="margin:0;font-size:var(--text-xs);color:var(--text-faint)">Телефон показано з випадком «=1».</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1d -->
+    <div id="1d" style="width:1164px;flex:0 0 auto;display:grid;gap:14px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <span style="font-family:var(--font-mono);font-size:var(--text-xs);padding:2px 6px;border-radius:var(--radius-sm);background:var(--ink-800);color:#fff">1d</span>
+        <strong style="font-size:var(--text-md)">Наприкінці списку, коли підібране закінчилось</strong>
+      </div>
+      <p style="margin:0;max-width:84ch;font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">Верх сторінки не змінюється зовсім — над списком лише сортування. Перехід з'являється там, де людина вже переглянула все сумісне й не знайшла свого. Нижче показано кінець списку. Можна поєднати з <a href="#1a">1a</a>: пігулка вгорі для тих, хто шукає саме універсальне, блок унизу — для решти.</p>
+      <div style="display:flex;gap:24px;align-items:flex-start">
+        <div style="width:780px;flex:none;padding:24px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);display:grid;gap:var(--space-4)">
+          <ul class="ds-rows" data-list="parts" style="list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden">
+            <sc-for list="{{ lastRows }}" as="row" hint-placeholder-count="1">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.PartCard" brand="{{ row.brand }}" article="{{ row.article }}" name="{{ row.name }}" price="{{ row.price }}" oem="{{ row.oem }}" in-stock="{{ row.inStock }}" ship-relative="{{ row.shipRelative }}" cutoff="{{ row.cutoff }}" analogs-count="{{ row.analogsCount }}" line-id="{{ row.lineId }}" max-qty="{{ row.maxQty }}" href="#" hint-size="100%,130px">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.AddToCartButton" line-id="{{ row.lineId }}" max-qty="{{ row.maxQty }}" hint-size="134px,34px"></x-import>
+              </x-import>
+            </sc-for>
+          </ul>
+          <p class="ds-pager__end" style="margin:0">Це весь список у цій категорії.</p>
+          <section style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-4) var(--space-5);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)">
+            <div style="flex:1 1 300px;min-width:0;display:grid;gap:4px">
+              <p style="margin:0;font-size:var(--text-base);font-weight:600;color:var(--text-strong)">Не знайшли потрібне серед сумісних?</p>
+              <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">В Універсальних товарах — 1 222 товари цієї категорії для будь-якого авто.</p>
+            </div>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="secondary" size="md" as="a" href="#" icon-after="arrow-right" hint-size="auto,40px">Переглянути</x-import>
+          </section>
+        </div>
+        <div style="width:360px;flex:none;padding:16px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);display:grid;gap:var(--space-4)">
+          <div style="display:grid;gap:8px"><div style="height:92px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)"></div></div>
+          <p class="ds-pager__end" style="margin:0">Це весь список у цій категорії.</p>
+          <section style="display:grid;gap:var(--space-3);padding:var(--space-4);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-sunken)">
+            <div style="display:grid;gap:4px">
+              <p style="margin:0;font-size:var(--text-base);font-weight:600;color:var(--text-strong)">Не знайшли потрібне серед сумісних?</p>
+              <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">В Універсальних товарах — 1 товар цієї категорії для будь-якого авто.</p>
+            </div>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="secondary" size="lg" block="{{ true }}" as="a" href="#" icon-after="arrow-right" hint-size="100%,48px">Переглянути</x-import>
+          </section>
+          <p style="margin:0;font-size:var(--text-xs);color:var(--text-faint)">Телефон показано з випадком «=1».</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="max-width:84ch;display:grid;gap:8px;padding-top:var(--space-4);border-top:1px solid var(--line)">
+    <p class="t-eyebrow" style="margin:0;color:var(--text-muted)">Формулювання — усі форми</p>
+    <div style="display:grid;grid-template-columns:48px minmax(0,1fr);gap:6px 16px;font-size:var(--text-sm)">
+      <strong><a href="#1a">1a</a></strong><span>«Всі товари в цій категорії 1» · «Всі товари в цій категорії 1 222» — одна форма на всі числа</span>
+      <strong><a href="#1b">1b</a></strong><span>«…— 1 товар / 3 товари / 1 222 товари / 25 товарів в Універсальних товарах.»</span>
+      <strong><a href="#1c">1c</a></strong><span>«Під цю машину 15» · «Універсальні 1» / «Універсальні 1 222» — одна форма на всі числа</span>
+      <strong><a href="#1d">1d</a></strong><span>«…— 1 товар / 3 товари / 25 товарів цієї категорії для будь-якого авто.»</span>
+    </div>
+    <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted);text-wrap:pretty">Жоден варіант не каже «усі» чи «ще»: число — це вміст вузла розділу, і він не порівнюється з 15 деталями листка (§27.1). Стрілка «→» скрізь замінена іконкою.</p>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const row = (brand, article, name, price, qty, cutoff, analogs) => ({
+      brand, article, name, price, oem: false, inStock: true, shipRelative: 'сьогодні', cutoff,
+      analogsCount: analogs, lineId: brand + ' ' + article, maxQty: qty
+    })
+    const rows = [
+      row('MANN-FILTER', 'HU 816 x', 'Фільтр масляний', 1264, 6, '18:00', 9),
+      row('FILTRON', 'OE 667/2', 'Фільтр масляний', 178, 10, '21:00', 11)
+    ]
+    return {
+      rows,
+      lastRows: [row('MEYLE', '314 322 0006', 'Фільтр масляний', 208, 6, '18:00', 6)]
+    }
+  }
+}
+</script>
+</body>
+</html>
