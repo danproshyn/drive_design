@@ -63,10 +63,14 @@
       width: 100%; justify-content: flex-end; gap: var(--space-3);
     }
     .ds-row { padding-inline: var(--space-3) !important; }
-    /* Сортування поруч із «Фільтри»; переноситься, лише якщо не вміщається найдовша опція. */
+    [data-toolbar] > [data-treefield] { flex: none !important; max-width: none !important; width: 100%; }
+  }
+  /* Поки «Фільтри» видно (до 1120 px): пошук у списку, «Фільтри», сортування — по лівому
+     краю. Сортування переноситься, лише якщо поруч не вміщається найдовша опція. */
+  @media (max-width: 1119px) {
     [data-toolbar] > * { margin-left: 0 !important; }
     .ds-sortfield__trigger[data-sortsizer] { display: flex !important; height: 0; border-top: 0; border-bottom: 0; overflow: hidden; visibility: hidden; pointer-events: none; }
-    [data-toolbar] > [data-treefield] { order: -2; flex: none !important; max-width: none !important; width: 100%; }
+    [data-toolbar] > [data-treefield] { order: -2; }
     [data-toolbar] > [data-facets-toggle] { order: -1; }
     [data-toolbar] .ds-sortfield__menu { right: auto; left: 0; }
   }

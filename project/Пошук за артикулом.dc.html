@@ -46,6 +46,12 @@
     [data-sheet-close] { display: inline-flex; }
     /* Кнопка застосування — на всю ширину аркуша, а не по ширині напису. */
     [data-sheet-apply] { display: block !important; }
+    /* Поки «Фільтри» видно: вони першими, сортування — поруч, обидва по лівому краю.
+       Сортування переноситься, лише якщо поруч не вміщається найдовша опція. */
+    [data-toolbar-actions] { margin-left: 0 !important; flex: 1 1 100% !important; }
+    [data-toolbar-actions] .ds-sortfield__menu { right: auto; left: 0; }
+    .ds-sortfield__trigger[data-sortsizer] { display: flex !important; height: 0; border-top: 0; border-bottom: 0; overflow: hidden; visibility: hidden; pointer-events: none; }
+    [data-facets-toggle] { flex: 0 0 auto !important; justify-content: flex-start !important; order: -1; }
   }
   @media (max-width: 639px) {
     .ds-row { padding-inline: var(--space-3) !important; }
@@ -65,12 +71,6 @@
     /* Блок запиту на підбір: 280 px мінімуму плюс паддинги не вміщувалися в 360 px. */
     [data-cta] { min-width: 0 !important; padding-inline: var(--space-4) !important; }
     [data-cta-copy] { min-width: 0 !important; flex-basis: 100% !important; }
-    /* «Фільтри» першими, сортування — поруч, по лівому краю. На наступний рядок воно
-       переходить, лише якщо поруч не вміщається найдовша опція, а не обрана зараз. */
-    [data-toolbar-actions] { margin-left: 0 !important; flex: 1 1 100% !important; }
-    [data-toolbar-actions] .ds-sortfield__menu { right: auto; left: 0; }
-    .ds-sortfield__trigger[data-sortsizer] { display: flex !important; height: 0; border-top: 0; border-bottom: 0; overflow: hidden; visibility: hidden; pointer-events: none; }
-    [data-facets-toggle] { flex: 0 0 auto !important; justify-content: flex-start !important; order: -1; }
   }
   /* Ширина колонки пропозицій тут не залежить від ширини екрана: від неї віднімається
      216 px ідентичності деталі та 248 px фасетів, які зʼявляються з 900 px. Тому розкладка
