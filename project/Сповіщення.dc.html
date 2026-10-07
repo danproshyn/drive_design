@@ -16,10 +16,10 @@
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/motion.css">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/layout.css">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/base.css">
-<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css?v=22">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
-<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=21"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=23"></script>
 <style>
   html, body { margin: 0; }
   body { background: var(--surface); color: var(--text-body); font-family: var(--font-sans); }
@@ -39,6 +39,7 @@
       <a href="#centre" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">02 Центр сповіщень</a>
       <a href="#toast" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">03 Тост</a>
       <a href="#device" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">04 Сповіщення в браузері</a>
+      <a href="#offer" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">04 · Після входу</a>
       <a href="#system" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">05 Системне сповіщення</a>
       <a href="#off" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">06 Вимкнення</a>
       <a href="#kinds" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">07 Події</a>
@@ -507,6 +508,296 @@
           <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">Стан пристрою не важить — замість нього посилання на перемикач.</span>
         </figcaption>
       </figure>
+    </div>
+
+    <div id="offer" data-screen-label="04 Після входу" style="display:grid;gap:var(--space-10);margin-top:var(--space-6);padding-top:var(--space-10);border-top:1px solid var(--line);scroll-margin-top:24px">
+      <div style="display:grid;gap:var(--space-2);max-width:760px">
+        <span class="t-eyebrow">04 · Після входу</span>
+        <h3 class="t-display-xs" style="margin:0">Пропозиція на кроці «Ви увійшли»</h3>
+        <p style="margin:0;font-size:var(--text-md);line-height:1.5;color:var(--text-body);text-wrap:pretty">Той самий запит, що й кнопка вище, — один раз, одразу після входу покупця, кодом чи паролем. Пропозиція стоїть під кнопками переходу, тож вибір, куди йти далі, в жодному стані не зсувається.</p>
+      </div>
+      <ul style="margin:0;padding:0;list-style:none;display:grid;gap:var(--space-2);max-width:820px;font-size:var(--text-sm);line-height:1.5;color:var(--text-body)">
+        <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span><strong style="color:var(--text-strong)">Коли.</strong> Лише коли браузер ще може спитати: на цьому пристрої не питали, і сповіщення він підтримує. Стан читаємо раз — коли зʼявився крок «Ви увійшли».</span></li>
+        <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span><strong style="color:var(--text-strong)">Коли ні.</strong> Дозвіл уже дано чи заблоковано, браузер не вміє, iPhone чи iPad у Safari без екрана «Додому» — крок такий, як сьогодні, без пропозиції й пояснень. Вхід у панель — теж без неї: у працівника лишається кнопка в центрі.</span></li>
+        <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span><strong style="color:var(--text-strong)">Запит браузера</strong> відкриває тільки «Увімкнути». Ні завантаження сторінки, ні поява кроку його не викликають.</span></li>
+        <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span><strong style="color:var(--text-strong)">«Не зараз»</strong> лише ховає пропозицію: запит браузера не витрачено, кнопка в центрі сповіщень на місці. Нічого не запамʼятовуємо — наступного входу пропозиція може зʼявитися знову.</span></li>
+        <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span><strong style="color:var(--text-strong)">Фокус.</strong> Після «Не зараз», дозволу й відмови переходить на першу кнопку переходу. Прийшли з оформлення — це «До оформлення», пропозиція так само під кнопками.</span></li>
+      </ul>
+
+      <div style="display:grid;gap:var(--space-4)">
+        <div style="display:grid;gap:4px;max-width:760px">
+          <span style="font-size:var(--text-md);font-weight:600;color:var(--text-strong)">1 · Пропозиція</span>
+          <span style="font-size:var(--text-sm);line-height:1.5;color:var(--text-body);text-wrap:pretty">«Увімкнути» — контурна: темна кнопка над нею лишається головною дією кроку. Текст називає лише те, що справді приходить покупцеві, — дванадцять подій розділу 07.</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:var(--space-6);align-items:flex-start">
+      <figure style="margin:0;display:grid;gap:var(--space-3);flex:1 1 560px;max-width:720px;min-width:0">
+        <div style="position:relative;box-sizing:border-box;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);overflow:hidden">
+          <div style="display:flex;align-items:center;height:36px;padding:0 var(--space-3);background:var(--surface-sunken);border-bottom:1px solid var(--line-subtle)">
+            <span style="display:flex;align-items:center;width:100%;max-width:340px;height:24px;padding:0 12px;box-sizing:border-box;border-radius:var(--radius-full);background:var(--surface);font-size:var(--text-2xs);color:var(--text-muted)">drive.zp.ua/login</span>
+          </div>
+          <div style="height:14px;background:var(--ink-800)"></div>
+          <div style="display:flex;align-items:center;gap:var(--space-5);height:60px;padding:0 var(--space-6);border-bottom:1px solid var(--line)">
+            <img src="assets/logo.svg" alt="" style="display:block;height:22px;width:auto">
+            <span style="flex:1;max-width:240px;height:34px;border:1px solid var(--line);border-radius:var(--radius-md)"></span>
+            <span style="margin-left:auto;display:flex;align-items:center;gap:14px"><span style="width:52px;height:6px;border-radius:2px;background:var(--ink-300)"></span><span style="width:14px;height:14px;border-radius:3px;border:1.5px solid var(--ink-700)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--ink-300)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--red-500)"></span></span>
+          </div>
+          <div style="display:grid;justify-items:center;padding:var(--space-8) var(--space-6) var(--space-12)">
+            <div style="width:100%;max-width:430px">
+              <div class="t-display-md">Ви увійшли</div>
+              <div style="margin-top:var(--space-6);display:flex;flex-direction:column;gap:4px;padding:var(--space-4) var(--space-5);border:1px solid var(--line);border-left:3px solid var(--ink-800);border-radius:var(--radius-md);background:var(--surface-sunken)">
+                <span class="t-eyebrow" style="color:var(--text-muted)">Номер</span>
+                <span class="t-mono" style="font-size:var(--text-md);font-weight:600;color:var(--text-strong)">+38 (067) 123-45-67</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-5)">
+                <span class="ds-btn ds-btn--md ds-btn--dark">Мій кабінет</span>
+                <span class="ds-btn ds-btn--md ds-btn--ghost">На головну</span>
+              </div>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyOffer" state="offer" hint-size="100%,180px"></x-import>
+            </div>
+          </div>
+        </div>
+        <figcaption style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Комп'ютер</figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3);width:360px;max-width:100%">
+        <div style="position:relative;height:620px;box-sizing:border-box;border:1px solid var(--line);border-radius:28px;overflow:hidden;background:var(--surface)">
+          <div style="display:flex;align-items:center;gap:var(--space-1);min-height:60px;padding:var(--space-2) var(--space-3);border-bottom:1px solid var(--line)">
+            <span style="display:inline-grid;place-items:center;width:44px;height:44px;color:var(--text-body)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="menu" size="22" hint-size="22px,22px"></x-import></span>
+            <img src="assets/logo-v2-md2.svg" alt="" style="display:block;height:28px;width:auto">
+            <span style="margin-left:auto"></span>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyBell" count="0" interactive="false" hint-size="44px,44px"></x-import>
+            <span style="display:inline-grid;place-items:center;width:44px;height:44px;color:var(--text-body)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="user" size="17" hint-size="17px,17px"></x-import></span>
+            <span style="position:relative;display:inline-grid;place-items:center;width:44px;height:44px;color:var(--text-body)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="shopping-cart" size="17" hint-size="17px,17px"></x-import><span class="ds-navlink__count" style="position:absolute;top:2px;right:0">2</span></span>
+          </div>
+          <div style="padding:var(--space-6) var(--space-4)">
+              <div class="t-display-md">Ви увійшли</div>
+              <div style="margin-top:var(--space-6);display:flex;flex-direction:column;gap:4px;padding:var(--space-4) var(--space-5);border:1px solid var(--line);border-left:3px solid var(--ink-800);border-radius:var(--radius-md);background:var(--surface-sunken)">
+                <span class="t-eyebrow" style="color:var(--text-muted)">Номер</span>
+                <span class="t-mono" style="font-size:var(--text-md);font-weight:600;color:var(--text-strong)">+38 (067) 123-45-67</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-5)">
+                <span class="ds-btn ds-btn--md ds-btn--dark">Мій кабінет</span>
+                <span class="ds-btn ds-btn--md ds-btn--ghost">На головну</span>
+              </div>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyOffer" state="offer" hint-size="100%,180px"></x-import>
+          </div>
+        </div>
+        <figcaption style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Телефон, 360</figcaption>
+      </figure>
+        </div>
+      </div>
+
+      <div style="display:grid;gap:var(--space-4)">
+        <div style="display:grid;gap:4px;max-width:760px">
+          <span style="font-size:var(--text-md);font-weight:600;color:var(--text-strong)">2 · Чекаємо на браузер</span>
+          <span style="font-size:var(--text-sm);line-height:1.5;color:var(--text-body);text-wrap:pretty">Замість дзвіночка в кнопці — коло завантаження, кнопка не натискається. Підпис і ширина ті самі, тож «Не зараз» і все довкола стоїть на місці. Закрили запит, не відповівши, — пропозиція знову як у стані 1.</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:var(--space-6);align-items:flex-start">
+      <figure style="margin:0;display:grid;gap:var(--space-3);flex:1 1 560px;max-width:720px;min-width:0">
+        <div style="position:relative;box-sizing:border-box;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);overflow:hidden">
+          <div style="display:flex;align-items:center;height:36px;padding:0 var(--space-3);background:var(--surface-sunken);border-bottom:1px solid var(--line-subtle)">
+            <span style="display:flex;align-items:center;width:100%;max-width:340px;height:24px;padding:0 12px;box-sizing:border-box;border-radius:var(--radius-full);background:var(--surface);font-size:var(--text-2xs);color:var(--text-muted)">drive.zp.ua/login</span>
+          </div>
+          <div style="height:14px;background:var(--ink-800)"></div>
+          <div style="display:flex;align-items:center;gap:var(--space-5);height:60px;padding:0 var(--space-6);border-bottom:1px solid var(--line)">
+            <img src="assets/logo.svg" alt="" style="display:block;height:22px;width:auto">
+            <span style="flex:1;max-width:240px;height:34px;border:1px solid var(--line);border-radius:var(--radius-md)"></span>
+            <span style="margin-left:auto;display:flex;align-items:center;gap:14px"><span style="width:52px;height:6px;border-radius:2px;background:var(--ink-300)"></span><span style="width:14px;height:14px;border-radius:3px;border:1.5px solid var(--ink-700)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--ink-300)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--red-500)"></span></span>
+          </div>
+          <div style="display:grid;justify-items:center;padding:var(--space-8) var(--space-6) var(--space-12)">
+            <div style="width:100%;max-width:430px">
+              <div class="t-display-md">Ви увійшли</div>
+              <div style="margin-top:var(--space-6);display:flex;flex-direction:column;gap:4px;padding:var(--space-4) var(--space-5);border:1px solid var(--line);border-left:3px solid var(--ink-800);border-radius:var(--radius-md);background:var(--surface-sunken)">
+                <span class="t-eyebrow" style="color:var(--text-muted)">Номер</span>
+                <span class="t-mono" style="font-size:var(--text-md);font-weight:600;color:var(--text-strong)">+38 (067) 123-45-67</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-5)">
+                <span class="ds-btn ds-btn--md ds-btn--dark">Мій кабінет</span>
+                <span class="ds-btn ds-btn--md ds-btn--ghost">На головну</span>
+              </div>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyOffer" state="asking" hint-size="100%,180px"></x-import>
+            </div>
+          </div>
+          <div style="position:absolute;left:16px;top:40px;width:300px;box-sizing:border-box;display:grid;gap:12px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow-md);font-family:system-ui,sans-serif">
+            <span style="font-size:13px;color:var(--text-strong)">drive.zp.ua хоче</span>
+            <span style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-body)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="bell" size="16" hint-size="16px,16px"></x-import><span>Показувати сповіщення</span></span>
+            <span style="display:flex;justify-content:flex-end;gap:8px"><span style="padding:6px 14px;border:1px solid var(--line);border-radius:999px;font-size:12px;color:var(--text-strong)">Блокувати</span><span style="padding:6px 14px;border:1px solid var(--line);border-radius:999px;font-size:12px;color:var(--text-strong)">Дозволити</span></span>
+          </div>
+        </div>
+        <figcaption style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Комп'ютер — запит малює браузер, під адресним рядком</figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3);width:360px;max-width:100%">
+        <div style="position:relative;height:620px;box-sizing:border-box;border:1px solid var(--line);border-radius:28px;overflow:hidden;background:var(--surface)">
+          <div style="display:flex;align-items:center;gap:var(--space-1);min-height:60px;padding:var(--space-2) var(--space-3);border-bottom:1px solid var(--line)">
+            <span style="display:inline-grid;place-items:center;width:44px;height:44px;color:var(--text-body)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="menu" size="22" hint-size="22px,22px"></x-import></span>
+            <img src="assets/logo-v2-md2.svg" alt="" style="display:block;height:28px;width:auto">
+            <span style="margin-left:auto"></span>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyBell" count="0" interactive="false" hint-size="44px,44px"></x-import>
+            <span style="display:inline-grid;place-items:center;width:44px;height:44px;color:var(--text-body)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="user" size="17" hint-size="17px,17px"></x-import></span>
+            <span style="position:relative;display:inline-grid;place-items:center;width:44px;height:44px;color:var(--text-body)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="shopping-cart" size="17" hint-size="17px,17px"></x-import><span class="ds-navlink__count" style="position:absolute;top:2px;right:0">2</span></span>
+          </div>
+          <div style="padding:var(--space-6) var(--space-4)">
+              <div class="t-display-md">Ви увійшли</div>
+              <div style="margin-top:var(--space-6);display:flex;flex-direction:column;gap:4px;padding:var(--space-4) var(--space-5);border:1px solid var(--line);border-left:3px solid var(--ink-800);border-radius:var(--radius-md);background:var(--surface-sunken)">
+                <span class="t-eyebrow" style="color:var(--text-muted)">Номер</span>
+                <span class="t-mono" style="font-size:var(--text-md);font-weight:600;color:var(--text-strong)">+38 (067) 123-45-67</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-5)">
+                <span class="ds-btn ds-btn--md ds-btn--dark">Мій кабінет</span>
+                <span class="ds-btn ds-btn--md ds-btn--ghost">На головну</span>
+              </div>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyOffer" state="asking" hint-size="100%,180px"></x-import>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;display:grid;gap:14px;padding:20px 20px 24px;background:var(--surface);border-top:1px solid var(--line);border-radius:20px 20px 0 0;box-shadow:var(--shadow-md);font-family:system-ui,sans-serif">
+            <span style="display:flex;align-items:flex-start;gap:10px;font-size:14px;line-height:1.4;color:var(--text-strong)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="bell" size="18" hint-size="18px,18px"></x-import><span>Дозволити сайту drive.zp.ua надсилати вам сповіщення?</span></span>
+            <span style="display:flex;justify-content:flex-end;gap:8px"><span style="padding:8px 16px;border-radius:999px;font-size:13px;color:var(--text-strong)">Блокувати</span><span style="padding:8px 16px;border:1px solid var(--line);border-radius:999px;font-size:13px;color:var(--text-strong)">Дозволити</span></span>
+          </div>
+        </div>
+        <figcaption style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Телефон, 360 — запит браузера знизу</figcaption>
+      </figure>
+        </div>
+      </div>
+
+      <div style="display:grid;gap:var(--space-4)">
+        <div style="display:grid;gap:4px;max-width:760px">
+          <span style="font-size:var(--text-md);font-weight:600;color:var(--text-strong)">3 · Дозволено</span>
+          <span style="font-size:var(--text-sm);line-height:1.5;color:var(--text-body);text-wrap:pretty">Пропозиція стає одним рядком на тому самому місці й лишається до кінця кроку: зникни вона — людина не знала б, чи спрацювало. Текст — той самий, що в центрі сповіщень.</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:var(--space-6);align-items:flex-start">
+      <figure style="margin:0;display:grid;gap:var(--space-3);flex:1 1 560px;max-width:720px;min-width:0">
+        <div style="position:relative;box-sizing:border-box;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);overflow:hidden">
+          <div style="display:flex;align-items:center;height:36px;padding:0 var(--space-3);background:var(--surface-sunken);border-bottom:1px solid var(--line-subtle)">
+            <span style="display:flex;align-items:center;width:100%;max-width:340px;height:24px;padding:0 12px;box-sizing:border-box;border-radius:var(--radius-full);background:var(--surface);font-size:var(--text-2xs);color:var(--text-muted)">drive.zp.ua/login</span>
+          </div>
+          <div style="height:14px;background:var(--ink-800)"></div>
+          <div style="display:flex;align-items:center;gap:var(--space-5);height:60px;padding:0 var(--space-6);border-bottom:1px solid var(--line)">
+            <img src="assets/logo.svg" alt="" style="display:block;height:22px;width:auto">
+            <span style="flex:1;max-width:240px;height:34px;border:1px solid var(--line);border-radius:var(--radius-md)"></span>
+            <span style="margin-left:auto;display:flex;align-items:center;gap:14px"><span style="width:52px;height:6px;border-radius:2px;background:var(--ink-300)"></span><span style="width:14px;height:14px;border-radius:3px;border:1.5px solid var(--ink-700)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--ink-300)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--red-500)"></span></span>
+          </div>
+          <div style="display:grid;justify-items:center;padding:var(--space-8) var(--space-6) var(--space-12)">
+            <div style="width:100%;max-width:430px">
+              <div class="t-display-md">Ви увійшли</div>
+              <div style="margin-top:var(--space-6);display:flex;flex-direction:column;gap:4px;padding:var(--space-4) var(--space-5);border:1px solid var(--line);border-left:3px solid var(--ink-800);border-radius:var(--radius-md);background:var(--surface-sunken)">
+                <span class="t-eyebrow" style="color:var(--text-muted)">Номер</span>
+                <span class="t-mono" style="font-size:var(--text-md);font-weight:600;color:var(--text-strong)">+38 (067) 123-45-67</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-5)">
+                <span class="ds-btn ds-btn--md ds-btn--dark">Мій кабінет</span>
+                <span class="ds-btn ds-btn--md ds-btn--ghost">На головну</span>
+              </div>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyOffer" state="granted" hint-size="100%,60px"></x-import>
+            </div>
+          </div>
+        </div>
+        <figcaption style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Комп'ютер</figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3);width:360px;max-width:100%">
+        <div style="position:relative;height:620px;box-sizing:border-box;border:1px solid var(--line);border-radius:28px;overflow:hidden;background:var(--surface)">
+          <div style="display:flex;align-items:center;gap:var(--space-1);min-height:60px;padding:var(--space-2) var(--space-3);border-bottom:1px solid var(--line)">
+            <span style="display:inline-grid;place-items:center;width:44px;height:44px;color:var(--text-body)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="menu" size="22" hint-size="22px,22px"></x-import></span>
+            <img src="assets/logo-v2-md2.svg" alt="" style="display:block;height:28px;width:auto">
+            <span style="margin-left:auto"></span>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyBell" count="0" interactive="false" hint-size="44px,44px"></x-import>
+            <span style="display:inline-grid;place-items:center;width:44px;height:44px;color:var(--text-body)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="user" size="17" hint-size="17px,17px"></x-import></span>
+            <span style="position:relative;display:inline-grid;place-items:center;width:44px;height:44px;color:var(--text-body)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="shopping-cart" size="17" hint-size="17px,17px"></x-import><span class="ds-navlink__count" style="position:absolute;top:2px;right:0">2</span></span>
+          </div>
+          <div style="padding:var(--space-6) var(--space-4)">
+              <div class="t-display-md">Ви увійшли</div>
+              <div style="margin-top:var(--space-6);display:flex;flex-direction:column;gap:4px;padding:var(--space-4) var(--space-5);border:1px solid var(--line);border-left:3px solid var(--ink-800);border-radius:var(--radius-md);background:var(--surface-sunken)">
+                <span class="t-eyebrow" style="color:var(--text-muted)">Номер</span>
+                <span class="t-mono" style="font-size:var(--text-md);font-weight:600;color:var(--text-strong)">+38 (067) 123-45-67</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-5)">
+                <span class="ds-btn ds-btn--md ds-btn--dark">Мій кабінет</span>
+                <span class="ds-btn ds-btn--md ds-btn--ghost">На головну</span>
+              </div>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyOffer" state="granted" hint-size="100%,60px"></x-import>
+          </div>
+        </div>
+        <figcaption style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Телефон, 360</figcaption>
+      </figure>
+        </div>
+      </div>
+
+      <div style="display:grid;gap:var(--space-4)">
+        <div style="display:grid;gap:4px;max-width:760px">
+          <span style="font-size:var(--text-md);font-weight:600;color:var(--text-strong)">4 · Відмовили, «Не зараз» або пропозиції не було</span>
+          <span style="font-size:var(--text-sm);line-height:1.5;color:var(--text-body);text-wrap:pretty">Пропозиція зникає разом із волосинкою, без пояснень. Що робити із заблокованими, каже центр сповіщень. Так само виглядає крок, коли пропозиції не було зовсім.</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:var(--space-6);align-items:flex-start">
+      <figure style="margin:0;display:grid;gap:var(--space-3);flex:1 1 560px;max-width:720px;min-width:0">
+        <div style="position:relative;box-sizing:border-box;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);overflow:hidden">
+          <div style="display:flex;align-items:center;height:36px;padding:0 var(--space-3);background:var(--surface-sunken);border-bottom:1px solid var(--line-subtle)">
+            <span style="display:flex;align-items:center;width:100%;max-width:340px;height:24px;padding:0 12px;box-sizing:border-box;border-radius:var(--radius-full);background:var(--surface);font-size:var(--text-2xs);color:var(--text-muted)">drive.zp.ua/login</span>
+          </div>
+          <div style="height:14px;background:var(--ink-800)"></div>
+          <div style="display:flex;align-items:center;gap:var(--space-5);height:60px;padding:0 var(--space-6);border-bottom:1px solid var(--line)">
+            <img src="assets/logo.svg" alt="" style="display:block;height:22px;width:auto">
+            <span style="flex:1;max-width:240px;height:34px;border:1px solid var(--line);border-radius:var(--radius-md)"></span>
+            <span style="margin-left:auto;display:flex;align-items:center;gap:14px"><span style="width:52px;height:6px;border-radius:2px;background:var(--ink-300)"></span><span style="width:14px;height:14px;border-radius:3px;border:1.5px solid var(--ink-700)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--ink-300)"></span><span style="width:14px;height:14px;border-radius:3px;background:var(--red-500)"></span></span>
+          </div>
+          <div style="display:grid;justify-items:center;padding:var(--space-8) var(--space-6) var(--space-12)">
+            <div style="width:100%;max-width:430px">
+              <div class="t-display-md">Ви увійшли</div>
+              <div style="margin-top:var(--space-6);display:flex;flex-direction:column;gap:4px;padding:var(--space-4) var(--space-5);border:1px solid var(--line);border-left:3px solid var(--ink-800);border-radius:var(--radius-md);background:var(--surface-sunken)">
+                <span class="t-eyebrow" style="color:var(--text-muted)">Номер</span>
+                <span class="t-mono" style="font-size:var(--text-md);font-weight:600;color:var(--text-strong)">+38 (067) 123-45-67</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-5)">
+                <span class="ds-btn ds-btn--md ds-btn--dark">Мій кабінет</span>
+                <span class="ds-btn ds-btn--md ds-btn--ghost">На головну</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Комп'ютер</figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3);width:360px;max-width:100%">
+        <div style="position:relative;height:620px;box-sizing:border-box;border:1px solid var(--line);border-radius:28px;overflow:hidden;background:var(--surface)">
+          <div style="display:flex;align-items:center;gap:var(--space-1);min-height:60px;padding:var(--space-2) var(--space-3);border-bottom:1px solid var(--line)">
+            <span style="display:inline-grid;place-items:center;width:44px;height:44px;color:var(--text-body)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="menu" size="22" hint-size="22px,22px"></x-import></span>
+            <img src="assets/logo-v2-md2.svg" alt="" style="display:block;height:28px;width:auto">
+            <span style="margin-left:auto"></span>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyBell" count="0" interactive="false" hint-size="44px,44px"></x-import>
+            <span style="display:inline-grid;place-items:center;width:44px;height:44px;color:var(--text-body)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="user" size="17" hint-size="17px,17px"></x-import></span>
+            <span style="position:relative;display:inline-grid;place-items:center;width:44px;height:44px;color:var(--text-body)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="shopping-cart" size="17" hint-size="17px,17px"></x-import><span class="ds-navlink__count" style="position:absolute;top:2px;right:0">2</span></span>
+          </div>
+          <div style="padding:var(--space-6) var(--space-4)">
+              <div class="t-display-md">Ви увійшли</div>
+              <div style="margin-top:var(--space-6);display:flex;flex-direction:column;gap:4px;padding:var(--space-4) var(--space-5);border:1px solid var(--line);border-left:3px solid var(--ink-800);border-radius:var(--radius-md);background:var(--surface-sunken)">
+                <span class="t-eyebrow" style="color:var(--text-muted)">Номер</span>
+                <span class="t-mono" style="font-size:var(--text-md);font-weight:600;color:var(--text-strong)">+38 (067) 123-45-67</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-5)">
+                <span class="ds-btn ds-btn--md ds-btn--dark">Мій кабінет</span>
+                <span class="ds-btn ds-btn--md ds-btn--ghost">На головну</span>
+              </div>
+          </div>
+        </div>
+        <figcaption style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Телефон, 360</figcaption>
+      </figure>
+        </div>
+      </div>
+      <div style="display:grid;gap:var(--space-4)">
+        <div style="display:grid;gap:4px;max-width:760px">
+          <span style="font-size:var(--text-md);font-weight:600;color:var(--text-strong)">Наживо</span>
+          <span style="font-size:var(--text-sm);line-height:1.5;color:var(--text-body);text-wrap:pretty">Натисніть «Увімкнути». Відповідь браузера, стан пристрою й «з оформлення» перемикаються в Tweaks сторінки входу. Дозвіл тут змінює й рядок у центрі сповіщень — повернути «Ще не питали» можна в розділі 08.</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:var(--space-6);align-items:flex-start">
+          <figure style="margin:0;display:grid;gap:var(--space-3)">
+            <div style="width:640px;height:400px;max-width:100%;overflow:hidden;border:1px solid var(--line);border-radius:var(--radius-md)">
+              <iframe src="Вхід.dc.html?step=done" title="Вхід, комп'ютер" loading="lazy" style="display:block;width:1280px;height:800px;border:0;transform:scale(.5);transform-origin:0 0"></iframe>
+            </div>
+            <figcaption style="display:flex;gap:var(--space-3);align-items:baseline"><span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Вхід, 1280</span><a href="Вхід.dc.html?step=done" style="font-size:var(--text-sm)">Відкрити</a></figcaption>
+          </figure>
+          <figure style="margin:0;display:grid;gap:var(--space-3)">
+            <div style="width:360px;height:720px;overflow:hidden;border:1px solid var(--line);border-radius:28px">
+              <iframe src="Вхід.dc.html?step=done&amp;from=checkout" title="Вхід, телефон" loading="lazy" style="display:block;width:360px;height:720px;border:0"></iframe>
+            </div>
+            <figcaption style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Вхід з оформлення, 360</figcaption>
+          </figure>
+        </div>
+      </div>
     </div>
   </section>
 

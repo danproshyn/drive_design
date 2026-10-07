@@ -4267,11 +4267,19 @@ function createStore() {
     },
     /* На сайті: Notification.requestPermission() → 'granted' → pushManager.subscribe()
        → POST /me/push-subscriptions. Тут — імітація відповіді «Дозволити». */
-    requestDevice: () => {
-      if (asking) return;
+    requestDevice: () => { api.askDevice('granted'); },
+    /* Те саме з відповіддю: 'granted' — «Дозволити», 'denied' — «Блокувати», 'default' — запит
+       закрили, не відповівши. На сайті answer немає — його дає Notification.requestPermission(). */
+    askDevice: (answer) => new Promise((resolve) => {
+      if (asking) { resolve(null); return; }
       asking = true; ping();
-      setTimeout(() => { asking = false; api.setDevice('granted'); }, 900);
-    },
+      setTimeout(() => {
+        asking = false;
+        const v = answer === 'denied' || answer === 'default' ? answer : 'granted';
+        if (v === 'default') ping(); else api.setDevice(v);
+        resolve(v);
+      }, 1400);
+    }),
     isOpen: (a) => !!open[a],
     setOpen: (a, on) => { if (open[a] === !!on) return; open[a] = !!on; ping(); },
     href: (a, item) => { const k = KINDS[item.kind]; return HOME[a] + (k ? k.to(item.n) : ''); },
@@ -4351,6 +4359,49 @@ function NotifyDevice({ audience = 'customer', device, push, settingsHref, frame
   const node = h('div', { className: 'ds-ndev' }, pushRow, body,
     !staff && on ? h('a', { className: 'ds-ndev__settings', href: settings }, 'Налаштування сповіщень') : null);
   return framed ? h('div', { className: 'ds-ncentre__foot', style: { border: '1px solid var(--line)', borderRadius: 'var(--radius-md)' } }, node) : node;
+}
+
+/* Пропозиція на кроці «Ви увійшли» — лише для покупця. Стоїть під кнопками переходу, тож
+   ніколи їх не зсуває. Показується, лише якщо браузер ще може спитати (стан читаємо один раз,
+   коли зʼявився крок). Запит браузера — тільки з натискання «Увімкнути». Нічого не запамʼятовує:
+   «Не зараз» і відмова просто ховають її до наступного входу. */
+const useOfferId = React.useId || (() => 'ds-noffer');
+function NotifyOffer({ state, device, answer = 'granted', returnFocus }) {
+  const st = useStore();
+  const id = useOfferId();
+  const demo = state != null && state !== '';
+  const [start] = React.useState(() => device || st.device());
+  const [phase, setPhase] = React.useState(start === 'default' ? 'offer' : 'none');
+  const [busy, setBusy] = React.useState(false);
+  const refocus = () => {
+    if (!returnFocus) return;
+    setTimeout(() => { const el = document.querySelector(returnFocus); if (el) { try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); } } }, 0);
+  };
+  const settle = (next) => { setBusy(false); setPhase(next); if (next !== 'offer') refocus(); };
+  const ask = () => {
+    if (demo || busy) return;
+    setBusy(true);
+    st.askDevice(answer).then((v) => settle(v === 'granted' ? 'granted' : v === 'default' ? 'offer' : 'none'));
+  };
+  let p = demo ? state : busy ? 'asking' : phase;
+  if (!demo && !device && p === 'offer' && st.device() !== 'default') p = st.device() === 'granted' ? 'granted' : 'none';
+  if (p !== 'offer' && p !== 'asking' && p !== 'granted') return null;
+  const asking = p === 'asking';
+  const sr = h('p', { className: 'ds-notify-sr', role: 'status' }, asking ? 'Чекаємо на відповідь браузера' : p === 'granted' ? 'Сповіщення на цьому пристрої увімкнено.' : '');
+  if (p === 'granted') {
+    return h('div', { className: 'ds-noffer', 'data-state': 'granted' },
+      h(ns.Icon, { name: 'check', size: 20, className: 'ds-noffer__icon' }),
+      h('p', { className: 'ds-noffer__done', 'aria-hidden': 'true' }, 'Сповіщення на цьому пристрої увімкнено.'), sr);
+  }
+  return h('div', { className: 'ds-noffer', 'data-state': p, role: 'region', 'aria-labelledby': id },
+    h(ns.Icon, { name: 'bell', size: 20, className: 'ds-noffer__icon' }),
+    h('div', { className: 'ds-noffer__body' },
+      h('p', { id, className: 'ds-noffer__title' }, 'Увімкнути сповіщення?'),
+      h('p', { className: 'ds-noffer__text' }, 'Повідомимо про статус і оплату замовлень, відповіді магазину й бонуси — навіть коли сайт закрито.'),
+      h('div', { className: 'ds-noffer__actions' },
+        h(ns.Button, { variant: 'secondary', size: 'md', icon: 'bell-ring', loading: asking, onClick: ask }, 'Увімкнути'),
+        h('button', { type: 'button', className: 'ds-noffer__later', onClick: () => { if (!demo) settle('none'); } }, 'Не зараз'))),
+    sr);
 }
 
 const EMPTY = {
@@ -4555,7 +4606,7 @@ function NotifyToasts({ audience = 'customer', placement = 'site', items, layout
   return flat ? region : portal(region);
 }
 
-Object.assign(ns, { NotifyStore: store, NOTIFY_KINDS: KINDS, NotifyTile, NotifyRow, NotifyDevice, NotifyCentre, NotifyBell, NotifyToast, NotifyToasts });
+Object.assign(ns, { NotifyStore: store, NOTIFY_KINDS: KINDS, NotifyTile, NotifyRow, NotifyDevice, NotifyOffer, NotifyCentre, NotifyBell, NotifyToast, NotifyToasts });
 } catch (e) {
   const bag = window.DesignSystem_d7c4f4;
   if (bag && bag.__errors) bag.__errors.push({ path: 'notify-patch', error: String((e && e.message) || e) });

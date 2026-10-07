@@ -1011,6 +1011,22 @@ input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appe
 .ds-ndev__push small { display: block; font-size: var(--text-xs); color: var(--text-muted); }
 .ds-ndev__settings { justify-self: start; display: inline-flex; align-items: center; min-height: 32px; font-size: var(--text-sm); }
 
+/* Пропозиція після входу: під кнопками переходу, відділена волосинкою. */
+.ds-noffer { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: var(--space-3); margin-top: var(--space-8); padding-top: var(--space-6); border-top: 1px solid var(--line); font-size: var(--text-sm); line-height: 1.45; color: var(--text-body); }
+.ds-noffer__icon { margin-top: 1px; color: var(--text-strong); }
+.ds-noffer__body { min-width: 0; }
+.ds-noffer__title { margin: 0; font-size: var(--text-md); font-weight: 600; line-height: 1.35; color: var(--text-strong); }
+.ds-noffer__text { margin: 4px 0 0; text-wrap: pretty; }
+.ds-noffer__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-4); }
+.ds-noffer .ds-btn[aria-busy='true'] { opacity: 1; cursor: progress; }
+.ds-noffer__later { min-height: 44px; padding: 0 var(--space-3); border: 0; border-radius: var(--radius-md); background: none; font: inherit; font-size: var(--text-sm); font-weight: 500; color: var(--text-muted); cursor: pointer; transition: var(--transition-colors); }
+.ds-noffer__later:hover { background: var(--surface-sunken); color: var(--text-strong); }
+.ds-noffer__later:active { transform: translateY(1px); }
+.ds-noffer__later:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.ds-noffer[data-state='granted'] { align-items: center; }
+.ds-noffer[data-state='granted'] .ds-noffer__icon { margin-top: 0; color: var(--success); }
+.ds-noffer__done { margin: 0; color: var(--text-strong); }
+
 /* Тости: знизу ліворуч від робочого поля — праворуч у панелі й на сайті стоять головні
    дії (кнопки заголовка, липкий підсумок, кнопка збереження). Над закріпленими знизу
    смугами тост піднімається сам (див. measureLift у бандлі). */

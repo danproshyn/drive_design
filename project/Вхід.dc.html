@@ -16,10 +16,10 @@
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/motion.css">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/layout.css">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/base.css">
-<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css?v=22">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
-<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=20"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=23"></script>
 <style>
   @media (max-width: 639px) {
   }
@@ -107,10 +107,19 @@
             <span class="t-eyebrow" style="color:var(--text-muted)">{{ doneLabel }}</span>
             <span class="t-mono" style="font-size:var(--text-md);font-weight:600;color:var(--text-strong);word-break:break-all">{{ doneValue }}</span>
           </div>
-          <div style="display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-5)">
-            <a class="ds-btn ds-btn--md ds-btn--dark" href="#">Мій кабінет</a>
-            <a class="ds-btn ds-btn--md ds-btn--ghost" href="Головна.dc.html">На головну</a>
+          <div data-login-next="true" style="display:flex;flex-wrap:wrap;gap:var(--space-3);margin-top:var(--space-5)">
+            <sc-if value="{{ fromCheckout }}" hint-placeholder-val="{{ false }}">
+              <a class="ds-btn ds-btn--md ds-btn--dark" href="Оформлення.dc.html">До оформлення</a>
+              <a class="ds-btn ds-btn--md ds-btn--ghost" href="Мій кабінет.dc.html">Мій кабінет</a>
+            </sc-if>
+            <sc-if value="{{ fromElsewhere }}" hint-placeholder-val="{{ true }}">
+              <a class="ds-btn ds-btn--md ds-btn--dark" href="Мій кабінет.dc.html">Мій кабінет</a>
+              <a class="ds-btn ds-btn--md ds-btn--ghost" href="Головна.dc.html">На головну</a>
+            </sc-if>
           </div>
+          <sc-if value="{{ offerOn }}" hint-placeholder-val="{{ true }}">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyOffer" device="{{ offerDevice }}" answer="{{ offerAnswer }}" return-focus="[data-login-next] a" hint-size="100%,0px"></x-import>
+          </sc-if>
         </section>
       </sc-if>
 
@@ -156,8 +165,18 @@
 </div>
 
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1000},&quot;passwordPanel&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Вхід&quot;},&quot;demoError&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Немає&quot;,&quot;options&quot;:[&quot;Немає&quot;,&quot;Код невірний&quot;,&quot;Спроби вичерпано&quot;,&quot;Сесію не завершено&quot;,&quot;Пароль не підходить&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Вхід&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1000},&quot;screen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Вхід&quot;,&quot;options&quot;:[&quot;Вхід&quot;,&quot;Ви увійшли&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Вхід&quot;},&quot;passwordPanel&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Вхід&quot;},&quot;demoError&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Немає&quot;,&quot;options&quot;:[&quot;Немає&quot;,&quot;Код невірний&quot;,&quot;Спроби вичерпано&quot;,&quot;Сесію не завершено&quot;,&quot;Пароль не підходить&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Вхід&quot;},&quot;origin&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Звідки завгодно&quot;,&quot;options&quot;:[&quot;Звідки завгодно&quot;,&quot;З оформлення&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Після входу&quot;},&quot;notifyDevice&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Ще не питали&quot;,&quot;options&quot;:[&quot;Ще не питали&quot;,&quot;Як каже браузер&quot;,&quot;Увімкнено&quot;,&quot;Заблоковано&quot;,&quot;iPhone без екрана «Додому»&quot;,&quot;Браузер не вміє&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Після входу&quot;},&quot;browserAnswer&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Дозволити&quot;,&quot;options&quot;:[&quot;Дозволити&quot;,&quot;Блокувати&quot;,&quot;Закрити запит&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Після входу&quot;}}">
 const RESEND_SECONDS = 60
+
+const DEVICE = {
+  'Як каже браузер': undefined,
+  'Ще не питали': 'default',
+  'Увімкнено': 'granted',
+  'Заблоковано': 'denied',
+  'iPhone без екрана «Додому»': 'ios',
+  'Браузер не вміє': 'unsupported',
+}
+const ANSWER = { 'Дозволити': 'granted', 'Блокувати': 'denied', 'Закрити запит': 'default' }
 
 let tickTimer = null
 
@@ -177,11 +196,30 @@ class Component extends DCLogic {
     password: '',
     pwFailed: false,
     method: 'code',
+    offerOn: true,
   }
 
   phoneRef = React.createRef()
 
+  showDone = () => this.setState({ step: 'done', method: 'code', sentDigits: this.state.sentDigits || '671234567', offerOn: true })
+
+  componentDidUpdate(prev) {
+    const p = this.props
+    if (prev.screen !== p.screen) {
+      if (p.screen === 'Ви увійшли') this.showDone()
+      else this.setState({ step: 'phone' })
+    }
+    // A tweak to the device or the answer is a fresh sign-in for the offer: it reads the
+    // browser once, when the confirmation appears.
+    if (prev.notifyDevice !== p.notifyDevice || prev.browserAnswer !== p.browserAnswer) {
+      this.setState({ offerOn: false }, () => setTimeout(() => this.setState({ offerOn: true }), 0))
+    }
+  }
+
   componentDidMount() {
+    let q = null
+    try { q = new URLSearchParams(window.location.search) } catch (e) {}
+    if (this.props.screen === 'Ви увійшли' || (q && q.get('step') === 'done')) this.showDone()
     // The countdown is an affordance only — the server decides. One tick for the whole screen.
     tickTimer = setInterval(() => {
       if (this.state.wait > 0) this.setState((s) => ({ wait: Math.max(0, s.wait - 1) }))
@@ -190,6 +228,11 @@ class Component extends DCLogic {
 
   componentWillUnmount() {
     if (tickTimer) clearInterval(tickTimer)
+  }
+
+  fromCheckout = () => {
+    if (this.props.origin === 'З оформлення') return true
+    try { return new URLSearchParams(window.location.search).get('from') === 'checkout' } catch (e) { return false }
   }
 
   formatPhone = (digits) => {
@@ -250,6 +293,11 @@ class Component extends DCLogic {
       stepPhone: s.step === 'phone',
       stepCode: s.step === 'code',
       stepDone: s.step === 'done',
+      fromCheckout: this.fromCheckout(),
+      fromElsewhere: !this.fromCheckout(),
+      offerOn: s.offerOn,
+      offerDevice: DEVICE[this.props.notifyDevice ?? 'Ще не питали'],
+      offerAnswer: ANSWER[this.props.browserAnswer ?? 'Дозволити'] || 'granted',
       pageTitle: s.step === 'done' ? 'Ви увійшли' : 'Вхід у кабінет',
       doneLabel: s.method === 'password' ? 'Пошта' : 'Номер',
       doneValue: s.method === 'password' ? s.email : this.formatPhone(s.sentDigits),
