@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/colors.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/space.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/motion.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/layout.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/tokens/base.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
+<link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=21"></script>
+<style>
+  html, body { margin: 0; }
+  body { background: var(--surface); color: var(--text-body); font-family: var(--font-sans); }
+  a { color: var(--text-action); text-decoration: none; }
+  a:hover { color: var(--text-action-hover); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
+</style>
+</helmet>
+
+<main style="box-sizing:border-box;max-width:1360px;margin:0 auto;padding:var(--space-12) var(--space-6) var(--space-24);display:grid;gap:var(--space-20)">
+
+  <header style="display:grid;gap:var(--space-4);max-width:820px">
+    <span class="t-eyebrow">Панель і сайт · усі стани</span>
+    <h1 class="t-display-md" style="margin:0">Сповіщення</h1>
+    <p style="margin:0;font-size:var(--text-lg);line-height:1.5;color:var(--text-body);text-wrap:pretty">Подія створює рядок у центрі сповіщень людини, тост на кожній її відкритій сторінці і системне сповіщення, коли жодна сторінка сайту не у фокусі. Усі три кажуть лише подію й номер — без імені, телефону, суми й тексту повідомлення.</p>
+    <nav aria-label="Розділи" style="display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-2)">
+      <a href="#bell" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">01 Дзвіночок</a>
+      <a href="#centre" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">02 Центр сповіщень</a>
+      <a href="#toast" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">03 Тост</a>
+      <a href="#device" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">04 Сповіщення в браузері</a>
+      <a href="#system" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">05 Системне сповіщення</a>
+      <a href="#off" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">06 Вимкнення</a>
+      <a href="#kinds" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">07 Події</a>
+      <a href="#live" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">08 Наживо</a>
+    </nav>
+  </header>
+
+  <!-- 01 -->
+  <section id="bell" data-screen-label="01 Дзвіночок" style="display:grid;gap:var(--space-8);scroll-margin-top:24px">
+    <div style="display:grid;gap:var(--space-2);max-width:760px">
+      <span class="t-eyebrow">01</span>
+      <h2 class="t-display-sm" style="margin:0">Дзвіночок</h2>
+      <p style="margin:0;font-size:var(--text-md);line-height:1.5;color:var(--text-body);text-wrap:pretty">Лічильник — непрочитані рядки людини, той самий на всіх її пристроях. Нуль не показуємо, понад 99 пишемо «99+». Лічильник чорний: червоний у шапці сайту вже означає кошик.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:var(--space-4);max-width:780px">
+      <figure style="margin:0;display:grid;gap:var(--space-2)">
+        <div style="display:grid;place-items:center;height:96px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyBell" count="0" interactive="false" hint-size="44px,44px"></x-import>
+        </div>
+        <figcaption style="font-size:var(--text-sm);color:var(--text-body)">0 — без лічильника</figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-2)">
+        <div style="display:grid;place-items:center;height:96px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyBell" count="3" interactive="false" hint-size="44px,44px"></x-import>
+        </div>
+        <figcaption style="font-size:var(--text-sm);color:var(--text-body)">1–9</figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-2)">
+        <div style="display:grid;place-items:center;height:96px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyBell" count="24" interactive="false" hint-size="44px,44px"></x-import>
+        </div>
+        <figcaption style="font-size:var(--text-sm);color:var(--text-body)">10–99</figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-2)">
+        <div style="display:grid;place-items:center;height:96px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyBell" count="140" interactive="false" hint-size="44px,44px"></x-import>
+        </div>
+        <figcaption style="font-size:var(--text-sm);color:var(--text-body)">Понад 99 — «99+»</figcaption>
+      </figure>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:var(--space-8) var(--space-6);align-items:start">
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="display:grid;place-items:start;padding:var(--space-6);background:var(--surface-sunken);border:1px solid var(--line-subtle);border-radius:var(--radius-lg)">
+          <div style="width:248px;box-sizing:border-box;display:grid;gap:var(--space-5);padding:var(--space-5) var(--space-3) var(--space-4);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md)">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-2)">
+              <span style="display:flex;align-items:center;gap:10px;min-height:44px;padding:0 var(--space-3)">
+                <img src="assets/logo.svg" alt="Драйв" style="display:block;height:26px;width:auto">
+                <span style="padding-left:10px;border-left:1px solid var(--line);font-family:var(--font-display);font-size:var(--text-2xs);font-weight:600;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--text-muted)">Панель</span>
+              </span>
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyBell" count="4" interactive="false" hint-size="44px,44px"></x-import>
+            </div>
+            <div style="display:grid;gap:2px">
+              <span style="display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;background:var(--surface-sunken);box-shadow:var(--keyline-red);font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">
+                <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="layout-dashboard" size="20" hint-size="20px,20px"></x-import>
+                <span>Сьогодні</span>
+              </span>
+              <span style="display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;font-size:var(--text-sm);font-weight:500;color:var(--text-body)">
+                <span style="display:inline-flex;color:var(--text-muted)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="package" size="20" hint-size="20px,20px"></x-import></span>
+                <span>Замовлення</span>
+                <span style="margin-left:auto;display:inline-grid;place-items:center;min-width:22px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:var(--radius-full);background:var(--ink-800);color:var(--white);font-size:var(--text-3xs);font-weight:700">2</span>
+              </span>
+              <span style="display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;font-size:var(--text-sm);font-weight:500;color:var(--text-body)">
+                <span style="display:inline-flex;color:var(--text-muted)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="rotate-ccw" size="20" hint-size="20px,20px"></x-import></span>
+                <span>Повернення</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Панель, від 1024 px — у бічному меню, поруч із логотипом</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">Верхньої смуги на комп'ютері в панелі немає, тож дзвіночок стоїть у шапці меню. Центр відкривається праворуч, над робочим полем.</span>
+        </figcaption>
+      </figure>
+
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="display:grid;place-items:start;padding:var(--space-6);background:var(--surface-sunken);border:1px solid var(--line-subtle);border-radius:var(--radius-lg)">
+          <div style="width:360px;max-width:100%;box-sizing:border-box;display:flex;align-items:center;gap:var(--space-2);height:56px;padding:0 var(--space-4) 0 var(--space-1);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="menu" label="Меню" hint-size="44px,44px"></x-import>
+            <span style="display:flex;align-items:center;gap:10px">
+              <img src="assets/logo.svg" alt="Драйв" style="display:block;height:22px;width:auto">
+            </span>
+            <span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:var(--text-xs);color:var(--text-muted);white-space:nowrap">
+              <span style="width:8px;height:8px;border-radius:var(--radius-full);background:var(--stock-in)"></span>
+              <span>ПРРО відкрита</span>
+            </span>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyBell" count="4" interactive="false" hint-size="44px,44px"></x-import>
+          </div>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Панель, телефон і планшет — у верхній смузі, праворуч</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">У висувному меню дзвіночка немає: він уже на смузі. Щоб усе вмістилося на 360 px, до 420 px ховається ярлик «Панель». До 640 px центр відкривається на весь екран.</span>
+        </figcaption>
+      </figure>
+
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="display:grid;place-items:start;padding:var(--space-6);background:var(--surface-sunken);border:1px solid var(--line-subtle);border-radius:var(--radius-lg);overflow-x:auto">
+          <div style="display:flex;align-items:center;gap:var(--space-5);min-height:68px;padding:0 var(--space-5);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md)">
+            <span class="ds-navlink" style="white-space:nowrap">Оригінальні каталоги</span>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyBell" count="3" interactive="false" hint-size="44px,44px"></x-import>
+            <span class="ds-navlink" data-active="true" style="white-space:nowrap">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="user" size="17" hint-size="17px,17px"></x-import>
+              <span>Мій кабінет</span>
+            </span>
+            <span class="ds-navlink" style="white-space:nowrap">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="shopping-cart" size="17" hint-size="17px,17px"></x-import>
+              <span>Кошик</span>
+              <span class="ds-navlink__count">2</span>
+            </span>
+          </div>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Сайт, від 1024 px — перед «Мій кабінет», лише для покупця, що увійшов</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">Без підпису: у шапці вже три текстові пункти й два з іконками, а підказка «Сповіщення» є на наведенні й у назві кнопки. Центр відкривається під дзвіночком, вирівняний праворуч.</span>
+        </figcaption>
+      </figure>
+
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="display:grid;place-items:start;padding:var(--space-6);background:var(--surface-sunken);border:1px solid var(--line-subtle);border-radius:var(--radius-lg)">
+          <div style="width:360px;max-width:100%;box-sizing:border-box;display:flex;align-items:center;gap:var(--space-2);min-height:60px;padding:var(--space-2) var(--space-3);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md)">
+            <span style="display:inline-grid;place-items:center;width:44px;height:44px;color:var(--text-body)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="menu" size="22" hint-size="22px,22px"></x-import></span>
+            <img src="assets/logo-v2-md2.svg" alt="Драйв" style="display:block;height:28px;width:auto">
+            <span style="margin-left:auto"></span>
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyBell" count="3" interactive="false" hint-size="44px,44px"></x-import>
+            <span style="display:inline-grid;place-items:center;width:44px;height:44px;color:var(--text-body)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="user" size="17" hint-size="17px,17px"></x-import></span>
+            <span style="position:relative;display:inline-grid;place-items:center;width:44px;height:44px;color:var(--text-body)">
+              <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="shopping-cart" size="17" hint-size="17px,17px"></x-import>
+              <span class="ds-navlink__count" style="position:absolute;top:2px;right:0">2</span>
+            </span>
+          </div>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Сайт, телефон і планшет — третім із кінця, поруч із кабінетом і кошиком</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">Як і кабінет із кошиком, на вузькій шапці — іконкою 44 × 44.</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section id="centre" data-screen-label="02 Центр сповіщень" style="display:grid;gap:var(--space-8);scroll-margin-top:24px">
+    <div style="display:grid;gap:var(--space-2);max-width:760px">
+      <span class="t-eyebrow">02</span>
+      <h2 class="t-display-sm" style="margin:0">Центр сповіщень</h2>
+      <p style="margin:0;font-size:var(--text-md);line-height:1.5;color:var(--text-body);text-wrap:pretty">Один список на всіх пристроях, прочитане зберігає сервер. На комп'ютері й планшеті — поповер під дзвіночком шириною 400 px, на телефоні — на весь екран. По 20 рядків.</p>
+    </div>
+
+    <ul style="margin:0;padding:0;list-style:none;display:grid;gap:var(--space-2);max-width:820px;font-size:var(--text-sm);line-height:1.5;color:var(--text-body)">
+      <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span>Рядок: плитка з тоном події, подія й номер, час, позначка «не прочитано». Непрочитаний — жирним і з чорною крапкою праворуч.</span></li>
+      <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span>Час словами, поки близько: «щойно», «5 хв тому», «3 год тому», «вчора», далі — дата, «30 вер». Повна дата й час — у підказці на наведенні.</span></li>
+      <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span>Натискання на рядок відкриває обʼєкт і позначає рядок прочитаним — на всіх пристроях. Наведення — сірий фон і червона риска зліва, як у кожному списку сайту.</span></li>
+      <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span>«Позначити всі прочитаними» видно, лише коли є непрочитані. «Показати ще» додає наступні 20; коли більше немає — кнопки немає.</span></li>
+      <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span>Закривається кліком поза ним і клавішею Escape (фокус повертається на дзвіночок), на телефоні — хрестиком. Поки центр відкритий, нові події зʼявляються вгорі списку без тосту.</span></li>
+    </ul>
+
+    <div style="display:flex;flex-wrap:wrap;gap:var(--space-8) var(--space-6);align-items:flex-start">
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="padding:var(--space-6);background:var(--surface-sunken);border:1px solid var(--line-subtle);border-radius:var(--radius-lg)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyCentre" audience="staff" variant="popover" inline="true" items="{{ staffAll }}" device="granted" push="true" max-height="600" style="width:400px;max-width:100%" hint-size="400px,600px"></x-import>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Панель — поповер</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted)">Унизу — перемикач Push-сповіщень працівника (розділ 06).</span>
+        </figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="padding:var(--space-6);background:var(--surface-sunken);border:1px solid var(--line-subtle);border-radius:var(--radius-lg)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyCentre" audience="customer" variant="popover" inline="true" items="{{ custAll }}" device="default" push="true" max-height="600" style="width:400px;max-width:100%" hint-size="400px,600px"></x-import>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Сайт — поповер</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted)">«Налаштування сповіщень» веде в кабінет, до перемикачів SMS, пошти й Push.</span>
+        </figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="padding:var(--space-6);background:var(--surface-sunken);border:1px solid var(--line-subtle);border-radius:var(--radius-lg)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyCentre" audience="staff" variant="popover" inline="true" items="{{ staffAll }}" device="granted" push="true" scroll-to-end="true" max-height="420" style="width:400px;max-width:100%" hint-size="400px,420px"></x-import>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Кінець першої сторінки</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted)">«Показати ще» — та сама кнопка, що під списками каталогу.</span>
+        </figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="padding:var(--space-6);background:var(--surface-sunken);border:1px solid var(--line-subtle);border-radius:var(--radius-lg)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyCentre" audience="staff" variant="popover" inline="true" items="{{ staffAll }}" device="granted" push="true" scroll-to-end="true" loading-more="true" max-height="420" style="width:400px;max-width:100%" hint-size="400px,420px"></x-import>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Наступні 20 вантажаться</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted)">Кнопка недоступна й каже, що відбувається; список не стрибає.</span>
+        </figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="padding:var(--space-6);background:var(--surface-sunken);border:1px solid var(--line-subtle);border-radius:var(--radius-lg)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyCentre" audience="staff" variant="popover" inline="true" items="{{ none }}" device="granted" push="true" style="width:400px;max-width:100%" hint-size="400px,360px"></x-import>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Порожньо — панель</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted)">Каже, що тут зʼявиться, тож порожній список читається як норма.</span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:var(--space-8) var(--space-6);align-items:flex-start">
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="width:360px;height:720px;box-sizing:border-box;border:1px solid var(--line);border-radius:28px;overflow:hidden;background:var(--surface)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyCentre" audience="staff" variant="sheet" inline="true" items="{{ staffAll }}" device="default" push="true" style="width:100%;height:100%" hint-size="100%,100%"></x-import>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Панель, телефон</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted)">Кількість непрочитаних і «Позначити всі» — окремим рядком під заголовком.</span>
+        </figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="width:360px;height:720px;box-sizing:border-box;border:1px solid var(--line);border-radius:28px;overflow:hidden;background:var(--surface)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyCentre" audience="customer" variant="sheet" inline="true" items="{{ custAll }}" device="ios" push="true" style="width:100%;height:100%" hint-size="100%,100%"></x-import>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Кабінет, iPhone у Safari</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted)">Унизу — як отримувати сповіщення на iPhone (розділ 04).</span>
+        </figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="width:360px;height:720px;box-sizing:border-box;border:1px solid var(--line);border-radius:28px;overflow:hidden;background:var(--surface)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyCentre" audience="customer" variant="sheet" inline="true" items="{{ none }}" device="granted" push="true" style="width:100%;height:100%" hint-size="100%,100%"></x-import>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Порожньо — кабінет, телефон</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted)">Нових покупців зустрічає саме цей стан.</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section id="toast" data-screen-label="03 Тост" style="display:grid;gap:var(--space-8);scroll-margin-top:24px">
+    <div style="display:grid;gap:var(--space-2);max-width:760px">
+      <span class="t-eyebrow">03</span>
+      <h2 class="t-display-sm" style="margin:0">Тост</h2>
+      <p style="margin:0;font-size:var(--text-md);line-height:1.5;color:var(--text-body);text-wrap:pretty">Приходить у кожну відкриту сторінку людини — і у фонову вкладку теж, де чекає, доки людина повернеться. Будова та сама, що в рядка центру, тому впізнається з першого разу.</p>
+    </div>
+
+    <ul style="margin:0;padding:0;list-style:none;display:grid;gap:var(--space-2);max-width:820px;font-size:var(--text-sm);line-height:1.5;color:var(--text-body)">
+      <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span><strong style="color:var(--text-strong)">Де.</strong> Знизу ліворуч від робочого поля; на телефоні — знизу на всю ширину, під великим пальцем. Праворуч і вгорі в панелі та на сайті стоять головні дії: кнопки заголовка, липкий підсумок замовлення й кошика, «В кошик» у рядках. Над панеллю збереження тост піднімається сам.</span></li>
+      <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span><strong style="color:var(--text-strong)">Скільки.</strong> Новий стає найближче до краю екрана. На комп'ютері видно три, на телефоні — один; решта збирається в «Ще N сповіщень», яке відкриває центр.</span></li>
+      <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span><strong style="color:var(--text-strong)">Коли йде.</strong> Через 8 с показу. Час іде, лише поки сторінку видно; курсор або фокус на тостах зупиняють відлік. Зникає одразу, коли рядок прочитали деінде (інша вкладка, телефон) і коли людина відкрила центр — там усе вже є.</span></li>
+      <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span><strong style="color:var(--text-strong)">Натискання</strong> відкриває обʼєкт і позначає рядок прочитаним. <strong style="color:var(--text-strong)">Хрестик</strong> ховає тост на цій сторінці, а рядок у центрі лишається непрочитаним.</span></li>
+    </ul>
+
+    <div style="display:flex;flex-wrap:wrap;gap:var(--space-8) var(--space-6);align-items:flex-start">
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="width:380px;max-width:100%;box-sizing:content-box;padding:var(--space-6);background:var(--surface-sunken);border:1px solid var(--line-subtle);border-radius:var(--radius-lg)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyToasts" audience="staff" placement="panel" items="{{ toast1 }}" layout="desktop" inline="true" hint-size="100%,70px"></x-import>
+        </div>
+        <figcaption style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Комп'ютер — один</figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="width:380px;max-width:100%;box-sizing:content-box;padding:var(--space-6);background:var(--surface-sunken);border:1px solid var(--line-subtle);border-radius:var(--radius-lg)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyToasts" audience="staff" placement="panel" items="{{ toast3 }}" layout="desktop" inline="true" hint-size="100%,230px"></x-import>
+        </div>
+        <figcaption style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Комп'ютер — три разом, новий унизу</figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="width:380px;max-width:100%;box-sizing:content-box;padding:var(--space-6);background:var(--surface-sunken);border:1px solid var(--line-subtle);border-radius:var(--radius-lg)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyToasts" audience="customer" placement="site" items="{{ ctoast5 }}" layout="desktop" inline="true" hint-size="100%,280px"></x-import>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Комп'ютер — п'ять: три й «Ще 2»</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">Найчастіше так буває, коли людина повертається у вкладку, що довго була у фоні.</span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:var(--space-8) var(--space-6);align-items:flex-start">
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="position:relative;width:360px;height:440px;box-sizing:border-box;border:1px solid var(--line);border-radius:28px;overflow:hidden;background:var(--surface)">
+          <div style="display:flex;align-items:center;gap:var(--space-2);height:56px;padding:0 var(--space-4);border-bottom:1px solid var(--line)">
+            <span style="width:22px;height:2px;background:var(--ink-700);box-shadow:0 -6px 0 var(--ink-700),0 6px 0 var(--ink-700)"></span>
+            <img src="assets/logo.svg" alt="" style="display:block;height:20px;width:auto;margin-left:var(--space-3)">
+          </div>
+          <div style="display:grid;gap:10px;padding:var(--space-5) var(--space-4)">
+            <span style="height:18px;width:52%;border-radius:3px;background:var(--ink-200)"></span>
+            <span style="height:12px;width:80%;border-radius:3px;background:var(--surface-muted)"></span>
+            <span style="height:56px;border-radius:6px;background:var(--surface-sunken);margin-top:8px"></span>
+            <span style="height:56px;border-radius:6px;background:var(--surface-sunken)"></span>
+            <span style="height:56px;border-radius:6px;background:var(--surface-sunken)"></span>
+          </div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyToasts" audience="staff" placement="panel" items="{{ toast1 }}" layout="phone" inline="true" hint-size="100%,70px"></x-import>
+          </div>
+        </div>
+        <figcaption style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Панель, телефон — один</figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="position:relative;width:360px;height:440px;box-sizing:border-box;border:1px solid var(--line);border-radius:28px;overflow:hidden;background:var(--surface)">
+          <div style="display:flex;align-items:center;gap:var(--space-2);height:56px;padding:0 var(--space-4);border-bottom:1px solid var(--line)">
+            <span style="width:22px;height:2px;background:var(--ink-700);box-shadow:0 -6px 0 var(--ink-700),0 6px 0 var(--ink-700)"></span>
+            <img src="assets/logo-v2-md2.svg" alt="" style="display:block;height:24px;width:auto;margin-left:var(--space-3)">
+          </div>
+          <div style="display:grid;gap:10px;padding:var(--space-5) var(--space-4)">
+            <span style="height:18px;width:44%;border-radius:3px;background:var(--ink-200)"></span>
+            <span style="height:72px;border-radius:6px;background:var(--surface-sunken);margin-top:8px"></span>
+            <span style="height:72px;border-radius:6px;background:var(--surface-sunken)"></span>
+          </div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyToasts" audience="customer" placement="site" items="{{ ctoast3 }}" layout="phone" inline="true" hint-size="100%,124px"></x-import>
+          </div>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Кабінет, телефон — три разом</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted)">Видно найновіший, над ним — «Ще 2 сповіщення».</span>
+        </figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="position:relative;width:360px;height:440px;box-sizing:border-box;border:1px solid var(--line);border-radius:28px;overflow:hidden;background:var(--surface)">
+          <div style="display:flex;align-items:center;gap:var(--space-2);height:56px;padding:0 var(--space-4);border-bottom:1px solid var(--line)">
+            <span style="width:22px;height:2px;background:var(--ink-700);box-shadow:0 -6px 0 var(--ink-700),0 6px 0 var(--ink-700)"></span>
+            <img src="assets/logo.svg" alt="" style="display:block;height:20px;width:auto;margin-left:var(--space-3)">
+          </div>
+          <div style="display:grid;gap:10px;padding:var(--space-5) var(--space-4)">
+            <span style="height:18px;width:60%;border-radius:3px;background:var(--ink-200)"></span>
+            <span style="height:44px;border-radius:6px;border:1px solid var(--line)"></span>
+            <span style="height:44px;border-radius:6px;border:1px solid var(--line)"></span>
+            <span style="height:44px;border-radius:6px;border:1px solid var(--line)"></span>
+          </div>
+          <div style="position:absolute;left:8px;right:8px;bottom:120px">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyToasts" audience="staff" placement="panel" items="{{ toast1b }}" layout="phone" inline="true" hint-size="100%,70px"></x-import>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;display:grid;gap:var(--space-3);padding:var(--space-3) var(--space-4) var(--space-4);border-top:1px solid var(--line);background:var(--surface)">
+            <span style="font-size:var(--text-sm);color:var(--text-strong)">Є незбережені зміни</span>
+            <span style="display:flex;gap:var(--space-2)">
+              <span style="flex:1;display:grid;place-items:center;height:44px;border:1px solid var(--line);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Скинути</span>
+              <span style="flex:1;display:grid;place-items:center;height:44px;border-radius:var(--radius-md);background:var(--ink-800);font-size:var(--text-sm);font-weight:600;color:var(--white)">Зберегти</span>
+            </span>
+          </div>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Панель, телефон — над панеллю збереження</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted)">Тост ніколи не закриває «Зберегти».</span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:var(--space-8) var(--space-6);align-items:flex-start">
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="position:relative;width:640px;max-width:100%;height:400px;box-sizing:border-box;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);overflow:hidden">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:124px;box-sizing:border-box;display:grid;align-content:start;gap:8px;padding:14px 10px;border-right:1px solid var(--line)">
+            <span style="display:flex;align-items:center;justify-content:space-between"><span style="height:10px;width:56px;border-radius:2px;background:var(--ink-800)"></span><span style="width:12px;height:12px;border-radius:3px;border:1.5px solid var(--ink-700)"></span></span>
+            <span style="height:12px;margin-top:8px;border-radius:2px;background:var(--surface-sunken);box-shadow:inset 2px 0 0 var(--red-500)"></span>
+            <span style="height:12px;border-radius:2px;background:var(--surface-sunken)"></span>
+            <span style="height:12px;border-radius:2px;background:var(--surface-sunken)"></span>
+            <span style="height:12px;border-radius:2px;background:var(--surface-sunken)"></span>
+          </div>
+          <div style="position:absolute;left:144px;right:16px;top:16px;display:flex;align-items:center;justify-content:space-between">
+            <span style="height:14px;width:140px;border-radius:2px;background:var(--ink-300)"></span>
+            <span style="display:flex;gap:6px;padding:4px;border:1.5px dashed var(--red-500);border-radius:6px"><span style="width:56px;height:18px;border-radius:4px;border:1px solid var(--line)"></span><span style="width:64px;height:18px;border-radius:4px;background:var(--ink-800)"></span></span>
+          </div>
+          <div style="position:absolute;left:144px;right:196px;top:56px;display:grid;gap:6px">
+            <span style="height:26px;border-radius:3px;background:var(--surface-sunken)"></span>
+            <span style="height:26px;border-radius:3px;background:var(--surface-sunken)"></span>
+            <span style="height:26px;border-radius:3px;background:var(--surface-sunken)"></span>
+            <span style="height:26px;border-radius:3px;background:var(--surface-sunken)"></span>
+          </div>
+          <div style="position:absolute;right:16px;top:52px;width:164px;height:200px;box-sizing:border-box;display:grid;align-content:end;padding:8px;border:1.5px dashed var(--red-500);border-radius:6px;background:var(--surface-sunken)">
+            <span style="height:20px;border-radius:4px;background:var(--red-600)"></span>
+          </div>
+          <div style="position:absolute;left:144px;bottom:46px;width:190px;display:grid;gap:4px">
+            <span style="height:28px;border:1px solid var(--line);border-radius:5px;background:var(--surface);box-shadow:var(--shadow-md)"></span>
+            <span style="height:28px;border:1px solid var(--line);border-radius:5px;background:var(--surface);box-shadow:var(--shadow-md)"></span>
+            <span style="height:28px;border:1px solid var(--ink-800);border-radius:5px;background:var(--surface);box-shadow:var(--shadow-md)"></span>
+          </div>
+          <div style="position:absolute;left:125px;right:0;bottom:0;height:36px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;padding:0 16px 0 20px;border-top:1px solid var(--line);background:var(--surface)">
+            <span style="height:8px;width:90px;border-radius:2px;background:var(--ink-300)"></span>
+            <span style="padding:3px;border:1.5px dashed var(--red-500);border-radius:6px"><span style="display:block;width:72px;height:16px;border-radius:4px;background:var(--ink-800)"></span></span>
+          </div>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Панель, комп'ютер — де стоять тости</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">Пунктиром — головні дії: кнопки заголовка, липкий підсумок картки замовлення, «Зберегти». Тости — за 24 px від бічного меню й над панеллю збереження.</span>
+        </figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="position:relative;width:640px;max-width:100%;height:400px;box-sizing:border-box;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);overflow:hidden">
+          <div style="position:absolute;left:0;right:0;top:0;height:16px;background:var(--ink-800)"></div>
+          <div style="position:absolute;left:0;right:0;top:16px;height:40px;box-sizing:border-box;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid var(--line)">
+            <span style="height:14px;width:60px;border-radius:2px;background:var(--ink-800)"></span>
+            <span style="height:20px;width:180px;border-radius:5px;border:1px solid var(--line)"></span>
+            <span style="margin-left:auto;display:flex;gap:10px;align-items:center"><span style="width:44px;height:6px;border-radius:2px;background:var(--ink-300)"></span><span style="width:44px;height:6px;border-radius:2px;background:var(--ink-300)"></span><span style="width:12px;height:12px;border-radius:3px;border:1.5px solid var(--ink-700)"></span><span style="width:12px;height:12px;border-radius:3px;background:var(--ink-300)"></span><span style="width:12px;height:12px;border-radius:3px;background:var(--red-500)"></span></span>
+          </div>
+          <div style="position:absolute;left:24px;right:220px;top:76px;display:grid;gap:6px">
+            <span style="height:14px;width:160px;border-radius:2px;background:var(--ink-300)"></span>
+            <span style="display:flex;align-items:center;justify-content:space-between;height:40px;padding:0 8px;border-radius:3px;background:var(--surface-sunken)"><span></span><span style="padding:2px;border:1.5px dashed var(--red-500);border-radius:5px"><span style="display:block;width:44px;height:14px;border-radius:3px;background:var(--red-600)"></span></span></span>
+            <span style="display:flex;align-items:center;justify-content:space-between;height:40px;padding:0 8px;border-radius:3px;background:var(--surface-sunken)"><span></span><span style="padding:2px;border:1.5px dashed var(--red-500);border-radius:5px"><span style="display:block;width:44px;height:14px;border-radius:3px;background:var(--red-600)"></span></span></span>
+            <span style="display:flex;align-items:center;justify-content:space-between;height:40px;padding:0 8px;border-radius:3px;background:var(--surface-sunken)"><span></span><span style="padding:2px;border:1.5px dashed var(--red-500);border-radius:5px"><span style="display:block;width:44px;height:14px;border-radius:3px;background:var(--red-600)"></span></span></span>
+          </div>
+          <div style="position:absolute;right:24px;top:76px;width:176px;height:180px;box-sizing:border-box;display:grid;align-content:end;padding:8px;border:1.5px dashed var(--red-500);border-radius:6px;background:var(--surface-sunken)">
+            <span style="height:20px;border-radius:4px;background:var(--red-600)"></span>
+          </div>
+          <div style="position:absolute;left:24px;bottom:16px;width:190px;display:grid;gap:4px">
+            <span style="height:28px;border:1px solid var(--ink-800);border-radius:5px;background:var(--surface);box-shadow:var(--shadow-md)"></span>
+          </div>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Сайт, комп'ютер — де стоїть тост</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">«В кошик» — праворуч у кожному рядку, підсумок кошика й оформлення — праворуч і липкий. Лівий нижній кут вільний на кожній сторінці.</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section id="device" data-screen-label="04 Сповіщення в браузері" style="display:grid;gap:var(--space-8);scroll-margin-top:24px">
+    <div style="display:grid;gap:var(--space-2);max-width:760px">
+      <span class="t-eyebrow">04</span>
+      <h2 class="t-display-sm" style="margin:0">Сповіщення в браузері</h2>
+      <p style="margin:0;font-size:var(--text-md);line-height:1.5;color:var(--text-body);text-wrap:pretty">Тихий рядок унизу центру сповіщень. Під час завантаження сторінки нічого не спливає: браузер показує свій запит лише після натискання. Стан щоразу читаємо з браузера, тож запамʼятовувати «не питати знову» нема чого.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));gap:var(--space-8) var(--space-6);align-items:start">
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyDevice" audience="customer" device="default" push="true" framed="true" hint-size="100%,140px"></x-import>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Ще не питали</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">Notification.permission — «default». Кнопка викликає запит браузера.</span>
+        </figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyDevice" audience="customer" device="asking" push="true" framed="true" hint-size="100%,140px"></x-import>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Запит браузера відкритий</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">Поки людина не відповіла. «Блокувати» веде в «Заблоковано», закритий запит — назад у «Ще не питали».</span>
+        </figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyDevice" audience="customer" device="granted" push="true" framed="true" hint-size="100%,96px"></x-import>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Увімкнено</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">Дозвіл є, підписку пристрою збережено на сервері.</span>
+        </figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyDevice" audience="customer" device="denied" push="true" framed="true" hint-size="100%,130px"></x-import>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Заблоковано в браузері</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">Повторно спитати сайт не може — лише пояснюємо, де дозволити. Щойно людина дозволить, рядок сам переходить в «Увімкнено».</span>
+        </figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyDevice" audience="customer" device="ios" push="true" framed="true" hint-size="100%,200px"></x-import>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">iPhone чи iPad у Safari, сайт не на екрані «Додому»</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">Відкритий з екрана «Додому», сайт показує звичайну кнопку «Увімкнути».</span>
+        </figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyDevice" audience="customer" device="unsupported" push="true" framed="true" hint-size="100%,110px"></x-import>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Браузер не вміє</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">Без порад: робити тут нічого.</span>
+        </figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyDevice" audience="customer" device="granted" push="false" framed="true" hint-size="100%,96px"></x-import>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Покупець вимкнув Push у кабінеті</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">Стан пристрою не важить — замість нього посилання на перемикач.</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section id="system" data-screen-label="05 Системне сповіщення" style="display:grid;gap:var(--space-8);scroll-margin-top:24px">
+    <div style="display:grid;gap:var(--space-2);max-width:760px">
+      <span class="t-eyebrow">05</span>
+      <h2 class="t-display-sm" style="margin:0">Системне сповіщення</h2>
+      <p style="margin:0;font-size:var(--text-md);line-height:1.5;color:var(--text-body);text-wrap:pretty">Зʼявляється, лише коли жодна сторінка сайту не у фокусі — інакше людина вже бачить тост. Вигляд малює система; ми даємо заголовок, іконку й монохромний значок для рядка стану Android.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:var(--space-10) var(--space-8);align-items:start">
+      <dl style="margin:0;display:grid;border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-sm)">
+        <div style="display:grid;grid-template-columns:132px minmax(0,1fr);gap:var(--space-4);padding:12px var(--space-4)">
+          <dt style="color:var(--text-muted)">Заголовок</dt>
+          <dd style="margin:0;display:grid;gap:2px"><span style="color:var(--text-strong);font-weight:600">Текст події, як у списку</span><span style="color:var(--text-muted)">«Замовлення №1045 відправлено»</span></dd>
+        </div>
+        <div style="display:grid;grid-template-columns:132px minmax(0,1fr);gap:var(--space-4);padding:12px var(--space-4);border-top:1px solid var(--line-subtle)">
+          <dt style="color:var(--text-muted)">Текст</dt>
+          <dd style="margin:0;color:var(--text-body)">Немає. Подія й номер уже в заголовку, а більше казати не можна.</dd>
+        </div>
+        <div style="display:grid;grid-template-columns:132px minmax(0,1fr);gap:var(--space-4);padding:12px var(--space-4);border-top:1px solid var(--line-subtle)">
+          <dt style="color:var(--text-muted)">icon</dt>
+          <dd style="margin:0;display:grid;gap:2px"><span class="t-mono" style="color:var(--text-strong)">assets/notification-icon-192.png</span><span style="color:var(--text-muted)">«Д» зі знака на світлій плитці, як фавікон. 192 × 192.</span></dd>
+        </div>
+        <div style="display:grid;grid-template-columns:132px minmax(0,1fr);gap:var(--space-4);padding:12px var(--space-4);border-top:1px solid var(--line-subtle)">
+          <dt style="color:var(--text-muted)">badge</dt>
+          <dd style="margin:0;display:grid;gap:2px"><span class="t-mono" style="color:var(--text-strong)">assets/notification-badge-96.png</span><span style="color:var(--text-muted)">Лише Android, рядок стану. Один колір на прозорому, 96 × 96. Є й SVG.</span></dd>
+        </div>
+        <div style="display:grid;grid-template-columns:132px minmax(0,1fr);gap:var(--space-4);padding:12px var(--space-4);border-top:1px solid var(--line-subtle)">
+          <dt style="color:var(--text-muted)">tag</dt>
+          <dd style="margin:0;color:var(--text-body)">Id рядка. Повтор тієї самої події заміняє сповіщення, а не додає друге.</dd>
+        </div>
+        <div style="display:grid;grid-template-columns:132px minmax(0,1fr);gap:var(--space-4);padding:12px var(--space-4);border-top:1px solid var(--line-subtle)">
+          <dt style="color:var(--text-muted)">Натискання</dt>
+          <dd style="margin:0;color:var(--text-body)">Відкриває обʼєкт — у вже відкритій вкладці сайту, якщо вона є, — і позначає рядок прочитаним.</dd>
+        </div>
+        <div style="display:grid;grid-template-columns:132px minmax(0,1fr);gap:var(--space-4);padding:12px var(--space-4);border-top:1px solid var(--line-subtle)">
+          <dt style="color:var(--text-muted)">Коли</dt>
+          <dd style="margin:0;color:var(--text-body)">Сервер надсилає push на кожну подію; service worker показує його, лише якщо серед відкритих сторінок сайту немає жодної у фокусі.</dd>
+        </div>
+      </dl>
+
+      <div style="display:grid;gap:var(--space-6)">
+        <figure style="margin:0;display:grid;gap:var(--space-3)">
+          <div style="display:grid;place-items:start;padding:var(--space-6);background:var(--surface-sunken);border:1px solid var(--line-subtle);border-radius:var(--radius-lg)">
+            <div style="width:360px;max-width:100%;box-sizing:border-box;display:grid;gap:10px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:10px">
+              <span style="font-size:var(--text-2xs);color:var(--text-muted)">Браузер · drive.zp.ua</span>
+              <span style="display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;align-items:center">
+                <img src="assets/notification-icon-192.png" alt="" style="display:block;width:40px;height:40px;border-radius:8px">
+                <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Замовлення №1045 відправлено</span>
+              </span>
+            </div>
+          </div>
+          <figcaption style="display:grid;gap:2px">
+            <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Комп'ютер — схема</span>
+            <span style="font-size:var(--text-xs);color:var(--text-muted)">Рамку, назву браузера й адресу сайту малює система.</span>
+          </figcaption>
+        </figure>
+
+        <figure style="margin:0;display:grid;gap:var(--space-3)">
+          <div style="display:grid;place-items:start;padding:var(--space-6);background:var(--surface-sunken);border:1px solid var(--line-subtle);border-radius:var(--radius-lg)">
+            <div style="width:360px;max-width:100%;box-sizing:border-box;display:grid;gap:10px;padding-bottom:14px;background:var(--ink-900);border-radius:20px;overflow:hidden">
+              <div style="display:flex;align-items:center;gap:8px;height:30px;padding:0 18px;color:var(--white);font-size:var(--text-xs);font-weight:600">
+                <span>10:42</span>
+                <img src="assets/notification-badge.svg" alt="" style="display:block;width:16px;height:16px">
+                <span style="margin-left:auto;display:inline-flex;gap:6px;color:var(--white)">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="wifi" size="14" hint-size="14px,14px"></x-import>
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="battery" size="14" hint-size="14px,14px"></x-import>
+                </span>
+              </div>
+              <div style="margin:0 10px;display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:12px;align-items:center;padding:12px 14px;background:var(--surface);border-radius:16px">
+                <span style="display:grid;gap:4px;min-width:0">
+                  <span style="display:flex;align-items:center;gap:6px;font-size:var(--text-2xs);color:var(--text-muted)">
+                    <span style="display:inline-block;width:14px;height:14px;background:var(--ink-800);-webkit-mask:url(assets/notification-badge.svg) center / contain no-repeat;mask:url(assets/notification-badge.svg) center / contain no-repeat"></span>
+                    <span>Chrome · drive.zp.ua · щойно</span>
+                  </span>
+                  <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Нове замовлення №1049</span>
+                </span>
+                <img src="assets/notification-icon-192.png" alt="" style="display:block;width:40px;height:40px;border-radius:8px">
+              </div>
+            </div>
+          </div>
+          <figcaption style="display:grid;gap:2px">
+            <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Android — схема</span>
+            <span style="font-size:var(--text-xs);color:var(--text-muted)">Значок — у рядку стану й у шапці сповіщення; колір йому дає система.</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:var(--space-6);align-items:flex-end">
+      <figure style="margin:0;display:grid;gap:var(--space-2)">
+        <div style="display:grid;place-items:center;width:144px;height:144px;border:1px solid var(--line);border-radius:var(--radius-md);background:repeating-conic-gradient(var(--ink-100) 0 25%, var(--white) 0 50%) 0 0 / 16px 16px">
+          <img src="assets/notification-badge-96.png" alt="Значок сповіщення" style="display:block;width:96px;height:96px;outline:1px dashed var(--ink-300)">
+        </div>
+        <figcaption style="font-size:var(--text-xs);color:var(--text-muted)">96 × 96, прозорий фон</figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-2)">
+        <div style="display:grid;place-items:center;width:144px;height:144px;border-radius:var(--radius-md);background:var(--ink-800)">
+          <img src="assets/notification-badge-96.png" alt="" style="display:block;width:96px;height:96px">
+        </div>
+        <figcaption style="font-size:var(--text-xs);color:var(--text-muted)">На темному</figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-2)">
+        <div style="display:grid;place-items:center;width:144px;height:144px;border-radius:var(--radius-md);background:var(--ink-900)">
+          <img src="assets/notification-badge.svg" alt="" style="display:block;width:24px;height:24px">
+        </div>
+        <figcaption style="font-size:var(--text-xs);color:var(--text-muted)">Справжній розмір, 24 dp</figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-2)">
+        <div style="display:grid;place-items:center;width:144px;height:144px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface)">
+          <img src="assets/notification-icon-192.png" alt="Іконка сповіщення" style="display:block;width:96px;height:96px">
+        </div>
+        <figcaption style="font-size:var(--text-xs);color:var(--text-muted)">Іконка, 192 × 192</figcaption>
+      </figure>
+      <p style="margin:0;max-width:340px;font-size:var(--text-xs);line-height:1.5;color:var(--text-muted);text-wrap:pretty">Значок — «Д» зі слова «Драйв», той самий, що у фавіконі. Спідометр і лінії швидкості з повного знака на 24 dp зливаються в пляму, а «Д» читається.</p>
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section id="off" data-screen-label="06 Вимкнення" style="display:grid;gap:var(--space-8);scroll-margin-top:24px">
+    <div style="display:grid;gap:var(--space-2);max-width:760px">
+      <span class="t-eyebrow">06</span>
+      <h2 class="t-display-sm" style="margin:0">Вимкнення</h2>
+      <p style="margin:0;font-size:var(--text-md);line-height:1.5;color:var(--text-body);text-wrap:pretty">Один перемикач людини вимикає системні сповіщення на всіх її пристроях. Центр і тости на відкритих сторінках лишаються — вони частина сайту. Підписки пристроїв не видаляються: увімкнули знову — сповіщення йдуть туди ж, без повторного дозволу.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:var(--space-8) var(--space-6);align-items:start">
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="display:grid;gap:var(--space-3);padding:var(--space-6);border:1px solid var(--line);border-radius:var(--radius-lg)">
+          <h3 class="t-display-xs" style="margin:0">Сповіщення</h3>
+          <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted)">Пишемо про стан замовлень і бонуси.</p>
+          <div style="display:grid;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);overflow:hidden">
+            <label class="ds-check" style="display:grid;grid-template-columns:18px minmax(0,1fr);gap:2px var(--space-3);align-items:start;padding:14px var(--space-4)">
+              <input type="checkbox" defaultChecked="{{ true }}" style="margin-top:2px">
+              <span style="display:grid;gap:2px;min-width:0"><span style="font-weight:600;color:var(--text-strong)">SMS</span><span style="font-size:var(--text-sm);color:var(--text-muted)">На +38 (067) 123-45-67</span></span>
+            </label>
+            <label class="ds-check" style="display:grid;grid-template-columns:18px minmax(0,1fr);gap:2px var(--space-3);align-items:start;padding:14px var(--space-4);border-top:1px solid var(--line)">
+              <input type="checkbox" defaultChecked="{{ true }}" style="margin-top:2px">
+              <span style="display:grid;gap:2px;min-width:0"><span style="font-weight:600;color:var(--text-strong)">Пошта</span><span style="font-size:var(--text-sm);color:var(--text-muted)">На o.ivanenko@ukr.net</span></span>
+            </label>
+            <label class="ds-check" style="display:grid;grid-template-columns:18px minmax(0,1fr);gap:2px var(--space-3);align-items:start;padding:14px var(--space-4);border-top:1px solid var(--line);background:var(--surface-sunken);box-shadow:var(--keyline-ink)">
+              <input type="checkbox" defaultChecked="{{ true }}" style="margin-top:2px">
+              <span style="display:grid;gap:2px;min-width:0"><span style="font-weight:600;color:var(--text-strong)">Push-сповіщення</span><span style="font-size:var(--text-sm);color:var(--text-muted)">У браузері — на всіх пристроях, де ви їх дозволили</span></span>
+            </label>
+          </div>
+        </div>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Кабінет → Профіль → Сповіщення</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">Новий рядок виділено. Правило «один канал лишається увімкненим» стосується SMS і пошти: Push залежить від пристрою, тож його не рахує. Вимкнено — підпис «Вимкнено на всіх пристроях».</span>
+        </figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyDevice" audience="staff" device="granted" push="true" framed="true" hint-size="100%,120px"></x-import>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Панель — у центрі сповіщень, увімкнено</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">Особистих налаштувань у панелі немає, а «Налаштування» — сайту й лише для власника. Тому перемикач — тут, де працівник і бачить сповіщення.</span>
+        </figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyDevice" audience="staff" device="granted" push="false" framed="true" hint-size="100%,80px"></x-import>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Панель — вимкнено</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">Рядок пристрою ховається: поки Push вимкнено, він ні на що не впливає.</span>
+        </figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyDevice" audience="staff" device="default" push="true" framed="true" hint-size="100%,170px"></x-import>
+        <figcaption style="display:grid;gap:2px">
+          <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Панель — увімкнено, а цей пристрій ще не дозволив</span>
+          <span style="font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty">Інші стани пристрою — ті самі, що в розділі 04.</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 07 -->
+  <section id="kinds" data-screen-label="07 Події" style="display:grid;gap:var(--space-8);scroll-margin-top:24px">
+    <div style="display:grid;gap:var(--space-2);max-width:760px">
+      <span class="t-eyebrow">07</span>
+      <h2 class="t-display-sm" style="margin:0">Події</h2>
+      <p style="margin:0;font-size:var(--text-md);line-height:1.5;color:var(--text-body);text-wrap:pretty">Чотири для панелі — їх отримує кожен працівник, і дванадцять для покупця — по одній на кожен лист, який він уже отримує поштою. Тон плитки читається зі списку на двадцять рядків: жовтий — потрібна дія, зелений — готово, сірий — скасовано, чорний — нове замовлення.</p>
+    </div>
+    <div style="overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius-md)">
+      <div style="min-width:820px;display:grid;font-size:var(--text-sm)">
+        <div style="display:grid;grid-template-columns:72px minmax(300px,2fr) minmax(220px,1.3fr) minmax(200px,1fr);gap:var(--space-4);align-items:center;padding:10px var(--space-4);background:var(--surface-sunken);font-size:var(--text-xs);font-weight:600;color:var(--text-muted)">
+          <span></span><span>Текст</span><span>Натискання відкриває</span><span>Тон</span>
+        </div>
+        <div style="padding:12px var(--space-4) 6px;border-top:1px solid var(--line)"><span class="t-eyebrow">Панель · 4</span></div>
+        <sc-for list="{{ kindsStaff }}" as="k" hint-placeholder-count="4">
+          <div style="display:grid;grid-template-columns:72px minmax(300px,2fr) minmax(220px,1.3fr) minmax(200px,1fr);gap:var(--space-4);align-items:center;padding:10px var(--space-4);border-top:1px solid var(--line-subtle)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyTile" kind="{{ k.kind }}" hint-size="32px,32px"></x-import>
+            <span style="font-weight:600;color:var(--text-strong)">{{ k.text }}</span>
+            <span style="color:var(--text-body)">{{ k.opens }}</span>
+            <span style="color:var(--text-muted)">{{ k.tone }}</span>
+          </div>
+        </sc-for>
+        <div style="padding:16px var(--space-4) 6px;border-top:1px solid var(--line)"><span class="t-eyebrow">Покупець · 12 — усе відкривається в кабінеті</span></div>
+        <sc-for list="{{ kindsCust }}" as="k" hint-placeholder-count="12">
+          <div style="display:grid;grid-template-columns:72px minmax(300px,2fr) minmax(220px,1.3fr) minmax(200px,1fr);gap:var(--space-4);align-items:center;padding:10px var(--space-4);border-top:1px solid var(--line-subtle)">
+            <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyTile" kind="{{ k.kind }}" hint-size="32px,32px"></x-import>
+            <span style="font-weight:600;color:var(--text-strong)">{{ k.text }}</span>
+            <span style="color:var(--text-body)">{{ k.opens }}</span>
+            <span style="color:var(--text-muted)">{{ k.tone }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <ul style="margin:0;padding:0;list-style:none;display:grid;gap:var(--space-2);max-width:820px;font-size:var(--text-sm);line-height:1.5;color:var(--text-body)">
+      <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span>Що змінено в чернетці: «:» замінено на тире, як у решті копірайту сайту; «очікує оплати» — «чекає на оплату»; «чекає у магазині» — «чекає на вас у магазині»; «Нова заявка» — «Нова заявка на підбір», бо в панелі заявки — це підбір за VIN і «нічого не знайдено».</span></li>
+      <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span>Звернення про повернення відкриває список повернень: окремої картки звернення в панелі немає.</span></li>
+    </ul>
+  </section>
+
+  <!-- 08 -->
+  <section id="live" data-screen-label="08 Наживо" style="display:grid;gap:var(--space-8);scroll-margin-top:24px">
+    <div style="display:grid;gap:var(--space-2);max-width:760px">
+      <span class="t-eyebrow">08</span>
+      <h2 class="t-display-sm" style="margin:0">Наживо</h2>
+      <p style="margin:0;font-size:var(--text-md);line-height:1.5;color:var(--text-body);text-wrap:pretty">Подія з пульта приходить у кожну відкриту вкладку — у панель і кабінет нижче теж. Відкрийте дві вкладки: прочитане в одній зникає з іншої.</p>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:var(--space-6);align-items:flex-end;padding:var(--space-5);border:1px solid var(--line);border-radius:var(--radius-lg)">
+      <div style="display:grid;gap:6px">
+        <span class="t-eyebrow">Кому</span>
+        <div style="display:flex;gap:var(--space-2)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.Chip" as="button" type="button" active="{{ audStaff }}" onClick="{{ pickStaff }}" hint-size="auto,36px">Панель</x-import>
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.Chip" as="button" type="button" active="{{ audCust }}" onClick="{{ pickCust }}" hint-size="auto,36px">Покупець</x-import>
+        </div>
+      </div>
+      <label style="display:grid;gap:6px;min-width:280px;flex:1 1 280px">
+        <span class="t-eyebrow">Подія</span>
+        <select class="ds-select" value="{{ kind }}" onChange="{{ onKind }}">
+          <sc-for list="{{ kindOptions }}" as="o" hint-placeholder-count="4">
+            <option value="{{ o.id }}">{{ o.label }}</option>
+          </sc-for>
+        </select>
+      </label>
+      <label style="display:grid;gap:6px;width:120px">
+        <span class="t-eyebrow">Номер</span>
+        <input class="ds-input ds-input--mono" inputMode="numeric" value="{{ num }}" onChange="{{ onNum }}" disabled="{{ noNum }}">
+      </label>
+      <x-import component-from-global-scope="DesignSystem_d7c4f4.Button" variant="dark" onClick="{{ send }}" hint-size="auto,44px">Надіслати подію</x-import>
+      <label style="display:grid;gap:6px;min-width:240px">
+        <span class="t-eyebrow">Цей пристрій</span>
+        <select class="ds-select" value="{{ dev }}" onChange="{{ onDev }}">
+          <option value="">Як каже браузер</option>
+          <option value="default">Ще не питали</option>
+          <option value="granted">Увімкнено</option>
+          <option value="denied">Заблоковано</option>
+          <option value="ios">iPhone без екрана «Додому»</option>
+          <option value="unsupported">Браузер не вміє</option>
+        </select>
+      </label>
+      <button type="button" onClick="{{ reset }}" style="min-height:44px;padding:0;border:0;background:none;font:inherit;font-size:var(--text-sm);color:var(--text-muted);text-decoration:underline;text-decoration-color:var(--ink-300);text-underline-offset:3px;cursor:pointer">Повернути приклад</button>
+      <div style="display:flex;gap:var(--space-6);margin-left:auto">
+        <span style="display:grid;justify-items:center;gap:2px;font-size:var(--text-xs);color:var(--text-muted)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyBell" audience="staff" align="end" hint-size="44px,44px"></x-import>
+          <span>Панель</span>
+        </span>
+        <span style="display:grid;justify-items:center;gap:2px;font-size:var(--text-xs);color:var(--text-muted)">
+          <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyBell" audience="customer" align="end" hint-size="44px,44px"></x-import>
+          <span>Покупець</span>
+        </span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:var(--space-8) var(--space-6);align-items:flex-start">
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="width:640px;height:400px;max-width:100%;overflow:hidden;border:1px solid var(--line);border-radius:var(--radius-md)">
+          <iframe src="Панель.dc.html?nf=toast3#orders" title="Панель, комп'ютер" loading="lazy" style="display:block;width:1280px;height:800px;border:0;transform:scale(.5);transform-origin:0 0"></iframe>
+        </div>
+        <figcaption style="display:flex;gap:var(--space-3);align-items:baseline"><span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Панель, 1280 — три тости</span><a href="Панель.dc.html" style="font-size:var(--text-sm)">Відкрити</a></figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="width:360px;height:720px;overflow:hidden;border:1px solid var(--line);border-radius:28px">
+          <iframe src="Панель.dc.html?nf=centre#today" title="Панель, телефон" loading="lazy" style="display:block;width:360px;height:720px;border:0"></iframe>
+        </div>
+        <figcaption style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Панель, 360 — центр</figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="width:640px;height:400px;max-width:100%;overflow:hidden;border:1px solid var(--line);border-radius:var(--radius-md)">
+          <iframe src="Мій кабінет.dc.html?nf=centre" title="Кабінет, комп'ютер" loading="lazy" style="display:block;width:1280px;height:800px;border:0;transform:scale(.5);transform-origin:0 0"></iframe>
+        </div>
+        <figcaption style="display:flex;gap:var(--space-3);align-items:baseline"><span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Кабінет, 1280 — центр під дзвіночком</span><a href="Мій кабінет.dc.html" style="font-size:var(--text-sm)">Відкрити</a></figcaption>
+      </figure>
+      <figure style="margin:0;display:grid;gap:var(--space-3)">
+        <div style="width:360px;height:720px;overflow:hidden;border:1px solid var(--line);border-radius:28px">
+          <iframe src="Мій кабінет.dc.html?nf=toast1" title="Кабінет, телефон" loading="lazy" style="display:block;width:360px;height:720px;border:0"></iframe>
+        </div>
+        <figcaption style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Кабінет, 360 — тост</figcaption>
+      </figure>
+    </div>
+
+    <sc-if value="{{ audStaff }}" hint-placeholder-val="{{ false }}">
+      <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyToasts" audience="staff" placement="site" hint-size="0px,0px"></x-import>
+    </sc-if>
+    <sc-if value="{{ audCust }}" hint-placeholder-val="{{ false }}">
+      <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyToasts" audience="customer" placement="site" hint-size="0px,0px"></x-import>
+    </sc-if>
+  </section>
+
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { ready: false, aud: 'staff', kind: 'staff.order', num: '1049', dev: '' }
+
+  componentDidMount() {
+    const poll = () => {
+      const st = this.store()
+      if (!st) { this.t = setTimeout(poll, 150); return }
+      this.off = st.subscribe(() => this.forceUpdate())
+      let dev = ''
+      try { dev = localStorage.getItem('drive.notify.device') || '' } catch (e) {}
+      this.setState({ ready: true, dev })
+    }
+    poll()
+  }
+  componentWillUnmount() { clearTimeout(this.t); if (this.off) this.off() }
+  store() { const ns = window.DesignSystem_d7c4f4; return ns && ns.NotifyStore ? ns.NotifyStore : null }
+
+  renderVals() {
+    const st = this.store()
+    const s = this.state
+    const staff = st ? st.sample('staff') : []
+    const cust = st ? st.sample('customer') : []
+    const kinds = st ? st.kinds : {}
+    const tones = st ? st.tones : {}
+    const example = (id) => (id === 'staff.lead' ? 56 : 1234)
+    const rows = (aud) => Object.keys(kinds).filter((id) => kinds[id].aud === aud).map((id) => ({
+      kind: id, text: kinds[id].text(example(id)), opens: kinds[id].opens, tone: tones[kinds[id].tone] || ''
+    }))
+    const kindOptions = Object.keys(kinds).filter((id) => kinds[id].aud === s.aud).map((id) => ({ id, label: kinds[id].text('…').replace(' №…', '').replace('№…', '') }))
+    const noNum = s.kind === 'bonus.expiring' || s.kind === 'bonus.last'
+    const pick = (aud) => () => this.setState({ aud, kind: aud === 'staff' ? 'staff.order' : 'order.shipped', num: aud === 'staff' ? '1049' : '1047' })
+    return {
+      staffAll: staff, custAll: cust, none: [],
+      toast1: staff.slice(0, 1), toast1b: staff.slice(2, 3), toast3: staff.slice(0, 3),
+      ctoast3: cust.slice(0, 3), ctoast5: cust.slice(0, 5),
+      kindsStaff: rows('staff'), kindsCust: rows('customer'),
+      audStaff: s.aud === 'staff', audCust: s.aud === 'customer',
+      pickStaff: pick('staff'), pickCust: pick('customer'),
+      kind: s.kind, kindOptions, onKind: (e) => this.setState({ kind: e.target.value }),
+      num: noNum ? '' : s.num, noNum, onNum: (e) => this.setState({ num: e.target.value.replace(/\D/g, '').slice(0, 6) }),
+      send: () => { if (st) st.add(s.aud, s.kind, noNum ? null : (s.num || '1049')) },
+      dev: s.dev, onDev: (e) => { const v = e.target.value; this.setState({ dev: v }); if (st) st.setDevice(v) },
+      reset: () => { if (st) { st.reset('staff'); st.reset('customer') } }
+    }
+  }
+}
+</script>
+</body>
+</html>

@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
-<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=20"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=21"></script>
 <style>
   html, body { margin: 0; }
   body { background: var(--surface); color: var(--text-body); font-family: var(--font-sans); }
@@ -62,6 +62,11 @@
   [data-brand] { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 var(--space-3); color: inherit; }
   [data-brand]:hover { text-decoration: none; }
   [data-brand] img { display: block; height: 26px; width: auto; }
+  /* Дзвіночок: від 1024 px — у бічному меню біля логотипа, нижче — у верхній смузі. */
+  [data-side-bell] { display: none; }
+  @media (min-width: 1024px) { [data-side-bell] { display: inline-flex; } }
+  /* Із дзвіночком верхня смуга на 360 px не вміщає ярлик «Панель» — він декоративний, ховаємо його першим. */
+  @media (max-width: 419px) { [data-top] [data-brand-tag] { display: none; } }
   [data-brand-tag] { padding-left: 10px; border-left: 1px solid var(--line); font-family: var(--font-display); font-size: var(--text-2xs); font-weight: 600; letter-spacing: var(--tracking-eyebrow); text-transform: uppercase; color: var(--text-muted); }
   [data-navgroup] { display: grid; gap: 2px; }
   [data-navgroup] > h2 { margin: 0 0 6px; padding: 0 var(--space-3); }
@@ -396,6 +401,7 @@
 
 <sc-if value="{{ showApp }}" hint-placeholder-val="{{ true }}">
 <div data-app>
+  <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyToasts" audience="staff" placement="panel" hint-size="0px,0px"></x-import>
   <sc-if value="{{ navOpen }}" hint-placeholder-val="{{ false }}">
     <button type="button" data-scrim aria-label="Закрити меню" onClick="{{ closeNav }}"></button>
   </sc-if>
@@ -408,6 +414,9 @@
       </a>
       <span data-side-close>
         <x-import component-from-global-scope="DesignSystem_d7c4f4.IconButton" icon="x" label="Закрити меню" onClick="{{ closeNav }}" hint-size="44px,44px"></x-import>
+      </span>
+      <span data-side-bell>
+        <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyBell" audience="staff" align="start" hint-size="44px,44px"></x-import>
       </span>
     </div>
 
@@ -468,10 +477,11 @@
         <img src="assets/logo.svg" alt="Драйв" style="height:22px">
         <span data-brand-tag>Панель</span>
       </a>
-      <span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:var(--text-xs);color:var(--text-muted)">
+      <span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:var(--text-xs);color:var(--text-muted);white-space:nowrap">
         <span data-dot data-tone="{{ shiftTone }}"></span>
         <span>ПРРО {{ shiftLabel }}</span>
       </span>
+      <x-import component-from-global-scope="DesignSystem_d7c4f4.NotifyBell" audience="staff" align="end" hint-size="44px,44px"></x-import>
     </header>
 
     <main data-main>

@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/components/components.css">
 <link rel="stylesheet" href="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/styles.css">
 <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
-<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=20"></script>
+<script src="_ds/design-system-d7c4f46a-eddf-4874-af71-8ec2161374b2/_ds_bundle.js?v=21"></script>
 <style>
   /* Шапка кабінету, списки з волосяними лініями, текстові кнопки. */
   [data-acc-head] { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-2); }
@@ -1021,6 +1021,13 @@
                     <span style="font-size:var(--text-sm);color:var(--text-muted);overflow-wrap:anywhere">{{ emailSub }}</span>
                   </span>
                 </label>
+                <label class="ds-check" data-nrow>
+                  <input type="checkbox" checked="{{ pushOn }}" onChange="{{ onPush }}">
+                  <span style="display:grid;gap:2px;min-width:0">
+                    <span style="font-weight:600;color:var(--text-strong)">Push-сповіщення</span>
+                    <span style="font-size:var(--text-sm);color:var(--text-muted)">{{ pushSub }}</span>
+                  </span>
+                </label>
               </div>
               <sc-if value="{{ notifyNote }}" hint-placeholder-val="{{ false }}">
                 <p style="margin:0;font-size:var(--text-xs);color:var(--text-muted);text-wrap:pretty" data-comment-anchor="10ba46f60e-p">{{ notifyNote }}</p>
@@ -1265,10 +1272,19 @@ class Component extends DCLogic {
     this.onHash = () => { const h = this.fromHash(); if (h) this.setState((s) => this.navPatch(s, h.tab, h.orderNo)) }
     window.addEventListener('hashchange', this.onHash)
     this.onHash()
+    /* Push — третій канал, але не «останній»: він залежить від пристрою, тому правило «один канал лишається» його не враховує. */
+    const hook = () => {
+      const st = window.DesignSystem_d7c4f4 && window.DesignSystem_d7c4f4.NotifyStore
+      if (!st) { this.tPush = setTimeout(hook, 200); return }
+      this.offPush = st.subscribe(() => this.forceUpdate())
+      this.forceUpdate()
+    }
+    hook()
   }
   componentWillUnmount() {
     window.removeEventListener('hashchange', this.onHash)
-    ;[this.t1, this.t2, this.t3, this.t4, this.t5].forEach((t) => clearTimeout(t))
+    ;[this.t1, this.t2, this.t3, this.t4, this.t5, this.tPush].forEach((t) => clearTimeout(t))
+    if (this.offPush) this.offPush()
   }
   componentDidUpdate(prev) {
     const p = this.props
@@ -1504,6 +1520,15 @@ class Component extends DCLogic {
   copyVals(ttn) {
     const done = !!ttn && this.state.copied === ttn
     return { copyTtn: this.copyTtn(ttn), ttnCopied: done, copyIcon: done ? 'check' : 'copy', copyLabel: done ? 'Скопійовано' : 'Скопіювати номер ТТН' }
+  }
+  pushVals() {
+    const st = window.DesignSystem_d7c4f4 && window.DesignSystem_d7c4f4.NotifyStore
+    const on = st ? st.push('customer') : true
+    return {
+      pushOn: on,
+      pushSub: on ? 'У браузері — на всіх пристроях, де ви їх дозволили' : 'Вимкнено на всіх пристроях',
+      onPush: (e) => { if (st) st.setPush('customer', e.target.checked) }
+    }
   }
   onSms = (e) => { const v = e.target.checked; this.setState((s) => (!v && !s.notify.email ? {} : { notify: { ...s.notify, sms: v } })) }
   onEmail = (e) => { const v = e.target.checked; this.setState((s) => (!s.profile.email || (!v && !s.notify.sms) ? {} : { notify: { ...s.notify, email: v } })) }
@@ -1798,6 +1823,7 @@ class Component extends DCLogic {
       smsSub: 'На ' + phoneText(p.phone),
       emailSub: p.email ? 'На ' + p.email : 'Спершу вкажіть пошту в особистих даних',
       onSms: this.onSms, onEmail: this.onEmail,
+      ...this.pushVals(),
       notifyNote,
 
       delClosed: !s.delOpen, delOpen: s.delOpen, openDel: this.openDel, closeDel: this.closeDel,

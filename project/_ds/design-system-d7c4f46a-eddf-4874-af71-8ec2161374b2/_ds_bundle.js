@@ -3723,6 +3723,9 @@ function SiteHeader({
           href: link('panel'), className: 'ds-navlink', 'aria-label': 'Панель', onClick: nav_('panel'),
         }, h(__ds_scope.Icon, { name: 'layout-dashboard', size: 17 }),
           h('span', { className: 'ds-navlink__text' }, 'Панель')) : null,
+        /* Сповіщення — для покупця, що увійшов. Ознака працівника тут не заважає: сторінку,
+           що передає signedIn, людина бачить як покупець. Компонент — у патчі «Сповіщення». */
+        signedIn && __ds_ns.NotifyBell ? h(__ds_ns.NotifyBell, { audience: 'customer', align: 'end' }) : null,
         isStaff ? null : h('a', {
           href: link('account'), className: 'ds-navlink',
           'aria-label': signedIn ? 'Мій кабінет' : 'Увійти',
@@ -3734,7 +3737,8 @@ function SiteHeader({
           'data-active': active === 'cart' ? 'true' : 'false', onClick: nav_('cart'),
         }, h(__ds_scope.Icon, { name: 'shopping-cart', size: 17 }),
           h('span', { className: 'ds-navlink__text' }, 'Кошик'),
-          cartCount > 0 ? h('span', { className: 'ds-navlink__count' }, cartCount) : null))));
+          cartCount > 0 ? h('span', { className: 'ds-navlink__count' }, cartCount) : null))),
+    signedIn && __ds_ns.NotifyToasts ? h(__ds_ns.NotifyToasts, { audience: 'customer', placement: 'site' }) : null);
 }
 
 /* ═══ Маски держномера й VIN — 2026-09-07 ═══════════════════════════════════
@@ -4078,5 +4082,489 @@ ns.PhoneField = PhoneField;
 } catch (e) {
   const bag = window.DesignSystem_d7c4f4;
   if (bag && bag.__errors) bag.__errors.push({ path: 'phone-field-patch', error: String((e && e.message) || e) });
+}
+}());
+
+
+(function () {
+try {
+/* ═══ Сповіщення — 2026-10-07 ════════════════════════════════════════════════
+   Дзвіночок із лічильником, центр сповіщень, тости й рядок «на цьому пристрої».
+   Одна реалізація для двох аудиторій: панель ('staff') ставить NotifyBell і
+   NotifyToasts у своїй розмітці, сайт ('customer') — через SiteHeader, коли
+   покупець увійшов. Усі стани й правила — «Сповіщення.dc.html».
+
+   Сховище тут демонстраційне: localStorage + подія storage, тож тост приходить у
+   кожну відкриту вкладку, а «прочитано» розходиться по всіх. На сайті це
+   GET /me/notifications?page=N (20 на сторінку), PATCH /me/notifications/:id/read,
+   POST /me/notifications/read-all і серверна подія на кожну відкриту сторінку.
+   Fold into the master design system as components/notify/*.jsx.            */
+const ns = window.DesignSystem_d7c4f4;
+if (!ns) return;
+const h = function () { return React.createElement.apply(React, arguments); };
+
+const MIN = 60000, HOUR = 60 * MIN, DAY = 24 * HOUR;
+const PAGE = 20;
+const TOAST_MS = 8000;
+const MONTHS = ['січ', 'лют', 'бер', 'квіт', 'тра', 'чер', 'лип', 'серп', 'вер', 'жовт', 'лист', 'груд'];
+const MONTHS_FULL = ['січня', 'лютого', 'березня', 'квітня', 'травня', 'червня', 'липня', 'серпня', 'вересня', 'жовтня', 'листопада', 'грудня'];
+const HOME = { staff: 'Панель.dc.html', customer: 'Мій кабінет.dc.html' };
+const UNREAD = ['непрочитане', 'непрочитані', 'непрочитаних'];
+const plural = (n, f) => { const a = n % 10, b = n % 100; return f[a === 1 && b !== 11 ? 0 : a >= 2 && a <= 4 && (b < 12 || b > 14) ? 1 : 2]; };
+const urlParam = (k) => { try { return new URLSearchParams(window.location.search).get(k) || ''; } catch (e) { return ''; } };
+const mq = (q) => { try { return window.matchMedia(q).matches; } catch (e) { return false; } };
+const portal = (node) => (window.ReactDOM && typeof window.ReactDOM.createPortal === 'function' && document.body ? window.ReactDOM.createPortal(node, document.body) : node);
+
+/* Каталог подій. Текст — тільки подія й номер: ні імені, ні телефону, ні суми, ні
+   тексту повідомлення — ні в тості, ні в списку, ні в системному сповіщенні.
+   Оплата й доплата відкривають замовлення в кабінеті, ніколи не сторінку оплати. */
+const ORDER = (n) => '#order-' + n;
+const KINDS = {
+  'staff.order':      { aud: 'staff', icon: 'shopping-bag', tone: 'ink', text: (n) => 'Нове замовлення №' + n, to: (n) => '#order/' + n, opens: 'Картка замовлення' },
+  'staff.return':     { aud: 'staff', icon: 'undo-2', tone: 'warn', text: (n) => 'Нове звернення про повернення — замовлення №' + n, to: () => '#returns', opens: 'Повернення, нові вгорі' },
+  'staff.lead':       { aud: 'staff', icon: 'clipboard-list', tone: 'plain', text: (n) => 'Нова заявка на підбір №' + n, to: (n) => '#lead/' + n, opens: 'Картка заявки' },
+  'staff.message':    { aud: 'staff', icon: 'message-square', tone: 'plain', text: (n) => 'Нове повідомлення в замовленні №' + n, to: (n) => '#order/' + n, opens: 'Картка замовлення, листування' },
+  'order.accepted':   { aud: 'customer', icon: 'inbox', tone: 'plain', text: (n) => 'Замовлення №' + n + ' прийнято', to: ORDER, opens: 'Картка замовлення' },
+  'order.confirmed':  { aud: 'customer', icon: 'circle-check', tone: 'ok', text: (n) => 'Замовлення №' + n + ' підтверджено', to: ORDER, opens: 'Картка замовлення' },
+  'order.substitute': { aud: 'customer', icon: 'arrow-left-right', tone: 'warn', text: (n) => 'Замовлення №' + n + ' — підбираємо заміну', to: ORDER, opens: 'Картка замовлення' },
+  'order.awaiting':   { aud: 'customer', icon: 'wallet', tone: 'warn', text: (n) => 'Замовлення №' + n + ' чекає на оплату', to: ORDER, opens: 'Картка замовлення, не сторінка оплати' },
+  'order.surcharge':  { aud: 'customer', icon: 'banknote', tone: 'warn', text: (n) => 'Замовлення №' + n + ' — потрібна доплата', to: ORDER, opens: 'Картка замовлення, не сторінка оплати' },
+  'order.shipped':    { aud: 'customer', icon: 'truck', tone: 'plain', text: (n) => 'Замовлення №' + n + ' відправлено', to: ORDER, opens: 'Картка замовлення' },
+  'order.ready':      { aud: 'customer', icon: 'store', tone: 'ok', text: (n) => 'Замовлення №' + n + ' чекає на вас у магазині', to: ORDER, opens: 'Картка замовлення' },
+  'order.cancelled':  { aud: 'customer', icon: 'circle-x', tone: 'muted', text: (n) => 'Замовлення №' + n + ' скасовано', to: ORDER, opens: 'Картка замовлення' },
+  'order.message':    { aud: 'customer', icon: 'message-square', tone: 'plain', text: (n) => 'Нове повідомлення в замовленні №' + n, to: ORDER, opens: 'Картка замовлення, листування' },
+  'bonus.credited':   { aud: 'customer', icon: 'badge-percent', tone: 'ok', text: (n) => 'Нараховано бонуси за замовлення №' + n, to: () => '#bonuses', opens: 'Бонуси' },
+  'bonus.expiring':   { aud: 'customer', icon: 'hourglass', tone: 'warn', text: () => 'Бонуси скоро згорять', to: () => '#bonuses', opens: 'Бонуси' },
+  'bonus.last':       { aud: 'customer', icon: 'alarm-clock', tone: 'warn', text: () => 'Бонуси згорять — останнє нагадування', to: () => '#bonuses', opens: 'Бонуси' },
+};
+const TONES = {
+  ink: 'Нове замовлення — головна подія панелі',
+  plain: 'Звичайна подія',
+  ok: 'Готово або нараховано',
+  warn: 'Потрібна дія або увага',
+  muted: 'Скасовано',
+};
+
+/* Демонстраційні списки: номери — ті самі, що в панелі й кабінеті, тож клік відкриває справжню картку. */
+const STAFF_SEED = [
+  ['staff.order', 1048, 0.4, 0], ['staff.message', 1048, 4, 0], ['staff.lead', 214, 23, 0], ['staff.return', 1040, 66, 0],
+  ['staff.order', 1047, 98, 1], ['staff.lead', 213, 142, 1], ['staff.order', 1036, 900, 1], ['staff.message', 1045, 960, 1],
+  ['staff.order', 1045, 1020, 1], ['staff.order', 1044, 1140, 1], ['staff.message', 1044, 1200, 1], ['staff.order', 1043, 1440, 1],
+  ['staff.order', 1035, 1500, 1], ['staff.return', 1037, 1800, 1], ['staff.order', 1042, 2640, 1], ['staff.lead', 212, 2760, 1],
+  ['staff.order', 1040, 4320, 1], ['staff.message', 1040, 4380, 1], ['staff.order', 1039, 4620, 1], ['staff.order', 1038, 5760, 1],
+  ['staff.lead', 211, 6000, 1], ['staff.order', 1037, 7200, 1], ['staff.message', 1037, 7320, 1], ['staff.order', 1033, 8640, 1],
+  ['staff.lead', 210, 10080, 1], ['staff.order', 1032, 11520, 1],
+];
+const CUSTOMER_SEED = [
+  ['order.accepted', 1047, 6, 0], ['order.message', 1038, 1140, 0], ['order.substitute', 1038, 1142, 0],
+  ['order.shipped', 1045, 8640, 1], ['bonus.expiring', null, 9360, 1], ['order.confirmed', 1045, 10080, 1], ['order.accepted', 1045, 10100, 1],
+  ['bonus.credited', 1043, 11520, 1], ['order.message', 1040, 15840, 1], ['order.substitute', 1040, 15845, 1], ['order.confirmed', 1040, 15900, 1],
+  ['order.accepted', 1040, 15910, 1], ['order.shipped', 1043, 17280, 1], ['order.confirmed', 1043, 17370, 1], ['order.accepted', 1043, 17380, 1],
+  ['order.awaiting', 1038, 18720, 1], ['order.accepted', 1038, 18723, 1], ['bonus.credited', 1021, 46080, 1], ['order.cancelled', 1009, 72000, 1],
+  ['order.accepted', 1009, 72030, 1], ['bonus.last', null, 86400, 1], ['order.ready', 987, 136800, 1], ['order.surcharge', 987, 138240, 1],
+];
+function seed(a) {
+  const t = Date.now();
+  const rows = a === 'staff' ? STAFF_SEED : CUSTOMER_SEED;
+  return rows.map((r, i) => ({ id: a.charAt(0) + (rows.length - i), kind: r[0], n: r[1], at: Math.round(t - r[2] * MIN), read: !!r[3] }));
+}
+
+function ago(at, now) {
+  const t = now || Date.now();
+  const d = Math.max(0, t - at);
+  if (d < MIN) return 'щойно';
+  if (d < HOUR) return Math.floor(d / MIN) + ' хв тому';
+  const a = new Date(at), b = new Date(t);
+  if (a.toDateString() === b.toDateString()) return Math.floor(d / HOUR) + ' год тому';
+  if (a.toDateString() === new Date(t - DAY).toDateString()) return 'вчора';
+  return a.getDate() + ' ' + MONTHS[a.getMonth()] + (a.getFullYear() !== b.getFullYear() ? ' ' + a.getFullYear() : '');
+}
+const pad = (x) => String(x).padStart(2, '0');
+function stamp(at) { const a = new Date(at); return a.getDate() + ' ' + MONTHS_FULL[a.getMonth()] + ' ' + a.getFullYear() + ', ' + pad(a.getHours()) + ':' + pad(a.getMinutes()); }
+const iso = (at) => { try { return new Date(at).toISOString(); } catch (e) { return ''; } };
+const textOf = (item) => { const k = KINDS[item.kind]; return k ? k.text(item.n) : ''; };
+
+/* Що вміє цей браузер. iPhone і iPad у Safari показують сповіщення лише сайту,
+   доданому на екран «Додому»; поза ним Notification просто немає. */
+function realDevice() {
+  const ua = navigator.userAgent || '';
+  const ios = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const standalone = mq('(display-mode: standalone)') || navigator.standalone === true;
+  if (ios && !standalone) return 'ios';
+  if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) return 'unsupported';
+  return Notification.permission === 'granted' ? 'granted' : Notification.permission === 'denied' ? 'denied' : 'default';
+}
+
+function go(href) {
+  const i = href.indexOf('#');
+  const page = i < 0 ? href : href.slice(0, i);
+  const hash = i < 0 ? '' : href.slice(i);
+  let here = '';
+  try { here = decodeURIComponent(window.location.pathname.split('/').pop() || ''); } catch (e) { here = ''; }
+  if (page === here && hash) { window.location.hash = hash; return; }
+  window.location.href = encodeURI(page) + hash;
+}
+
+function createStore() {
+  const KEY = (a) => 'drive.notify.v1.' + a;
+  const DEVICE_KEY = 'drive.notify.device';
+  const subs = new Set();
+  const cache = {};
+  const open = { staff: false, customer: false };
+  let asking = false;
+  const ping = () => subs.forEach((fn) => { try { fn(); } catch (e) { /* підписник зник */ } });
+  const load = (a) => {
+    if (cache[a]) return cache[a];
+    try {
+      const raw = localStorage.getItem(KEY(a));
+      const v = raw ? JSON.parse(raw) : null;
+      if (v && Array.isArray(v.items)) return (cache[a] = v);
+    } catch (e) { /* зіпсований запис — почнемо з прикладу */ }
+    const v = { items: seed(a), push: true, seq: 1 };
+    cache[a] = v;
+    try { localStorage.setItem(KEY(a), JSON.stringify(v)); } catch (e) { /* приватний режим */ }
+    return v;
+  };
+  const save = (a, v) => {
+    cache[a] = v;
+    try { localStorage.setItem(KEY(a), JSON.stringify(v)); } catch (e) { /* приватний режим */ }
+    ping();
+    return v;
+  };
+  window.addEventListener('storage', (e) => {
+    if (e.key && e.key.indexOf('drive.notify.') !== 0) return;
+    delete cache.staff; delete cache.customer;
+    ping();
+  });
+  const api = {
+    kinds: KINDS, tones: TONES, ago, stamp, text: textOf, sample: seed, PAGE, TOAST_MS,
+    items: (a) => load(a).items,
+    unread: (a) => load(a).items.filter((x) => !x.read).length,
+    push: (a) => load(a).push !== false,
+    setPush: (a, on) => save(a, Object.assign({}, load(a), { push: !!on })),
+    add: (a, kind, n) => {
+      const v = load(a);
+      const seq = (v.seq || 1) + 1;
+      const item = { id: a.charAt(0) + '-' + Date.now().toString(36) + '-' + seq, kind, n: n == null || n === '' ? null : Number(n), at: Date.now(), read: false };
+      save(a, Object.assign({}, v, { seq, items: [item].concat(v.items).slice(0, 200) }));
+      return item;
+    },
+    markRead: (a, id) => {
+      const v = load(a);
+      if (!v.items.some((x) => x.id === id && !x.read)) return;
+      save(a, Object.assign({}, v, { items: v.items.map((x) => (x.id === id ? Object.assign({}, x, { read: true }) : x)) }));
+    },
+    markAll: (a) => {
+      const v = load(a);
+      if (!v.items.some((x) => !x.read)) return;
+      save(a, Object.assign({}, v, { items: v.items.map((x) => (x.read ? x : Object.assign({}, x, { read: true }))) }));
+    },
+    reset: (a) => { delete cache[a]; save(a, { items: seed(a), push: true, seq: 1 }); },
+    device: () => {
+      if (asking) return 'asking';
+      const q = urlParam('nfdev');
+      if (q) return q;
+      try { const v = localStorage.getItem(DEVICE_KEY); if (v) return v; } catch (e) { /* немає сховища */ }
+      const real = realDevice();
+      return real === 'ios' || real === 'unsupported' ? real : 'default';
+    },
+    setDevice: (v) => {
+      try { if (v) localStorage.setItem(DEVICE_KEY, v); else localStorage.removeItem(DEVICE_KEY); } catch (e) { /* немає сховища */ }
+      ping();
+    },
+    /* На сайті: Notification.requestPermission() → 'granted' → pushManager.subscribe()
+       → POST /me/push-subscriptions. Тут — імітація відповіді «Дозволити». */
+    requestDevice: () => {
+      if (asking) return;
+      asking = true; ping();
+      setTimeout(() => { asking = false; api.setDevice('granted'); }, 900);
+    },
+    isOpen: (a) => !!open[a],
+    setOpen: (a, on) => { if (open[a] === !!on) return; open[a] = !!on; ping(); },
+    href: (a, item) => { const k = KINDS[item.kind]; return HOME[a] + (k ? k.to(item.n) : ''); },
+    openItem: (a, item) => { api.markRead(a, item.id); api.setOpen(a, false); go(api.href(a, item)); },
+    subscribe: (fn) => { subs.add(fn); return () => subs.delete(fn); },
+  };
+  return api;
+}
+const store = window.DriveNotify || (window.DriveNotify = createStore());
+
+function useStore() {
+  const [, tick] = React.useReducer((x) => x + 1, 0);
+  React.useEffect(() => {
+    const off = store.subscribe(tick);
+    const t = setInterval(tick, 30000); /* «5 хв тому» не стоїть на місці */
+    return () => { off(); clearInterval(t); };
+  }, []);
+  return store;
+}
+
+function NotifyTile({ kind }) {
+  const k = KINDS[kind] || { icon: 'bell', tone: 'plain' };
+  return h('span', { className: 'ds-ntile', 'data-tone': k.tone, 'aria-hidden': 'true' }, h(ns.Icon, { name: k.icon, size: 17 }));
+}
+
+function NotifyRow({ item, onOpen }) {
+  const unread = !item.read;
+  return h('button', { type: 'button', className: 'ds-nrow', 'data-unread': unread ? 'true' : 'false', onClick: onOpen },
+    h(NotifyTile, { kind: item.kind }),
+    h('span', { className: 'ds-nrow__body' },
+      h('span', { className: 'ds-nrow__text' }, textOf(item), unread ? h('span', { className: 'ds-notify-sr' }, ', непрочитане') : null),
+      h('time', { className: 'ds-nrow__time', dateTime: iso(item.at), title: stamp(item.at) }, ago(item.at))),
+    h('span', { className: 'ds-nrow__mark', 'aria-hidden': 'true' }));
+}
+
+/* Рядок «на цьому пристрої» — тихий, унизу центру. Ніколи не спливає сам:
+   браузер показує свій запит лише після натискання. */
+function NotifyDevice({ audience = 'customer', device, push, settingsHref, framed = false }) {
+  const st = useStore();
+  const dev = device || st.device();
+  const on = push == null || push === '' ? st.push(audience) : push === true || push === 'true';
+  const staff = audience === 'staff';
+  const demo = device != null || (push != null && push !== '');
+  const settings = encodeURI(settingsHref || HOME.customer) + '#profile';
+  const line = (icon, tone, kids) => h('div', { className: 'ds-ndev__line', 'data-tone': tone },
+    h(ns.Icon, { name: icon, size: 16, className: 'ds-ndev__icon' }), h('div', null, kids));
+  let body = null;
+  if (!on) {
+    body = staff ? null : line('bell-off', 'muted', h('p', null, 'Push-сповіщення вимкнено на всіх ваших пристроях. ', h('a', { href: settings }, 'Змінити в налаштуваннях')));
+  } else if (dev === 'default' || dev === 'asking') {
+    const asking = dev === 'asking';
+    body = h('div', null,
+      h(ns.Button, { variant: 'secondary', size: 'md', icon: 'bell-ring', block: true, disabled: asking, onClick: () => { if (!demo) st.requestDevice(); } },
+        asking ? 'Чекаємо на відповідь браузера…' : 'Увімкнути сповіщення на цьому пристрої'),
+      h('p', { className: 'ds-ndev__hint' }, asking ? 'Відповідайте у вікні браузера.' : 'Покажемо їх, навіть коли сайт закрито.'));
+  } else if (dev === 'granted') {
+    body = line('check', 'ok', h('p', null, 'Сповіщення на цьому пристрої увімкнено.'));
+  } else if (dev === 'denied') {
+    body = line('bell-off', 'muted', [
+      h('p', { key: 'a' }, 'Браузер блокує сповіщення від цього сайту.'),
+      h('p', { key: 'b', className: 'ds-ndev__muted' }, 'Щоб дозволити, натисніть значок ліворуч від адреси сайту й увімкніть «Сповіщення».')]);
+  } else if (dev === 'ios') {
+    body = line('smartphone', 'muted', [
+      h('p', { key: 'a' }, 'На iPhone і iPad сповіщення приходять, лише коли Драйв додано на екран «Додому».'),
+      h('ol', { key: 'b', className: 'ds-ndev__steps' },
+        h('li', null, 'Натисніть ', h('span', { className: 'ds-ndev__glyph' }, h(ns.Icon, { name: 'share', size: 15 })), ' «Поділитися» в Safari.'),
+        h('li', null, 'Оберіть «Додати на екран “Додому”».'),
+        h('li', null, 'Відкрийте Драйв з екрана «Додому» й увімкніть сповіщення тут.'))]);
+  } else {
+    body = line('bell-off', 'muted', h('p', null, 'Цей браузер не показує системних сповіщень. Нові події зʼявляться тут.'));
+  }
+  const pushRow = staff
+    ? h('label', { className: 'ds-check ds-ndev__push' },
+        h('input', { type: 'checkbox', checked: on, onChange: (e) => { if (!demo) st.setPush('staff', e.target.checked); } }),
+        h('span', null, h('strong', null, 'Push-сповіщення'), h('small', null, on ? 'На всіх ваших пристроях' : 'Вимкнено на всіх ваших пристроях')))
+    : null;
+  const node = h('div', { className: 'ds-ndev' }, pushRow, body,
+    !staff && on ? h('a', { className: 'ds-ndev__settings', href: settings }, 'Налаштування сповіщень') : null);
+  return framed ? h('div', { className: 'ds-ncentre__foot', style: { border: '1px solid var(--line)', borderRadius: 'var(--radius-md)' } }, node) : node;
+}
+
+const EMPTY = {
+  staff: 'Тут зʼявляться нові замовлення, звернення про повернення, заявки й повідомлення покупців.',
+  customer: 'Тут зʼявлятимуться зміни у ваших замовленнях і бонусах.',
+};
+
+function NotifyCentre({ audience = 'customer', variant = 'popover', inline = false, items, device, push, loadingMore = false, scrollToEnd = false, maxHeight, onClose, settingsHref }) {
+  const st = useStore();
+  const list = items || st.items(audience);
+  const demo = !!items;
+  const [shown, setShown] = React.useState(PAGE);
+  const [busy, setBusy] = React.useState(false);
+  const scroller = React.useRef(null);
+  const root = React.useRef(null);
+  React.useEffect(() => { if (scrollToEnd && scroller.current) scroller.current.scrollTop = scroller.current.scrollHeight; }, [scrollToEnd, list.length]);
+  React.useEffect(() => { if (!inline && root.current) { try { root.current.focus({ preventScroll: true }); } catch (e) { /* старий браузер */ } } }, []);
+  const unread = list.filter((x) => !x.read).length;
+  const more = list.length > shown;
+  const loading = busy || loadingMore === true || loadingMore === 'true';
+  const sheet = variant === 'sheet';
+  const markAll = h('button', { type: 'button', className: 'ds-ncentre__markall', onClick: () => { if (!demo) st.markAll(audience); } }, 'Позначити всі прочитаними');
+  const loadMore = () => {
+    if (loading) return;
+    setBusy(true);
+    setTimeout(() => { setBusy(false); setShown((s) => s + PAGE); }, 500);
+  };
+  return h('div', {
+    ref: root, tabIndex: -1, className: 'ds-ncentre', 'data-variant': variant, 'data-inline': inline ? 'true' : 'false',
+    role: inline ? 'region' : 'dialog', 'aria-label': 'Сповіщення', style: maxHeight ? { maxHeight: isNaN(maxHeight) ? maxHeight : Number(maxHeight) } : undefined,
+  },
+    h('div', { className: 'ds-ncentre__head' },
+      h('h2', { className: 'ds-ncentre__title' }, 'Сповіщення'),
+      sheet ? h(ns.IconButton, { icon: 'x', label: 'Закрити', onClick: onClose }) : unread ? markAll : null),
+    sheet && unread ? h('div', { className: 'ds-ncentre__bar' }, h('span', null, unread + ' ' + plural(unread, UNREAD)), markAll) : null,
+    h('div', { ref: scroller, className: 'ds-ncentre__scroll' },
+      list.length === 0
+        ? h(ns.EmptyState, { icon: 'bell', title: 'Сповіщень немає' }, EMPTY[audience] || EMPTY.customer)
+        : h('ul', { className: 'ds-ncentre__list' }, list.slice(0, shown).map((it) => h('li', { key: it.id },
+            h(NotifyRow, { item: it, onOpen: () => { if (!demo) st.openItem(audience, it); } })))),
+      more ? h('div', { className: 'ds-ncentre__more' },
+        h('button', { type: 'button', className: 'ds-pager__more', disabled: loading, 'aria-busy': loading ? 'true' : undefined, onClick: loadMore },
+          loading ? 'Завантажуємо…' : 'Показати ще')) : null),
+    h('div', { className: 'ds-ncentre__foot' }, h(NotifyDevice, { audience, device, push, settingsHref })));
+}
+
+/* Дзвіночок. Від 640 px центр — поповер під ним, нижче — на весь екран. Якщо на
+   сторінці два дзвіночки однієї аудиторії (панель: бічне меню й верхня смуга),
+   відкривається той, що видно. */
+function NotifyBell({ audience = 'customer', align = 'end', count, interactive = true }) {
+  const st = useStore();
+  const live = interactive !== false && interactive !== 'false';
+  const n = count == null || count === '' ? st.unread(audience) : Number(count);
+  const isOpen = live && st.isOpen(audience);
+  const btn = React.useRef(null);
+  const pop = React.useRef(null);
+  const [geo, setGeo] = React.useState(null);
+  React.useEffect(() => { if (live && urlParam('nf') === 'centre') st.setOpen(audience, true); }, []);
+  React.useEffect(() => {
+    if (!isOpen) { setGeo(null); return undefined; }
+    const el = btn.current;
+    if (!el || el.offsetWidth === 0) return undefined;
+    const close = () => st.setOpen(audience, false);
+    const measure = () => {
+      if (el.offsetWidth === 0) { close(); return; }
+      setGeo({ r: el.getBoundingClientRect(), phone: mq('(max-width: 639px)'), vw: window.innerWidth, vh: window.innerHeight });
+    };
+    measure();
+    const away = (e) => { if (el.contains(e.target) || (pop.current && pop.current.contains(e.target))) return; close(); };
+    const esc = (e) => { if (e.key === 'Escape') { close(); el.focus(); } };
+    window.addEventListener('resize', measure);
+    document.addEventListener('pointerdown', away);
+    document.addEventListener('keydown', esc);
+    return () => {
+      window.removeEventListener('resize', measure);
+      document.removeEventListener('pointerdown', away);
+      document.removeEventListener('keydown', esc);
+    };
+  }, [isOpen]);
+  const sheet = !!(geo && geo.phone);
+  React.useEffect(() => {
+    if (!sheet) return undefined;
+    const root = document.documentElement;
+    const prev = root.style.overflow;
+    root.style.overflow = 'hidden';
+    return () => { root.style.overflow = prev; };
+  }, [sheet]);
+  const label = n > 0 ? 'Сповіщення: ' + n + ' ' + plural(n, UNREAD) : 'Сповіщення';
+  const button = h('button', {
+    ref: btn, type: 'button', className: 'ds-bell', 'aria-label': label, title: 'Сповіщення',
+    'aria-haspopup': 'dialog', 'aria-expanded': isOpen ? 'true' : 'false',
+    onClick: () => { if (live) st.setOpen(audience, !isOpen); },
+  },
+    h(ns.Icon, { name: 'bell', size: 20 }),
+    n > 0 ? h('span', { className: 'ds-bell__count', 'aria-hidden': 'true' }, n > 99 ? '99+' : String(n)) : null);
+  let layer = null;
+  if (isOpen && geo && geo.r.width > 0) {
+    const close = () => { st.setOpen(audience, false); if (btn.current) btn.current.focus(); };
+    if (sheet) {
+      layer = h('div', { ref: pop, className: 'ds-npop', 'data-sheet': 'true' }, h(NotifyCentre, { audience, variant: 'sheet', onClose: close }));
+    } else {
+      const W = Math.min(400, geo.vw - 16);
+      const top = Math.round(geo.r.bottom + 8);
+      const raw = align === 'start' ? geo.r.left - 4 : geo.r.right - W;
+      const left = Math.round(Math.max(8, Math.min(raw, geo.vw - W - 8)));
+      layer = h('div', { ref: pop, className: 'ds-npop', style: { top, left, width: W } },
+        h(NotifyCentre, { audience, variant: 'popover', maxHeight: Math.min(640, geo.vh - top - 16) }));
+    }
+    layer = portal(layer);
+  }
+  return h(React.Fragment, null, button, layer);
+}
+
+function NotifyToast({ item, onOpen, onClose }) {
+  return h('div', { className: 'ds-toast' },
+    h('button', { type: 'button', className: 'ds-toast__main', onClick: onOpen },
+      h(NotifyTile, { kind: item.kind }),
+      h('span', { className: 'ds-toast__body' },
+        h('span', { className: 'ds-toast__text' }, textOf(item)),
+        h('time', { className: 'ds-toast__time', dateTime: iso(item.at), title: stamp(item.at) }, ago(item.at)))),
+    h('button', { type: 'button', className: 'ds-toast__close', 'aria-label': 'Закрити', title: 'Закрити', onClick: onClose },
+      h(ns.Icon, { name: 'x', size: 16 })));
+}
+
+/* Закріплені знизу смуги (панель збереження тощо) — тост стає над ними. */
+function measureLift() {
+  let need = 0;
+  const vh = window.innerHeight;
+  document.querySelectorAll('[data-savebar], [data-toast-avoid]').forEach((el) => {
+    const r = el.getBoundingClientRect();
+    if (r.height > 0 && r.bottom >= vh - 2 && r.top < vh) need = Math.max(need, Math.ceil(vh - r.top));
+  });
+  return need;
+}
+
+/* Тости. Приходять у кожну відкриту сторінку, у фоні теж; час показу (8 с)
+   рахується тільки поки сторінку видно й курсор не над тостом. Новий — найближче
+   до краю екрана. На комп'ютері видно три, на телефоні один, решта — «Ще N». */
+function NotifyToasts({ audience = 'customer', placement = 'site', items, layout, inline = false }) {
+  const st = useStore();
+  const all = st.items(audience);
+  const isOpen = st.isOpen(audience);
+  const flat = inline === true || inline === 'true';
+  const seen = React.useRef(null);
+  const hover = React.useRef(false);
+  const [list, setList] = React.useState([]);
+  const [phone, setPhone] = React.useState(() => (layout ? layout === 'phone' : mq('(max-width: 639px)')));
+  const [lift, setLift] = React.useState(0);
+  const urlN = { toast1: 1, toast3: 3 }[urlParam('nf')] || 0;
+  const pinned = items || (urlN ? all.slice(0, urlN) : null);
+  if (seen.current === null) seen.current = new Set(all.map((x) => x.id));
+  const sig = all.map((x) => x.id + (x.read ? 'r' : 'u')).join(',') + (isOpen ? '|o' : '');
+  React.useEffect(() => {
+    if (pinned) return;
+    const fresh = all.filter((x) => !seen.current.has(x.id));
+    fresh.forEach((x) => seen.current.add(x.id));
+    setList((cur) => {
+      if (isOpen) return cur.length ? [] : cur;
+      const alive = cur.filter((t) => all.some((x) => x.id === t.id && !x.read));
+      const add = fresh.filter((x) => !x.read).reverse().map((x) => ({ id: x.id, shown: 0 }));
+      if (!add.length && alive.length === cur.length) return cur;
+      return alive.concat(add);
+    });
+  }, [sig]);
+  React.useEffect(() => {
+    if (layout) return undefined;
+    const on = () => setPhone(mq('(max-width: 639px)'));
+    window.addEventListener('resize', on);
+    return () => window.removeEventListener('resize', on);
+  }, [layout]);
+  const showing = (pinned ? pinned.length : list.length) > 0;
+  React.useEffect(() => {
+    if (!showing || flat) return undefined;
+    setLift(measureLift());
+    const step = 250;
+    const t = setInterval(() => {
+      setLift(measureLift());
+      if (pinned || document.visibilityState !== 'visible' || hover.current) return;
+      setList((cur) => cur.map((x) => ({ id: x.id, shown: x.shown + step })).filter((x) => x.shown < TOAST_MS));
+    }, step);
+    return () => clearInterval(t);
+  }, [showing, !!pinned, flat]);
+  const shown = pinned ? pinned.slice().reverse() : list.map((t) => all.find((x) => x.id === t.id)).filter(Boolean);
+  if (!shown.length) return null;
+  const max = phone ? 1 : 3;
+  const vis = shown.slice(-max);
+  const rest = shown.length - vis.length;
+  const region = h('section', {
+    className: 'ds-toasts', 'data-placement': placement, 'data-layout': phone ? 'phone' : 'desktop', 'data-inline': flat ? 'true' : 'false',
+    'aria-label': 'Нові сповіщення', 'aria-live': 'polite',
+    style: !flat && lift ? { bottom: lift + 8 } : undefined,
+    onMouseEnter: () => { hover.current = true; }, onMouseLeave: () => { hover.current = false; },
+    onFocus: () => { hover.current = true; }, onBlur: () => { hover.current = false; },
+  },
+    rest > 0 ? h('button', { type: 'button', className: 'ds-toasts__more', onClick: () => { if (!items) st.setOpen(audience, true); } },
+      'Ще ' + rest + ' ' + plural(rest, ['сповіщення', 'сповіщення', 'сповіщень'])) : null,
+    vis.map((it) => h(NotifyToast, {
+      key: it.id, item: it,
+      onOpen: () => { if (!items) st.openItem(audience, it); },
+      onClose: () => { if (!pinned) setList((cur) => cur.filter((x) => x.id !== it.id)); },
+    })));
+  return flat ? region : portal(region);
+}
+
+Object.assign(ns, { NotifyStore: store, NOTIFY_KINDS: KINDS, NotifyTile, NotifyRow, NotifyDevice, NotifyCentre, NotifyBell, NotifyToast, NotifyToasts });
+} catch (e) {
+  const bag = window.DesignSystem_d7c4f4;
+  if (bag && bag.__errors) bag.__errors.push({ path: 'notify-patch', error: String((e && e.message) || e) });
 }
 }());
