@@ -41,6 +41,7 @@
       <a href="#device" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">04 Сповіщення в браузері</a>
       <a href="#offer" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">04 · Після входу</a>
       <a href="#system" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">05 Системне сповіщення</a>
+      <a href="#kind-icon" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">05 · Картинка події</a>
       <a href="#off" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">06 Вимкнення</a>
       <a href="#kinds" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">07 Події</a>
       <a href="#live" style="display:inline-flex;align-items:center;min-height:36px;padding:0 var(--space-3);border:1px solid var(--line);border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--text-strong)">08 Наживо</a>
@@ -821,7 +822,7 @@
         </div>
         <div style="display:grid;grid-template-columns:132px minmax(0,1fr);gap:var(--space-4);padding:12px var(--space-4);border-top:1px solid var(--line-subtle)">
           <dt style="color:var(--text-muted)">icon</dt>
-          <dd style="margin:0;display:grid;gap:2px"><span class="t-mono" style="color:var(--text-strong)">assets/notification-icon-192.png</span><span style="color:var(--text-muted)">«Д» зі знака на світлій плитці, як фавікон. 192 × 192.</span></dd>
+          <dd style="margin:0;display:grid;gap:2px"><span class="t-mono" style="color:var(--text-strong)">assets/push/{icon}.png</span><span style="color:var(--text-muted)">Картинка події — своя для кожного виду, 192 × 192. Див. <a href="#kind-icon">05 · Картинка події</a>.</span></dd>
         </div>
         <div style="display:grid;grid-template-columns:132px minmax(0,1fr);gap:var(--space-4);padding:12px var(--space-4);border-top:1px solid var(--line-subtle)">
           <dt style="color:var(--text-muted)">badge</dt>
@@ -915,6 +916,219 @@
         <figcaption style="font-size:var(--text-xs);color:var(--text-muted)">Іконка, 192 × 192</figcaption>
       </figure>
       <p style="margin:0;max-width:340px;font-size:var(--text-xs);line-height:1.5;color:var(--text-muted);text-wrap:pretty">Значок — «Д» зі слова «Драйв», той самий, що у фавіконі. Спідометр і лінії швидкості з повного знака на 24 dp зливаються в пляму, а «Д» читається.</p>
+    </div>
+
+    <div id="kind-icon" data-screen-label="05 Картинка події" style="display:grid;gap:var(--space-10);margin-top:var(--space-6);padding-top:var(--space-10);border-top:1px solid var(--line);scroll-margin-top:24px">
+      <div style="display:grid;gap:var(--space-2);max-width:760px">
+        <span class="t-eyebrow">05 · Картинка події</span>
+        <h3 class="t-display-xs" style="margin:0">Праворуч — що сталося, а не «Д»</h3>
+        <p style="margin:0;font-size:var(--text-md);line-height:1.5;color:var(--text-body);text-wrap:pretty">Ліву іконку малює телефон — це іконка встановленого застосунку. Праву даємо ми, тож вона показує вид події: та сама плитка, що в центрі сповіщень, лише 192 × 192. Заголовок і текст — за рішенням власника від 07.10.2026.</p>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:var(--space-8);align-items:flex-start">
+        <figure style="margin:0;display:grid;gap:var(--space-3)">
+          <div style="position:relative;width:192px;height:192px">
+            <img src="assets/push/truck.png" alt="Картинка «відправлено», 192 × 192" style="display:block;width:192px;height:192px">
+            <span style="position:absolute;left:37px;top:37px;width:118px;height:118px;box-sizing:border-box;border:1.5px dashed var(--red-500);border-radius:50%"></span>
+            <span style="position:absolute;left:48px;top:48px;width:96px;height:96px;box-sizing:border-box;border:1px dashed var(--ink-400)"></span>
+          </div>
+          <figcaption style="display:grid;gap:2px;max-width:260px">
+            <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Безпечна зона — коло 118 px</span>
+            <span style="font-size:var(--text-xs);line-height:1.5;color:var(--text-muted);text-wrap:pretty">Гліф — квадрат 96 px у центрі (сама лінія — близько 80 px), увесь усередині кола 118 px: та сама пропорція 61 %, що в адаптивних іконок Android. Фон заливає весь квадрат, тож маска в коло чи в заокруглений квадрат нічого не зрізає.</span>
+          </figcaption>
+        </figure>
+        <div style="display:grid;gap:var(--space-3)">
+          <div style="display:flex;gap:var(--space-6);align-items:flex-end">
+            <figure style="margin:0;display:grid;gap:var(--space-2);justify-items:center">
+              <img src="assets/push/truck.png" alt="" style="display:block;width:96px;height:96px">
+              <figcaption style="font-size:var(--text-xs);color:var(--text-muted)">Квадрат</figcaption>
+            </figure>
+            <figure style="margin:0;display:grid;gap:var(--space-2);justify-items:center">
+              <img src="assets/push/truck.png" alt="" style="display:block;width:96px;height:96px;border-radius:22px">
+              <figcaption style="font-size:var(--text-xs);color:var(--text-muted)">Заокруглений</figcaption>
+            </figure>
+            <figure style="margin:0;display:grid;gap:var(--space-2);justify-items:center">
+              <img src="assets/push/truck.png" alt="" style="display:block;width:96px;height:96px;border-radius:50%">
+              <figcaption style="font-size:var(--text-xs);color:var(--text-muted)">Коло</figcaption>
+            </figure>
+            <figure style="margin:0;display:grid;gap:var(--space-2);justify-items:center">
+              <img src="assets/push/truck.png" alt="" style="display:block;width:40px;height:40px;border-radius:8px">
+              <figcaption style="font-size:var(--text-xs);color:var(--text-muted)">40 dp, як на телефоні</figcaption>
+            </figure>
+          </div>
+          <p style="margin:0;max-width:440px;font-size:var(--text-xs);line-height:1.5;color:var(--text-muted);text-wrap:pretty">Кольори й лінія — з плитки центру: фон і колір тону, Lucide, лінія 1,75. На 40 dp гліф виходить близько 20 dp — як у плитці 32 px.</p>
+        </div>
+      </div>
+
+      <div style="display:grid;gap:var(--space-3)">
+        <div style="display:flex;flex-wrap:wrap;gap:var(--space-2) var(--space-6);align-items:baseline">
+          <h4 style="margin:0;font-size:var(--text-md);font-weight:600;color:var(--text-strong)">Набір — 16 видів, 15 картинок</h4>
+          <span style="font-size:var(--text-xs);color:var(--text-muted)">Кожна — на світлій і темній картці сповіщення</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:var(--space-3)">
+          <sc-for list="{{ pushKinds }}" as="k" hint-placeholder-count="16">
+            <div style="display:grid;border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden">
+              <div style="display:grid;grid-template-columns:1fr 1fr">
+                <span style="display:grid;place-items:center;height:72px;background:var(--white)"><img src="{{ k.src }}" alt="" style="display:block;width:40px;height:40px;border-radius:8px"></span>
+                <span style="display:grid;place-items:center;height:72px;background:var(--surface-inverse-raised)"><img src="{{ k.src }}" alt="" style="display:block;width:40px;height:40px;border-radius:8px"></span>
+              </div>
+              <div style="display:grid;gap:2px;padding:10px 12px;border-top:1px solid var(--line-subtle)">
+                <span class="t-mono" style="font-size:var(--text-xs);color:var(--text-strong)">{{ k.id }}</span>
+                <span style="font-size:var(--text-xs);color:var(--text-muted)">{{ k.icon }} · {{ k.tone }} · {{ k.aud }}</span>
+                <sc-if value="{{ k.shared }}" hint-placeholder-val="{{ false }}"><span style="font-size:var(--text-xs);color:var(--text-muted)">Та сама картинка, що в парного виду</span></sc-if>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <p style="margin:0;max-width:760px;font-size:var(--text-xs);line-height:1.5;color:var(--text-muted);text-wrap:pretty">Файли — <span class="t-mono">assets/push/{icon}.png</span>, поряд SVG-джерело. Картинка несе власну плитку, тож контраст не залежить від теми телефона. Єдиний виняток — чорна плитка order_new на темній картці: край плитки зникає, але білий гліф читається.</p>
+      </div>
+
+      <div style="display:grid;gap:var(--space-3)">
+        <h4 style="margin:0;font-size:var(--text-md);font-weight:600;color:var(--text-strong)">Android — група з чотирьох</h4>
+        <div style="display:flex;flex-wrap:wrap;gap:var(--space-8) var(--space-6);align-items:flex-start">
+
+          <figure style="margin:0;display:grid;gap:var(--space-3)">
+            <div style="width:360px;max-width:100%;box-sizing:border-box;display:grid;gap:var(--space-4);padding:var(--space-4) 10px var(--space-5);background:var(--surface-muted);border-radius:20px">
+              <div style="display:grid;grid-template-columns:40px minmax(0,1fr) 40px;gap:12px;align-items:center;padding:12px 14px;background:var(--white);border-radius:20px">
+                <img src="assets/notification-icon-192.png" alt="" style="display:block;width:40px;height:40px;border-radius:50%">
+                <span style="display:grid;gap:2px;min-width:0">
+                  <span style="display:flex;align-items:center;gap:6px;font-size:var(--text-2xs);color:var(--ink-500)">
+                    <span>Драйв · щойно</span>
+                    <span style="display:inline-flex;align-items:center;gap:2px;margin-left:auto;padding:0 4px 0 7px;height:18px;border-radius:9px;background:var(--ink-100);color:var(--ink-700);font-weight:600">4<x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="12" hint-size="12px,12px"></x-import></span>
+                  </span>
+                  <span style="font-size:var(--text-sm);font-weight:600;color:var(--ink-900)">№1047</span>
+                  <span style="font-size:var(--text-sm);color:var(--ink-700)">Замовлення відправлено</span>
+                </span>
+                <img src="assets/push/truck.png" alt="" style="display:block;width:40px;height:40px;border-radius:8px">
+              </div>
+              <div style="display:grid;grid-template-columns:40px minmax(0,1fr) 40px;gap:12px;align-items:center;padding:12px 14px;background:var(--surface-inverse-raised);border-radius:20px">
+                <img src="assets/notification-icon-192.png" alt="" style="display:block;width:40px;height:40px;border-radius:50%">
+                <span style="display:grid;gap:2px;min-width:0">
+                  <span style="display:flex;align-items:center;gap:6px;font-size:var(--text-2xs);color:var(--text-inverse-muted)">
+                    <span>Драйв · щойно</span>
+                    <span style="display:inline-flex;align-items:center;gap:2px;margin-left:auto;padding:0 4px 0 7px;height:18px;border-radius:9px;background:var(--ink-700);color:var(--white);font-weight:600">4<x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-down" size="12" hint-size="12px,12px"></x-import></span>
+                  </span>
+                  <span style="font-size:var(--text-sm);font-weight:600;color:var(--white)">№1047</span>
+                  <span style="font-size:var(--text-sm);color:var(--text-inverse-muted)">Замовлення відправлено</span>
+                </span>
+                <img src="assets/push/truck.png" alt="" style="display:block;width:40px;height:40px;border-radius:8px">
+              </div>
+            </div>
+            <figcaption style="display:grid;gap:2px;max-width:360px">
+              <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Згорнуто — світла й темна тема</span>
+              <span style="font-size:var(--text-xs);color:var(--text-muted)">Згорнута група показує останнє сповіщення й лічильник. Ліва «Д» — телефону, права картинка — наша.</span>
+            </figcaption>
+          </figure>
+
+          <figure style="margin:0;display:grid;gap:var(--space-3)">
+            <div style="width:360px;max-width:100%;box-sizing:border-box;padding:var(--space-4) 10px var(--space-5);background:var(--surface-muted);border-radius:20px">
+              <div style="display:grid;padding:4px 0 8px;background:var(--white);border-radius:20px">
+                <div style="display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 14px 6px">
+                  <img src="assets/notification-icon-192.png" alt="" style="display:block;width:40px;height:40px;border-radius:50%">
+                  <span style="font-size:var(--text-sm);font-weight:600;color:var(--ink-900)">Драйв</span>
+                  <span style="display:inline-grid;place-items:center;width:24px;height:24px;border-radius:12px;background:var(--ink-100);color:var(--ink-700)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-up" size="14" hint-size="14px,14px"></x-import></span>
+                </div>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:12px;align-items:center;padding:10px 14px 10px 66px">
+                  <span style="display:grid;gap:2px;min-width:0"><span style="display:flex;gap:6px;align-items:baseline"><span style="font-size:var(--text-sm);font-weight:600;color:var(--ink-900)">№1047</span><span style="font-size:var(--text-2xs);color:var(--ink-500)">щойно</span></span><span style="font-size:var(--text-sm);color:var(--ink-700)">Замовлення відправлено</span></span>
+                  <img src="assets/push/truck.png" alt="" style="display:block;width:40px;height:40px;border-radius:8px">
+                </div>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:12px;align-items:center;padding:10px 14px 10px 66px;border-top:1px solid var(--ink-100)">
+                  <span style="display:grid;gap:2px;min-width:0"><span style="display:flex;gap:6px;align-items:baseline"><span style="font-size:var(--text-sm);font-weight:600;color:var(--ink-900)">Бонуси</span><span style="font-size:var(--text-2xs);color:var(--ink-500)">12 хв</span></span><span style="font-size:var(--text-sm);color:var(--ink-700)">Нараховано бонуси за замовлення №1043</span></span>
+                  <img src="assets/push/badge-percent.png" alt="" style="display:block;width:40px;height:40px;border-radius:8px">
+                </div>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:12px;align-items:center;padding:10px 14px 10px 66px;border-top:1px solid var(--ink-100)">
+                  <span style="display:grid;gap:2px;min-width:0"><span style="display:flex;gap:6px;align-items:baseline"><span style="font-size:var(--text-sm);font-weight:600;color:var(--ink-900)">№1046</span><span style="font-size:var(--text-2xs);color:var(--ink-500)">1 год</span></span><span style="font-size:var(--text-sm);color:var(--ink-700)">Замовлення чекає на оплату</span></span>
+                  <img src="assets/push/wallet.png" alt="" style="display:block;width:40px;height:40px;border-radius:8px">
+                </div>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:12px;align-items:center;padding:10px 14px 10px 66px;border-top:1px solid var(--ink-100)">
+                  <span style="display:grid;gap:2px;min-width:0"><span style="display:flex;gap:6px;align-items:baseline"><span style="font-size:var(--text-sm);font-weight:600;color:var(--ink-900)">№1045</span><span style="font-size:var(--text-2xs);color:var(--ink-500)">2 год</span></span><span style="font-size:var(--text-sm);color:var(--ink-700)">Замовлення підтверджено</span></span>
+                  <img src="assets/push/circle-check.png" alt="" style="display:block;width:40px;height:40px;border-radius:8px">
+                </div>
+              </div>
+            </div>
+            <figcaption style="display:grid;gap:2px;max-width:360px">
+              <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Розгорнуто — світла тема</span>
+              <span style="font-size:var(--text-xs);color:var(--text-muted)">«Д» лишається одна, у шапці групи. Кожен рядок каже свою подію картинкою.</span>
+            </figcaption>
+          </figure>
+
+          <figure style="margin:0;display:grid;gap:var(--space-3)">
+            <div style="width:360px;max-width:100%;box-sizing:border-box;padding:var(--space-4) 10px var(--space-5);background:var(--ink-900);border-radius:20px">
+              <div style="display:grid;padding:4px 0 8px;background:var(--surface-inverse-raised);border-radius:20px">
+                <div style="display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 14px 6px">
+                  <img src="assets/notification-icon-192.png" alt="" style="display:block;width:40px;height:40px;border-radius:50%">
+                  <span style="font-size:var(--text-sm);font-weight:600;color:var(--white)">Драйв</span>
+                  <span style="display:inline-grid;place-items:center;width:24px;height:24px;border-radius:12px;background:var(--ink-700);color:var(--white)"><x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="chevron-up" size="14" hint-size="14px,14px"></x-import></span>
+                </div>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:12px;align-items:center;padding:10px 14px 10px 66px">
+                  <span style="display:grid;gap:2px;min-width:0"><span style="display:flex;gap:6px;align-items:baseline"><span style="font-size:var(--text-sm);font-weight:600;color:var(--white)">№1047</span><span style="font-size:var(--text-2xs);color:var(--text-inverse-muted)">щойно</span></span><span style="font-size:var(--text-sm);color:var(--text-inverse-muted)">Замовлення відправлено</span></span>
+                  <img src="assets/push/truck.png" alt="" style="display:block;width:40px;height:40px;border-radius:8px">
+                </div>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:12px;align-items:center;padding:10px 14px 10px 66px;border-top:1px solid var(--ink-700)">
+                  <span style="display:grid;gap:2px;min-width:0"><span style="display:flex;gap:6px;align-items:baseline"><span style="font-size:var(--text-sm);font-weight:600;color:var(--white)">Бонуси</span><span style="font-size:var(--text-2xs);color:var(--text-inverse-muted)">12 хв</span></span><span style="font-size:var(--text-sm);color:var(--text-inverse-muted)">Нараховано бонуси за замовлення №1043</span></span>
+                  <img src="assets/push/badge-percent.png" alt="" style="display:block;width:40px;height:40px;border-radius:8px">
+                </div>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:12px;align-items:center;padding:10px 14px 10px 66px;border-top:1px solid var(--ink-700)">
+                  <span style="display:grid;gap:2px;min-width:0"><span style="display:flex;gap:6px;align-items:baseline"><span style="font-size:var(--text-sm);font-weight:600;color:var(--white)">№1046</span><span style="font-size:var(--text-2xs);color:var(--text-inverse-muted)">1 год</span></span><span style="font-size:var(--text-sm);color:var(--text-inverse-muted)">Замовлення чекає на оплату</span></span>
+                  <img src="assets/push/wallet.png" alt="" style="display:block;width:40px;height:40px;border-radius:8px">
+                </div>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:12px;align-items:center;padding:10px 14px 10px 66px;border-top:1px solid var(--ink-700)">
+                  <span style="display:grid;gap:2px;min-width:0"><span style="display:flex;gap:6px;align-items:baseline"><span style="font-size:var(--text-sm);font-weight:600;color:var(--white)">№1045</span><span style="font-size:var(--text-2xs);color:var(--text-inverse-muted)">2 год</span></span><span style="font-size:var(--text-sm);color:var(--text-inverse-muted)">Замовлення підтверджено</span></span>
+                  <img src="assets/push/circle-check.png" alt="" style="display:block;width:40px;height:40px;border-radius:8px">
+                </div>
+              </div>
+            </div>
+            <figcaption style="display:grid;gap:2px;max-width:360px">
+              <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Розгорнуто — темна тема</span>
+              <span style="font-size:var(--text-xs);color:var(--text-muted)">Ті самі файли. Тема картки на картинку не впливає.</span>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div style="display:grid;gap:var(--space-3)">
+        <h4 style="margin:0;font-size:var(--text-md);font-weight:600;color:var(--text-strong)">Chrome на Windows</h4>
+        <figure style="margin:0;display:grid;gap:var(--space-3)">
+          <div style="display:grid;place-items:start;padding:var(--space-6);background:var(--surface-sunken);border:1px solid var(--line-subtle);border-radius:var(--radius-lg)">
+            <div style="width:364px;max-width:100%;box-sizing:border-box;display:grid;gap:12px;padding:12px 14px 16px;background:var(--white);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow-md)">
+              <div style="display:flex;align-items:center;gap:8px;font-size:var(--text-2xs);color:var(--ink-600)">
+                <span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:var(--ink-200)"></span>
+                <span>Google Chrome</span>
+                <span style="margin-left:auto;display:inline-flex;gap:14px;color:var(--ink-600)">
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="ellipsis" size="14" hint-size="14px,14px"></x-import>
+                  <x-import component-from-global-scope="DesignSystem_d7c4f4.Icon" name="x" size="14" hint-size="14px,14px"></x-import>
+                </span>
+              </div>
+              <div style="display:grid;grid-template-columns:48px minmax(0,1fr);gap:14px;align-items:start">
+                <img src="assets/push/truck.png" alt="" style="display:block;width:48px;height:48px">
+                <span style="display:grid;gap:2px;min-width:0">
+                  <span style="font-size:var(--text-sm);font-weight:600;color:var(--ink-900)">№1047</span>
+                  <span style="font-size:var(--text-sm);color:var(--ink-700)">Замовлення відправлено</span>
+                  <span style="font-size:var(--text-2xs);color:var(--ink-500)">drive.zp.ua</span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <figcaption style="display:grid;gap:2px;max-width:520px">
+            <span style="font-size:var(--text-sm);font-weight:600;color:var(--text-strong)">Windows 11 — схема</span>
+            <span style="font-size:var(--text-xs);color:var(--text-muted)">Windows ставить нашу картинку ліворуч від тексту, квадратом без маски. Той самий файл; гліф у безпечній зоні лишає йому поле.</span>
+          </figcaption>
+        </figure>
+      </div>
+
+      <div style="display:grid;gap:var(--space-3);max-width:820px">
+        <h4 style="margin:0;font-size:var(--text-md);font-weight:600;color:var(--text-strong)">Примітки</h4>
+        <ul style="margin:0;padding:0;list-style:none;display:grid;gap:var(--space-3);font-size:var(--text-sm);line-height:1.5;color:var(--text-body)">
+          <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span style="display:grid;gap:var(--space-3)"><span style="text-wrap:pretty">Пропозиція, не застосована: order_cancelled. Тон muted — сірий гліф <span class="t-mono">ink-400</span> на <span class="t-mono">ink-100</span>, контраст 2,6 : 1, нижче за 3 : 1 для графіки. У плитці 32 px поряд із текстом рядка це терпимо; у сповіщенні картинка стоїть сама, і хрестик блякне. Пропоную гліф <span class="t-mono">ink-500</span> — 4,3 : 1, і досі найтихіша картинка в наборі. Якщо приймаєте — так само змінити й плитку в центрі, щоб вони лишились одним обʼєктом.</span>
+            <span style="display:flex;gap:var(--space-6);align-items:flex-end">
+              <span style="display:grid;gap:4px;justify-items:center"><img src="assets/push/circle-x.png" alt="" style="display:block;width:48px;height:48px;border-radius:8px"><span style="font-size:var(--text-xs);color:var(--text-muted)">Зараз, ink-400</span></span>
+              <span style="display:grid;gap:4px;justify-items:center"><img src="assets/push/circle-x-proposal.png" alt="" style="display:block;width:48px;height:48px;border-radius:8px"><span style="font-size:var(--text-xs);color:var(--text-muted)">Пропозиція, ink-500</span></span>
+            </span></span></li>
+          <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span style="text-wrap:pretty">Інші іконки з таблиці на 40 dp читаються, їх не змінено. wallet і banknote — обидва прямокутники в тоні warn, але гаманець має застібку, а купюра — коло, і поряд у групі їх не сплутати.</span></li>
+          <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span style="text-wrap:pretty">Різних картинок 15, а не 14: повторюється лише message-square (customer_message і order_message, обидва plain).</span></li>
+          <li style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--space-2)"><span style="color:var(--text-faint)">—</span><span style="text-wrap:pretty">iPhone розглянуто й не малювали: веб-сповіщення Safari показують іконку застосунку з екрана «Додому» і можуть ігнорувати нашу. Поле <span class="t-mono">icon</span> однаково передаємо — якщо iOS його покаже, це буде та сама картинка.</span></li>
+        </ul>
+      </div>
     </div>
   </section>
 
@@ -1134,7 +1348,15 @@ class Component extends DCLogic {
     const kindOptions = Object.keys(kinds).filter((id) => kinds[id].aud === s.aud).map((id) => ({ id, label: kinds[id].text('…').replace(' №…', '').replace('№…', '') }))
     const noNum = s.kind === 'bonus.expiring' || s.kind === 'bonus.last'
     const pick = (aud) => () => this.setState({ aud, kind: aud === 'staff' ? 'staff.order' : 'order.shipped', num: aud === 'staff' ? '1049' : '1047' })
+    const TL = { ink: 'ink', plain: 'plain', ok: 'ok', warn: 'warn', muted: 'muted' }
+    const pushKinds = [
+      ['order_new', 'Панель', 'shopping-bag', 'ink'], ['return_new', 'Панель', 'undo-2', 'warn'], ['lead_new', 'Панель', 'clipboard-list', 'plain'], ['customer_message', 'Панель', 'message-square', 'plain'],
+      ['order_received', 'Покупець', 'inbox', 'plain'], ['order_confirmed', 'Покупець', 'circle-check', 'ok'], ['order_substitution', 'Покупець', 'arrow-left-right', 'warn'], ['payment_link', 'Покупець', 'wallet', 'warn'],
+      ['surcharge_link', 'Покупець', 'banknote', 'warn'], ['order_shipped', 'Покупець', 'truck', 'plain'], ['order_ready', 'Покупець', 'store', 'ok'], ['order_cancelled', 'Покупець', 'circle-x', 'muted'],
+      ['order_message', 'Покупець', 'message-square', 'plain'], ['bonus_accrued', 'Покупець', 'badge-percent', 'ok'], ['bonus_expiring', 'Покупець', 'hourglass', 'warn'], ['bonus_expiring_2', 'Покупець', 'alarm-clock', 'warn']
+    ].map(([id, aud, icon, tone]) => ({ id, aud, icon, tone: TL[tone], src: 'assets/push/' + icon + '.png', shared: icon === 'message-square' }))
     return {
+      pushKinds,
       staffAll: staff, custAll: cust, none: [],
       toast1: staff.slice(0, 1), toast1b: staff.slice(2, 3), toast3: staff.slice(0, 3),
       ctoast3: cust.slice(0, 3), ctoast5: cust.slice(0, 5),
