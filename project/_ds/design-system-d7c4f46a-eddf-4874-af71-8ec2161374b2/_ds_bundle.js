@@ -3649,13 +3649,9 @@ function SiteHeader({
   cartCount = 0,
   active = '',
   signedIn = false,
-  staff,
   onNavigate,
   className = '',
 }) {
-  /* Працівник магазину, що зайшов у панель, бачить сайт як каталог: замість «Увійти» й
-     «Кошик» — повернення в панель. Ознаку ставить панель, знімає її «Вийти». */
-  const isStaff = staff ?? (() => { try { return localStorage.getItem('drive.staff') === '1' } catch (e) { return false } })();
   const nav_ = (key) => (event) => {
     if (!onNavigate) return;
     event.preventDefault();
@@ -3696,7 +3692,7 @@ function SiteHeader({
       className: 'ds-container ds-header__bar',
       style: {
         display: 'flex', flexWrap: 'wrap', alignItems: 'center',
-        gap: 'var(--space-4) var(--space-6)', minHeight: 'var(--header-h)',
+        gap: 'var(--space-4)', minHeight: 'var(--header-h)',
         paddingBlock: 'var(--space-3)',
       },
     },
@@ -3706,7 +3702,9 @@ function SiteHeader({
       }),
       h('a', { href: link('home'), style: { flex: 'none' }, onClick: nav_('home') },
         h('img', { src: logoSrc, alt: 'Драйв', className: 'ds-header__logo', style: { height: 38, width: 'auto', display: 'block' } })),
-      h('div', { className: 'ds-header__search', style: { flex: '1 1 240px', minWidth: 200, maxWidth: 520 } },
+      /* minWidth — щоб «Введіть номер деталі» влазило повністю; коли місця немає, навігація
+         переходить у другий рядок, а поле не обрізає підказку. */
+      h('div', { className: 'ds-header__search', style: { flex: '1 1 316px', minWidth: 316, maxWidth: 520 } },
         h(HeaderSearch, {
           /* The field is the ADDRESS's, not its own: on the results page it shows the query
              that page is answering, and it is empty everywhere else. */
@@ -3719,20 +3717,15 @@ function SiteHeader({
           key: item.key, href: link(item.key), className: 'ds-navlink ds-navlink--wide',
           'data-active': active === item.key ? 'true' : 'false', onClick: nav_(item.key),
         }, item.label)),
-        isStaff ? h('a', {
-          href: link('panel'), className: 'ds-navlink', 'aria-label': 'Панель', onClick: nav_('panel'),
-        }, h(__ds_scope.Icon, { name: 'layout-dashboard', size: 17 }),
-          h('span', { className: 'ds-navlink__text' }, 'Панель')) : null,
-        /* Сповіщення — для покупця, що увійшов. Ознака працівника тут не заважає: сторінку,
-           що передає signedIn, людина бачить як покупець. Компонент — у патчі «Сповіщення». */
+        /* Сповіщення — для покупця, що увійшов. Компонент — у патчі «Сповіщення». */
         signedIn && __ds_ns.NotifyBell ? h(__ds_ns.NotifyBell, { audience: 'customer', align: 'end' }) : null,
-        isStaff ? null : h('a', {
+        h('a', {
           href: link('account'), className: 'ds-navlink',
           'aria-label': signedIn ? 'Мій кабінет' : 'Увійти',
           'data-active': active === 'account' ? 'true' : 'false', onClick: nav_('account'),
         }, h(__ds_scope.Icon, { name: 'user', size: 17 }),
           h('span', { className: 'ds-navlink__text' }, signedIn ? 'Мій кабінет' : 'Увійти')),
-        isStaff ? null : h('a', {
+        h('a', {
           href: link('cart'), className: 'ds-navlink', 'aria-label': 'Кошик',
           'data-active': active === 'cart' ? 'true' : 'false', onClick: nav_('cart'),
         }, h(__ds_scope.Icon, { name: 'shopping-cart', size: 17 }),

@@ -2838,7 +2838,6 @@ class Component extends DCLogic {
     this.onHash = () => { const h = this.fromHash(); if (h) this.setState({ screen: h.screen, param: h.param, navOpen: false, ...this.cardBlank() }) }
     window.addEventListener('hashchange', this.onHash)
     this.onHash()
-    try { localStorage.setItem('drive.staff', '1') } catch (e) {}
   }
   lgnBlank() { return { user: '', pass: '', busy: false, err: '' } }
   componentWillUnmount() { window.removeEventListener('hashchange', this.onHash); clearTimeout(this.tLogin); clearTimeout(this.tCopy); clearTimeout(this.tShift); clearTimeout(this.tBusy) }
@@ -2916,7 +2915,6 @@ class Component extends DCLogic {
       me: { name: this.staffName(), role: owner ? 'Власник' : 'Продавець' },
       signOut: (e) => {
         if (e && e.preventDefault) e.preventDefault()
-        try { localStorage.removeItem('drive.staff') } catch (err) {}
         this.setState({ signedOut: true, entered: false, navOpen: false, lgn: this.lgnBlank() })
         try { window.scrollTo(0, 0) } catch (err) {}
       },
@@ -3861,7 +3859,6 @@ class Component extends DCLogic {
             this.setState((x) => ({ lgn: { ...x.lgn, busy: false, err } }))
             return
           }
-          try { localStorage.setItem('drive.staff', '1') } catch (err) {}
           this.setState({ signedOut: false, entered: true, lgn: this.lgnBlank() })
           try { window.scrollTo(0, 0) } catch (err) {}
         }, 700)

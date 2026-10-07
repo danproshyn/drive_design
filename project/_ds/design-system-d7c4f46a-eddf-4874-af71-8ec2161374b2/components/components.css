@@ -647,7 +647,13 @@ input[type='search']::-webkit-search-decoration { -webkit-appearance: none; appe
 .ds-utilitybar a { color: var(--text-inverse-muted); text-decoration: none; }
 .ds-utilitybar a:hover { color: var(--white); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
 .ds-header { position: sticky; top: 0; z-index: var(--z-header); background: var(--surface); border-bottom: 1px solid var(--line); }
-.ds-header__nav { display: flex; align-items: center; gap: var(--space-5); }
+.ds-header__nav { display: flex; align-items: center; gap: var(--space-4); }
+/* Місце для повної підказки в пошуку: дзвіночок лишає 44 px під палець, але не додає
+   порожніх полів до проміжку, а кнопка «Знайти» в шапці вужча, ніж у великому полі. */
+@media (min-width: 1024px) {
+  .ds-header__nav .ds-bell { margin-inline: -6px; }
+  .ds-header__search .ds-btn--md { padding-inline: var(--space-4); }
+}
 .ds-navlink {
   position: relative; display: inline-flex; align-items: center; gap: 6px;
   padding: 6px 0; color: var(--text-body); text-decoration: none;
